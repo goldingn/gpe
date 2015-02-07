@@ -1,4 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
+.Rbuildignore
 gpe.Rproj
