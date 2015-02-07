@@ -1,0 +1,204 @@
+# utility functions
+
+trimParentheses <- function (string) {
+  # check whether the string starts with a parenthesis and remove outer
+  # parentheses if so.
+  
+  if (substr(string, 1, 1) == '(') {
+    string <- substr(string,
+                     2,
+                     nchar(string) - 1)
+  }
+  
+  return (string)
+  
+}
+
+dumpDetails <- function(x, digits) {
+  # prettily-print a basis kernel's details.
+  # x is the list returned by getObject for a basis kernel
+  
+  cat('\t\t\t\ttype: ',
+      x$type)
+  cat('\n\t\t\t\tactive columns: ',
+      paste(x$columns, collapse = ', '))
+  cat('\n\t\t\t\tparameters: ')
+  for(i in 1:length(x$parameters)) {
+    cat(names(x$parameters)[i],
+        ' = ',
+        paste(round(x$parameters[[i]], digits), collapse = ', '),
+        '\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t')
+  }
+}
+parseKernelStructure <- function (x,
+                                  type = c('simple',
+                                           'call')) {
+  # function to parse structure from nested kernels ready for printing
+  # if type = 'simple' then the text returned is a simplified, human-readable
+  # structure, e.g. "(rbf(a, b) * rbf(c))"; if (type = 'call' then it
+  # is roughly what is needed to recreate the kernel structure, e.g.
+  # "(rbf(c('a', 'b')) * rbf('c'))".
+  
+  
+  # match the parsing type
+  type <- match.arg(type)
+  
+  # get the kernel's data object
+  x_obj <- getObject(x)
+  
+  if (x_obj$type %in% c('prod', 'sum', 'kron')) {
+    
+    # if it's a compositional kernel, recursively call
+    # this function to parse subkernels
+    string1 <- parseKernelStructure(x_obj$kernel1,
+                                    type = type)
+    
+    string2 <- parseKernelStructure(x_obj$kernel2,
+                                    type = type)
+    
+    # combine the strings, and add parentheses
+    string <- paste0('(',
+                     string1,
+                     switch(x_obj$type,
+                            sum = ' + ',
+                            prod = ' * ',
+                            kron = ' %x% '),
+                     string2,
+                     ')')
+  } else {
+    # otherwise, if it's a regular kernel
+    
+    # if it's wanted in call form
+    if (type == 'call') {
+      
+      # combine the column names, keeping the quotations
+      
+      # add inverted commas
+      columns <- paste0("'",
+                        x_obj$columns,
+                        "'")
+      
+      # if more than one column
+      if (length(x_obj) > 1) {
+        
+        # combine with commas
+        columns <- paste0(columns, collapse = ', ')
+        
+        # and add concatenation text
+        columns <- paste0('c(', columns, ')')
+        
+      }
+      
+    } else if (type == 'simple') {
+      
+      # otherwise in slightly simplified form
+      columns <- paste0(x_obj$columns, collapse = ', ')
+      
+    }
+    
+    
+    # append the kernel type
+    string <- paste0(x_obj$type, '(', columns, ')')
+    
+  }
+  
+  # return the resulting string
+  return (string)
+  
+}
+
+
+# unpacking compositional kernel structure for reporting parameters etc.
+# to the user
+
+# unpacked structure is a list with contents:
+# symbolic:
+#   a text string, giving a symbolic representation of kernel structure, e.g.
+#   '((A + B) * C)'
+# data:
+#   a named list giving the kernel types, columns and parameters of the basis
+#   kernels corresponding to the symbols in `symbolic`, e.g.
+#     A = list(type = 'rbf',
+#              columns = c('a', 'b'),
+#              parameters = list(sigma = 1,
+#                                l = c(1, 1))),
+#     B = ...
+
+unpackKernel <- function (kernel) {
+  
+  # call flatten kernel
+  kernel_data <- flattenKernel(kernel)
+  
+  # rename the elements of data_list to the letters in symbolic_string
+  names(kernel_data$data_list) <- LETTERS[1:kernel_data$counter]
+  
+  # return the string and data
+  return (kernel_data[1:2])
+  
+}
+
+# function to recurse through a kernel object and flatten the structure
+flattenKernel <- function (kernel, counter = NULL, data_list = NULL) {
+  # counter is used to keep track of the components so far
+  # and data_list stores the basis finction details
+  
+  # if at the top, initialise the counter
+  if (is.null(counter)) counter <- 0
+  
+  # get the kernel's data object
+  x_obj <- getObject(kernel)
+  
+  if (x_obj$type %in% c('prod', 'sum', 'kron')) {
+    # if a compositional kernel, unpack the two sub-kernel, passing the
+    # counter and data_list back and forth
+    
+    part_one_list <- flattenKernel(x_obj$kernel1, counter, data_list)
+    string1 <- part_one_list[[1]]
+    data_list <- part_one_list[[2]]
+    counter <- part_one_list[[3]]
+    
+    part_two_list <- flattenKernel(x_obj$kernel2, counter, data_list)
+    string2 <- part_two_list[[1]]
+    data_list <- part_two_list[[2]]
+    counter <- part_two_list[[3]]
+    
+    # combine the symbolic strings, and add parentheses
+    symbolic_string <- paste0('(',
+                              string1,
+                              switch(x_obj$type,
+                                     sum = ' + ',
+                                     prod = ' * ',
+                                     kron = ' %x% '),
+                              string2,
+                              ')')
+    
+  } else {
+    
+    # otherwise, if it's a basis kernel
+    
+    # increment the counter
+    counter <- counter + 1
+    
+    # stop it form re-using letters
+    if (counter > 26) {
+      
+      stop ('cannot currently represent kernels with more than 26 basis kernels symbolicly')
+      
+    }
+    
+    # get the next available letter as the symbolic string
+    symbolic_string <- LETTERS[[counter]]
+    
+    # add the kernel object data to data_list
+    data_list[[counter]] <- x_obj
+    
+  }
+  
+  # return as a list
+  ans <- list(symbolic_string = symbolic_string,
+              data_list = data_list,
+              counter = counter)
+  
+  return (ans)
+  
+}
