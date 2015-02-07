@@ -27,6 +27,10 @@ install_github('goldingn/gpe')
 but there's nothing here yet, so why would you want to do that?
 
 
+<<<<<<< HEAD
 ## License
+=======
+# License
+>>>>>>> 225cfd1bb369bd06fd64afc8220948cdcc57877b
 
 The package is distributed under the MIT license, which I think means you can do pretty much anything with it, but see the LICENSE file for details
