@@ -69,7 +69,13 @@ kernel.comp <- function (kernel1, kernel2, type) {
 #' @description Construct a radial basis function (A.K.A. squared-exponential) kernel.
 #' 
 #' @details The rbf kernel takes the form:
-#' \deqn{k_{rbf} = \sigma^2 exp(-\frac{{(x - x')}^2}{2l^2})}
+#' \deqn{k_{rbf}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp\left[-\frac{1}{2} {\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right)}^2\right]}
+#' where \eqn{\mathbf{x}} are the covariates on which the kernel is active, \eqn{l_d} 
+#' are the characteristic lengthscales for each covariate (column) \eqn{x_d} 
+#' and \eqn{\sigma^2} is the overall variance.
+#' 
+#' Larger values of \eqn{l_i} correspond to functions in which change less 
+#' rapidly over the values of the covariates.
 #' 
 #' @template kco
 #' @template kco_basis

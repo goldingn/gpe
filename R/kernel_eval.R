@@ -17,7 +17,7 @@ kern.rbf.eval <- function(object, data, newdata = NULL) {
   sigma <- parameters$sigma
   
   # apply the lengthscale parameters
-  y <- sweep(y, 2, l, '/')
+  y <- sweep(y, 2, l^2, '/')
   
   # get distances
   d <- fields::rdist(x, y)
