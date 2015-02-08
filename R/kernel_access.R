@@ -20,7 +20,7 @@ kern.rbf.eval <- function(object, data, newdata = NULL) {
   y <- sweep(y, 2, l, '/')
   
   # get distances
-  d <- rdist(x, y)
+  d <- fields::rdist(x, y)
   
   # complete covariance matrix
   covmat <- sigma * exp(-(d ^ 2) / 2)
