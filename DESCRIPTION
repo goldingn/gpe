@@ -7,7 +7,7 @@ Author: Nick Golding
 Maintainer: Nick Golding <nick.golding@zoo.ox.ac.uk>
 Description: A framework reimplement and combine common statistical models
     using Gaussian processes
-License: MIT
+License: MIT + file LICENSE
 Suggests:
     testthat
 Imports:
