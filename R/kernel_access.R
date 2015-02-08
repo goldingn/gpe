@@ -1,4 +1,24 @@
-# functions to evaluate and access parts of kernels
+# Funtions to evaluate and access parts of kernels
+
+#' @name access
+#' @rdname access
+#'
+#' @title Interaction with kernel objects
+#' 
+#' @description Access and interact with kernel objects. 
+#' These functions allow you to report the type of kernel (\code{getType}), 
+#' view the overall kernel structure (\code{?}), extract subkernels (\code{getSubKernel})  
+#' report kernel parameters (\code{getParameters}) and update them (\code{setParameters}).
+#' 
+#' @template kac_kernel
+#' 
+#' @examples
+#'  
+#' # construct a kernel with one feature
+#' k1 <- rbf('temperature')
+#'  
+NULL
+
 
 kern.rbf.eval <- function(object, data, newdata = NULL) {
   # evaluate rbf kernel against data
@@ -94,6 +114,13 @@ evalKernel <- function (object, data, newdata = NULL) {
 
 # functions to access bits of kernels
 
+#' @rdname access
+#' @export
+#' @examples
+#'  
+#' # get the kernel type
+#' getType(k1)
+#'  
 getType <- function (kernel) {
   
   # get the type of kernel
@@ -108,7 +135,13 @@ getType <- function (kernel) {
   return (ans)
   
 }
-
+#' @rdname access
+#' @export
+#' @examples
+#'  
+#' # get the names of the columns the kernel acts on
+#' getColumns(k1)
+#'  
 getColumns <- function (kernel) {
   
   # get the columns used to construct the kernel
@@ -124,6 +157,14 @@ getColumns <- function (kernel) {
   
 }
 
+#' @rdname access
+#' @export
+#' @examples
+#'  
+#' # get the parameters of the kernel
+#' params <- getParameters(k1)
+#' params
+#'  
 getParameters <- function (kernel) {
   
   # get the kernel parameters
@@ -139,6 +180,17 @@ getParameters <- function (kernel) {
   
 }
 
+#' @rdname access
+#' @param which Which of the two \emph{immediate} subkernels of the kernel to extract
+#' @export
+#' @examples
+#'  
+#' # build a compositional kernel
+#' k2 <- k1 + k1 * k1
+#'  
+#' # extract a subkernel
+#' k3 <- getSubKernel(k2, 1)
+#'  
 getSubKernel <- function (kernel, which = 1) {
   
   # extract the subkernels of compositional kernels
@@ -147,10 +199,24 @@ getSubKernel <- function (kernel, which = 1) {
   
   # check the class and type
   stopifnot(is.kernel(kernel))
-  stopifnot(getType(kernel) %in% c('sum', 'prod', 'kron'))
+  type <- getType(kernel) 
+  
+  # if it's not a compositional kernel give a nice error
+  if (!(type %in% c('sum', 'prod', 'kron'))) {
+    
+    stop(paste0('only compositional kernel have sub-kernels,',
+                'this is a basis kernel of type: ',
+                type))
+    
+  }
   
   # check the subkernel selection
-  stopifnot(which %in% 1:2)
+  if (!(which %in% 1:2)) {
+    stop (paste0('this function can only access the *immediate* sub-kernels',
+                 ' of a compositional kernel, so which can only be 1 or 2.',
+                 ' You entered ',
+                 which))
+  }
   
   # extract the chosen subkernel
   if (which == 1) {
@@ -192,6 +258,23 @@ getFeatures <- function (object, data, newdata) {
   
 }
 
+#' @rdname access
+#' 
+#' @param parameter_list A named list with names giving the parameters to be 
+#' updated and values giving the new values they should take on.
+#' 
+#' @export
+#' @examples
+#' # evaluate and visualise it
+#' image(k1(pressure))
+#' 
+#' # change the length scale
+#' params$l <- 100
+#' k2 <- setParameters(k1, params)
+#' 
+#' # evaluate and visualise the new kernel
+#' image(k1(pressure))
+#'  
 setParameters <- function (kernel, parameter_list) {
   # function to set the values of some or all of the parameters
   # parameter_list must be a named list giving the parameters to be updated
@@ -227,7 +310,7 @@ setParameters <- function (kernel, parameter_list) {
       parameter_len <- length(parameter_list[[i]])
       
       # check it matches a valid kernel parameter 
-      if (!(names(parameter_list) %in% names(parameters_current))) {
+      if (!(parameter_name %in% names(parameters_current))) {
         stop (paste0(parameter_name,
                      'is not a valid parameter.\nValide parameters are:',
                      names(parameters_current)))
