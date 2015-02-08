@@ -30,6 +30,7 @@ dumpDetails <- function(x, digits) {
         '\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t')
   }
 }
+
 parseKernelStructure <- function (x,
                                   type = c('simple',
                                            'call')) {

@@ -35,7 +35,17 @@ function}
 A kernel object for which there are a range of associated functions.
 }
 \description{
-Construct a new kernel by combining existing kernels
+Construct a new kernel by combining existing kernels, either
+by summation, multiplication or the kronecker product.
+
+Summation and multiplication require that the covariance matrices produced
+the two kernels have the same dimension (same number of rows in the input
+columns) and result in a kernel with the same dimension as its inputs.
+
+The kronecker product doesn't require that the input functions have the
+same dimension, and the dimension of the output is the product of the
+dimensions of the inputs (i.e. an m-by-m matrix kroneckered with an
+n-by-n matrix gives rise to an nm-by-nm matrix).
 }
 \details{
 
