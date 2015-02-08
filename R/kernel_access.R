@@ -1,4 +1,4 @@
-# Funtions to evaluate and access parts of kernels
+# Funtions to access parts of kernels
 
 #' @name access
 #' @rdname access
@@ -18,101 +18,6 @@
 #' k1 <- rbf('temperature')
 #'  
 NULL
-
-
-kern.rbf.eval <- function(object, data, newdata = NULL) {
-  # evaluate rbf kernel against data
-  
-  # extract from/to data
-  data <- getFeatures(object, data, newdata)
-  
-  x <- data$x
-  y <- data$y
-  
-  # get kernel parameters
-  parameters <- object$parameters
-  
-  # extract lengthscales and variance
-  l <- parameters$l
-  sigma <- parameters$sigma
-  
-  # apply the lengthscale parameters
-  y <- sweep(y, 2, l, '/')
-  
-  # get distances
-  d <- fields::rdist(x, y)
-  
-  # complete covariance matrix
-  covmat <- sigma * exp(-(d ^ 2) / 2)
-  
-  # and return
-  return (covmat)
-  
-}
-
-kern.comp.eval <- function(object, data, newdata, operation) {
-  
-  stopifnot(operation %in% c('sum', 'prod', 'kron'))
-  
-  # extract the sub kernels
-  kernel1 <- getObject(object$kernel1)
-  kernel2 <- getObject(object$kernel2)
-  
-  # evaluate them
-  covmat1 <- evalKernel(kernel1, data, newdata)
-  covmat2 <- evalKernel(kernel2, data, newdata)
-  
-  # get the compositional covariance matrix
-  if (operation == 'sum') {
-    
-    covmat <- covmat1 + covmat2
-    
-  } else if (operation == 'prod') {
-    
-    covmat <- covmat1 * covmat2
-    
-  } else {
-    
-    covmat <- covmat1 %x% covmat2
-    
-  }
-  
-  # return the covariance matrix
-  return (covmat)
-}
-
-
-# evaluation master function
-evalKernel <- function (object, data, newdata = NULL) {
-  
-  # evaluate the kernel against data
-  
-  
-  # execute the different cases
-  
-  covmat <- switch(object$type,
-                   sum = kern.comp.eval(object,
-                                        data,
-                                        newdata,
-                                        'sum'),
-                   prod = kern.comp.eval(object,
-                                         data,
-                                         newdata,
-                                         'prod'),
-                   kron = kern.comp.eval(object,
-                                         data,
-                                         newdata,
-                                         'kron'),
-                   rbf = kern.rbf.eval(object,
-                                       data,
-                                       newdata))
-  
-  return (covmat)
-  
-}
-
-
-# functions to access bits of kernels
 
 #' @rdname access
 #' @export
