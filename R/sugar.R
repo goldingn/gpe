@@ -64,7 +64,7 @@ sum.kernel <- function (..., na.rm = FALSE) {
 `+.kernel` <- function (kernel1,
                         kernel2) {
   
-  gpe:::kernel.comp(kernel1,
+  kernel.comp(kernel1,
               kernel2,
               'sum')
   
@@ -132,7 +132,7 @@ prod.kernel <- function (..., na.rm = FALSE) {
 `*.kernel` <- function (kernel1,
                         kernel2) {
   
-  gpe:::kernel.comp(kernel1,
+  kernel.comp(kernel1,
               kernel2,
               'prod')
   
