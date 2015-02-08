@@ -1,6 +1,20 @@
 # functions for the kernel class -all S3 classes
 
-# coercion and testing for the new kernel class
+#' @name kernel
+#' @rdname kernel
+#'
+#' @title kernel object
+#' 
+#' @description Generic functions associated with the kernel class.
+#' @template kcl_kernel
+#' 
+#' @examples
+#'  
+#' # construct a kernel with one feature
+#' k1 <- rbf('temperature')
+#'  
+NULL
+
 as.kernel <- function (x) {
   
   # add kernel to x's class
@@ -13,6 +27,13 @@ as.kernel <- function (x) {
   
 }
 
+#' @rdname kernel
+#' @export
+#' @examples
+#' 
+#' # is it a kernel? 
+#' is.kernel(k1)
+#'  
 is.kernel <- function (x) {
   
   # test whether x is a kernel function
@@ -24,6 +45,17 @@ is.kernel <- function (x) {
 }
 
 # print function for kernels - just a basic structure
+#' @rdname kernel
+#' @param \dots For compatibility with the generic print function, not used.
+#' @export
+#' @examples
+#'  
+#' # print the kernel's basic structure
+#' print(k1)
+#'  
+#' # this is also the default action for displaying the object:
+#' k1
+#'   
 print.kernel <- function (x, ...) {
   
   # parse kernel structure into a readable format
@@ -41,6 +73,14 @@ print.kernel <- function (x, ...) {
 
 
 # summary function for kernels
+#' @rdname kernel
+#' @param digits The number of digits to display for the kernel parameters
+#' @export
+#' @examples
+#'  
+#' # a more detailed summary of the kernel's structure
+#' summary(k1)
+#'  
 summary.kernel <- function (object, digits = getOption("digits")) {
   
   # get the object's name
