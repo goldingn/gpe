@@ -203,3 +203,67 @@ flattenKernel <- function (kernel, counter = NULL, data_list = NULL) {
   return (ans)
   
 }
+
+
+rgp <- function(n, kernel, data = NULL) {
+  # draw n random GPs from a kernel, evaluated against a data.frame
+  
+  # if data is not provided  
+  if (is.null(data)) {
+    
+    # make some new data
+    data <- getFakeData(kernel)    
+    
+  } else {
+    
+    # otherwise, check it's a dataframe
+    stopifnot(class(data) == 'data.frame')
+    
+  }
+  
+  # evaluate the kernel on this data
+  K <- kernel(data)
+  
+  # get the number of datapoints
+  N <- nrow(data)
+  
+  # get a random matrix of the correct size to multiply against
+  z <- matrix(rnorm(n * D),
+              nrow = N,
+              ncol = n)
+  
+  # get random draws
+  ans <- K %*% z
+  
+  # name the columns
+  colnames(ans) <- paste0('draw_', 1:n)
+  
+  # return the draws
+  return (ans)
+  
+}
+
+
+getFakeData <- function (kernel,
+                         n = 1000) {
+  # create fake data matching the column names of a kernel
+  
+  # for now, throw an error the kernel is compositional
+  if (getType(kernel) %in% c('sum', 'prod', 'kron')) {
+    stop ("sorry, this functionality is currently only available for basis kernels")
+  }
+  
+  # get the column names and dimension
+  columns <- getColumns(kernel)
+  D <- length(columns)
+  
+  # random uniform draws for each column
+  ans <- replicate(D, runif(1000, -5, 5), simplify = FALSE)
+  
+  # add their names and turn into a dataframe
+  names(ans) <- columns
+  ans <- as.data.frame(ans)  
+  
+  return (ans)
+
+}
