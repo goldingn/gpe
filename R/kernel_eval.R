@@ -63,6 +63,34 @@ kern.lin.eval <- function(object, data, newdata = NULL) {
   
 }
 
+kern.per.eval <- function(object, data, newdata = NULL) {
+  # evaluate rbf kernel against data
+  
+  # extract from/to data
+  data <- getFeatures(object, data, newdata)
+  
+  x <- data$x
+  y <- data$y
+  
+  # get kernel parameters
+  parameters <- object$parameters
+  
+  # extract lengthscales and variance
+  p <- parameters$p
+  l <- parameters$l
+  sigma2 <- parameters$sigma2
+  
+  # get distances
+  d <- fields::rdist(x, y)
+  
+  # complete covariance matrix
+  covmat <- sigma2 * exp(-(2 * sin(pi * d / p) ^ 2) / l ^ 2)
+  
+  # and return
+  return (covmat)
+  
+}
+
 kern.comp.eval <- function(object, data, newdata, operation) {
   
   stopifnot(operation %in% c('sum', 'prod', 'kron'))
@@ -121,8 +149,8 @@ evalKernel <- function (object, data, newdata = NULL) {
                                        newdata),
                    lin = kern.lin.eval(object,
                                        data,
+                                       newdata),
+                   per = kern.per.eval(object,
+                                       data,
                                        newdata))
-  
-  return (covmat)
-  
 }

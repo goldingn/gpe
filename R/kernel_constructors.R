@@ -150,7 +150,7 @@ rbf <- function (columns) {
 #' 
 lin <- function (columns) {
   
-  # construct an rbf kernel
+  # construct a linear kernel
   
   # create the model object and initialize parameters
   object <- list(type = 'lin',
@@ -159,6 +159,61 @@ lin <- function (columns) {
                                    sigma2_v = 1,
                                    c = rep(0,
                                            length(columns))))
+  
+  # create a function to return
+  ans <- function(data,
+                  newdata = NULL) {
+    
+    evalKernel(object,
+               data,
+               newdata)    
+    
+  }
+  
+  # tell this function it's now a kernel
+  ans <- as.kernel(ans)
+  
+  return(ans)
+  
+}
+
+#' @title Periodic kernel
+#' 
+#' @description Construct a periodic kernel.
+#' 
+#' @details The periodic kernel takes the form:
+#' \deqn{k_{lin}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp \left(-\frac{2sin^2(\pi | \mathbf{x} - \mathbf{x}' | /p)}{l^2} \right)}
+#' where \eqn{\mathbf{x}} are the covariates on which the kernel is active,
+#' \eqn{p} determines the periodicity (distance between successive peaks),
+#' \eqn{l} is a characteristic lengthscale, as in the rbf kernel, and \eqn{\sigma^2}
+#' is the amplitude of the signal
+#' 
+#' @template kco
+#' @template kco_basis
+#' @export
+#' @name per
+#' 
+#' @examples
+#' # construct a kernel with one feature
+#' k1 <- per('temperature')
+#' 
+#' # and another with two features
+#' k2 <- per(c('temperature', 'pressure'))
+#' 
+#' # evaluate them on the pressure dataset
+#' image(k1(pressure))
+#' image(k2(pressure))
+#' 
+per <- function (columns) {
+  
+  # construct a periodic kernel
+  
+  # create the model object and initialize parameters
+  object <- list(type = 'per',
+                 columns = columns,
+                 parameters = list(p = 1,
+                                   l = 1,
+                                   sigma2 = 1))
   
   # create a function to return
   ans <- function(data,
