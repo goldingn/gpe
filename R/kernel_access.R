@@ -255,3 +255,68 @@ setParameters <- function (kernel, parameter_list) {
   return (new_kernel)
   
 }
+
+
+#' @rdname access
+#' 
+#' @param data a dataset from which to calculate the range of values over which to draw example GPs.
+#' If \code{NULL}, the range -5 to 5 is used, arbitrarily.
+#' @param ndraw the number of (zero-mean) GP realisations from the the kernel to plot.
+#' 
+#' @export
+#' @examples
+#'  
+#' #plot example GPs from this kernel, applied to the pressure dataset
+#' demoKernel(k1, data = pressure)
+#' 
+demoKernel <- function (kernel, data = NULL, ndraw = 5) {
+  
+  # plotting example draws from a kernel
+  
+  # for now, throw an error the kernel is compositional
+  if (getType(kernel) %in% c('sum', 'prod', 'kron')) {
+    stop ("sorry, this functionality is currently only available for basis kernels")
+  }
+  
+  # get the columns
+  columns <- getColumns(kernel)
+  D <- length(columns)
+  
+  if (D != 1) {
+    stop ("sorry, only one-dimensional kernels are currently supported")
+  }
+  
+  # make this handle discrete data
+  
+  # get the range of data to plot
+  if (is.null(data)) {
+    range <- c(-5, 5)
+  } else {
+    range <- range(data[, columns])
+  }
+  
+  # get some random draws from the kernel
+  df_covs <- data.frame(seq(range[1], range[2], len = 1000))
+  names(df_covs) <- columns
+  
+  draws <- rgp(n = ndraw, kernel = kernel, data = df_covs)
+  
+  plot(draws[, 1] ~ df_covs[[1]],
+       type = 'n',
+       ylim = range(draws),
+       xlab = columns,
+       ylab = paste0('f(', columns, ')'))
+  
+  for (i in 1:ndraw) {
+    lines(draws[, i] ~ df_covs[[1]],
+          type = 'l',
+          lwd = 2,
+          col = grey(0.5))
+  }
+  
+  title(main = paste0(ndraw,
+                      ' GP realisations from the kernel\n',
+                      trimParentheses(parseKernelStructure(kernel))))
+  
+}
+

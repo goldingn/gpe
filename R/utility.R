@@ -228,7 +228,7 @@ rgp <- function(n, kernel, data = NULL) {
   N <- nrow(data)
   
   # get a random matrix of the correct size to multiply against
-  z <- matrix(rnorm(n * D),
+  z <- matrix(rnorm(n * N),
               nrow = N,
               ncol = n)
   
@@ -267,3 +267,16 @@ getFakeData <- function (kernel,
   return (ans)
 
 }
+
+expandFactor <- function (factor) {
+  
+  # stick the factor in a dataframe
+  df <- data.frame(x = factor)
+  
+  # convert into full contrasts matrix
+  ans <- model.matrix(~ x - 1, data = df)
+  
+  return (ans)
+  
+}
+

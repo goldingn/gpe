@@ -231,3 +231,66 @@ per <- function (columns) {
   return(ans)
   
 }
+
+
+#' @title IID random effects kernel
+#' 
+#' @description Construct an iid 'random effect' kernel.
+#' 
+#' @details The iid kernel takes the form:
+#' \deqn{k_{iid}(\mathbf{x}, \mathbf{x}') = \sigma^2 \mathbf{x} \mathbf{x}'}
+#' where \eqn{\mathbf{x}} are indicator variables with each column containing 
+#' 1s for records in a given group and 0s otherwise and \eqn{\sigma^2} is the 
+#' overall variance. This is equivalent to a hierarchical or random-effects 
+#' model, with the hierarchical variance given by \eqn{\sigma^2}.
+#' 
+#' In practice, the active column should actually be a single factor and the 
+#' indicator variables will be built internally.
+#' 
+#' @template kco
+#' @template kco_basis
+#' @export
+#' @name iid
+#' 
+#' @examples
+#'  
+#' # add a discrete variable to the pressure dataset
+#' pressure$group <- factor(sample(letters[1:3], 19, replace = TRUE))
+#' 
+#' # construct an iid kernel over this
+#' k1 <- iid('group')
+#' 
+#' # evaluate and visualise it
+#' image(k1(pressure))
+#' 
+iid <- function (columns) {
+  
+  # construct an iid kernel
+
+  # throw an error if more than one column is specified
+  if (length(columns) > 1) {
+    stop (paste0('iid kernels can only be constructed on one column at a time',
+          ', perhaps you should try constructing two and summing them?'))
+  }
+  
+  # create the model object and initialize parameters
+  object <- list(type = 'iid',
+                 columns = columns,
+                 parameters = list(sigma = 1))
+  
+  # create a function to return
+  ans <- function(data,
+                  newdata = NULL) {
+    
+    evalKernel(object,
+               data,
+               newdata)    
+    
+  }
+  
+  # tell this function it's now a kernel
+  ans <- as.kernel(ans)
+  
+  return(ans)
+  
+}

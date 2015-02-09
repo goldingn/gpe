@@ -53,7 +53,7 @@ kern.lin.eval <- function(object, data, newdata = NULL) {
   y <- sweep(y, 2, c, '-')
   
   # get distances
-  d <- fields::rdist(x, y)
+  d <- x %*% t(y)
   
   # complete covariance matrix
   covmat <- sigma2_b + sigma2_v * d
@@ -85,6 +85,31 @@ kern.per.eval <- function(object, data, newdata = NULL) {
   
   # complete covariance matrix
   covmat <- sigma2 * exp(-(2 * sin(pi * d / p) ^ 2) / l ^ 2)
+  
+  # and return
+  return (covmat)
+  
+}
+
+kern.iid.eval <- function(object, data, newdata = NULL) {
+  # evaluate iid kernel against data
+  
+  # extract from/to data
+  data <- getFeatures(object, data, newdata)
+  
+  x <- expandFactor(data$x)
+  y <- expandFactor(data$y)
+  
+  # get kernel parameters
+  parameters <- object$parameters
+  
+  # extract lengthscales and variance
+  sigma <- parameters$sigma
+  
+  # get distances
+  
+  # complete covariance matrix
+  covmat <- sigma * x %*% t(y)
   
   # and return
   return (covmat)
@@ -151,6 +176,9 @@ evalKernel <- function (object, data, newdata = NULL) {
                                        data,
                                        newdata),
                    per = kern.per.eval(object,
+                                       data,
+                                       newdata),
+                   iid = kern.iid.eval(object,
                                        data,
                                        newdata))
 }
