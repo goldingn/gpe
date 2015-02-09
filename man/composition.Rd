@@ -88,6 +88,7 @@ k_kron <- k1 \%x\% k2
 image(k_kron(pressure))
 }
 \seealso{
-Other kernel.constructors: \code{\link{rbf}}
+Other kernel.constructors: \code{\link{lin}};
+  \code{\link{rbf}}
 }
 

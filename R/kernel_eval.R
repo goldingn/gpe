@@ -17,6 +17,7 @@ kern.rbf.eval <- function(object, data, newdata = NULL) {
   sigma <- parameters$sigma
   
   # apply the lengthscale parameters
+  x <- sweep(x, 2, l^2, '/')
   y <- sweep(y, 2, l^2, '/')
   
   # get distances
@@ -24,6 +25,38 @@ kern.rbf.eval <- function(object, data, newdata = NULL) {
   
   # complete covariance matrix
   covmat <- sigma * exp(-(d ^ 2) / 2)
+  
+  # and return
+  return (covmat)
+  
+}
+
+kern.lin.eval <- function(object, data, newdata = NULL) {
+  # evaluate linear kernel against data
+  
+  # extract from/to data
+  data <- getFeatures(object, data, newdata)
+  
+  x <- data$x
+  y <- data$y
+  
+  # get kernel parameters
+  parameters <- object$parameters
+  
+  # extract lengthscales and variance
+  sigma2_b <- parameters$sigma2_b
+  sigma2_v <- parameters$sigma2_v
+  c <- parameters$c
+  
+  # subtract the x axis offsets
+  x <- sweep(x, 2, c, '-')
+  y <- sweep(y, 2, c, '-')
+  
+  # get distances
+  d <- fields::rdist(x, y)
+  
+  # complete covariance matrix
+  covmat <- sigma2_b + sigma2_v * d
   
   # and return
   return (covmat)
@@ -84,6 +117,9 @@ evalKernel <- function (object, data, newdata = NULL) {
                                          newdata,
                                          'kron'),
                    rbf = kern.rbf.eval(object,
+                                       data,
+                                       newdata),
+                   lin = kern.lin.eval(object,
                                        data,
                                        newdata))
   

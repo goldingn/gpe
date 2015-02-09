@@ -120,3 +120,59 @@ rbf <- function (columns) {
   return(ans)
   
 }
+
+#' @title Linear kernel
+#' 
+#' @description Construct a linear kernel.
+#' 
+#' @details The linear kernel takes the form:
+#' \deqn{k_{lin}(\mathbf{x}, \mathbf{x}') = \sigma_b^2 + \sigma_v^2 (\mathbf{x} - c)(\mathbf{x}' - c)}
+#' where \eqn{\mathbf{x}} are the covariates on which the kernel is active,
+#' \eqn{c} determines the value(s) of \eqn{x} through which all realisations pass,
+#' \eqn{\sigma_b^2} is a prior over the absolute value of the intercept and
+#' \eqn{\sigma_v^2} isa  prior over the slopes of the realisations.
+#' 
+#' @template kco
+#' @template kco_basis
+#' @export
+#' @name lin
+#' 
+#' @examples
+#' # construct a kernel with one feature
+#' k1 <- lin('temperature')
+#' 
+#' # and another with two features
+#' k2 <- lin(c('temperature', 'pressure'))
+#' 
+#' # evaluate them on the pressure dataset
+#' image(k1(pressure))
+#' image(k2(pressure))
+#' 
+lin <- function (columns) {
+  
+  # construct an rbf kernel
+  
+  # create the model object and initialize parameters
+  object <- list(type = 'lin',
+                 columns = columns,
+                 parameters = list(sigma2_b = 1,
+                                   sigma2_v = 1,
+                                   c = rep(0,
+                                           length(columns))))
+  
+  # create a function to return
+  ans <- function(data,
+                  newdata = NULL) {
+    
+    evalKernel(object,
+               data,
+               newdata)    
+    
+  }
+  
+  # tell this function it's now a kernel
+  ans <- as.kernel(ans)
+  
+  return(ans)
+  
+}
