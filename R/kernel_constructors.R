@@ -235,20 +235,25 @@ per <- function (columns) {
 
 #' @title IID random effects kernel
 #' 
-#' @description Construct an iid 'random effect' kernel.
+#' @description Construct an iid normal 'random effect' kernel.
 #' 
+#' @param column optionally, a single string giving the name of a \emph{factor} 
+#' feature on which the kernel acts. This will be used to access columns from 
+#' a dataframe when the kernel is evaluated . If \code{NULL} then the iid 
+#' effect acts on each datapoint, rather than on groups.
+#'  
 #' @details The iid kernel takes the form:
 #' \deqn{k_{iid}(\mathbf{x}, \mathbf{x}') = \sigma^2 \mathbf{x} \mathbf{x}'}
 #' where \eqn{\mathbf{x}} are indicator variables with each column containing 
 #' 1s for records in a given group and 0s otherwise and \eqn{\sigma^2} is the 
 #' overall variance. This is equivalent to a hierarchical or random-effects 
-#' model, with the hierarchical variance given by \eqn{\sigma^2}.
+#' model: \eqn{z_j ~ N(0, \sigma2)} with \eqn{j} indexing the groups of the 
+#' specified factor.
 #' 
 #' In practice, the active column should actually be a single factor and the 
 #' indicator variables will be built internally.
 #' 
 #' @template kco
-#' @template kco_basis
 #' @export
 #' @name iid
 #' 
@@ -263,19 +268,19 @@ per <- function (columns) {
 #' # evaluate and visualise it
 #' image(k1(pressure))
 #' 
-iid <- function (columns) {
+iid <- function (column = NULL) {
   
   # construct an iid kernel
 
   # throw an error if more than one column is specified
-  if (length(columns) > 1) {
+  if (length(column) > 1) {
     stop (paste0('iid kernels can only be constructed on one column at a time',
           ', perhaps you should try constructing two and summing them?'))
   }
   
   # create the model object and initialize parameters
   object <- list(type = 'iid',
-                 columns = columns,
+                 columns = column,
                  parameters = list(sigma = 1))
   
   # create a function to return

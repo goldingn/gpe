@@ -3,18 +3,19 @@
 \alias{iid}
 \title{IID random effects kernel}
 \usage{
-iid(columns)
+iid(column = NULL)
 }
 \arguments{
-\item{columns}{A string vector giving the names of features on which the
-kernel acts. These will be used to access columns from a dataframe when the
-kernel is later used in a GP model.}
+\item{column}{optionally, a single string giving the name of a \emph{factor}
+feature on which the kernel acts. This will be used to access columns from
+a dataframe when the kernel is evaluated . If \code{NULL} then the iid
+effect acts on each datapoint, rather than on groups.}
 }
 \value{
 A kernel object for which there are a range of associated functions.
 }
 \description{
-Construct an iid 'random effect' kernel.
+Construct an iid normal 'random effect' kernel.
 }
 \details{
 
@@ -24,7 +25,8 @@ The iid kernel takes the form:
 where \eqn{\mathbf{x}} are indicator variables with each column containing
 1s for records in a given group and 0s otherwise and \eqn{\sigma^2} is the
 overall variance. This is equivalent to a hierarchical or random-effects
-model, with the hierarchical variance given by \eqn{\sigma^2}.
+model: \eqn{z_j ~ N(0, \sigma2)} with \eqn{j} indexing the groups of the
+specified factor.
 
 In practice, the active column should actually be a single factor and the
 indicator variables will be built internally.

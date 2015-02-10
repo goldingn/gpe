@@ -92,26 +92,57 @@ kern.per.eval <- function(object, data, newdata = NULL) {
 }
 
 kern.iid.eval <- function(object, data, newdata = NULL) {
+  
   # evaluate iid kernel against data
-  
-  # extract from/to data
-  data <- getFeatures(object, data, newdata)
-  
-  x <- expandFactor(data$x)
-  y <- expandFactor(data$y)
-  
+    
   # get kernel parameters
   parameters <- object$parameters
   
   # extract lengthscales and variance
   sigma <- parameters$sigma
   
-  # get distances
+  # if columns is null, it's iid on all observations
+  if (is.null(object$columns)) {
+
+    # get training n
+    n <- nrow(data) 
+    
+    if (is.null(newdata)) {
+
+      # if newdata is NULL, it must be the self matrix, so identity
+      covmat <- sigma ^ 2 * diag(n)
+    
+    } else {
+
+      # otherwise it's 0s (new data independent so no covariance)
+      
+      # dimension of evaluation data
+      m <- nrow(newdata)
+      
+      # 0s matrix
+      covmat <- matrix(0,
+                       nrow = n,
+                       ncol = m)
+      
+    }
+
+  } else {
+    
+    # otherwise, iid on some grouping factor
   
-  # complete covariance matrix
-  covmat <- sigma * x %*% t(y)
+    # extract from/to data
+    data <- getFeatures(object, data, newdata)
+    
+    # turn factors into full set of indicator variables
+    x <- expandFactor(data$x)
+    y <- expandFactor(data$y)
+        
+    # complete covariance matrix
+    covmat <- sigma ^ 2 * x %*% t(y)
   
-  # and return
+  }
+  
+  # return covariance matrix
   return (covmat)
   
 }

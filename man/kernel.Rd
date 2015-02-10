@@ -4,20 +4,23 @@
 \alias{kernel}
 \alias{print.kernel}
 \alias{summary.kernel}
-\title{kernel object}
+\title{gpe kernel class}
 \usage{
 is.kernel(x)
 
 \method{print}{kernel}(x, ...)
 
-\method{summary}{kernel}(object, digits = getOption("digits"))
+\method{summary}{kernel}(object, ..., digits = max(3, getOption("digits") -
+  3))
 }
 \arguments{
-\item{kernel}{A kernel object}
+\item{x}{a kernel object, or some other object to be tested}
 
-\item{\dots}{For compatibility with the generic print function, not used.}
+\item{\dots}{additional arguments for compatibility with generic functions}
 
-\item{digits}{The number of digits to display for the kernel parameters}
+\item{object}{a kernel object}
+
+\item{digits}{the number of digits to display for the kernel parameters}
 }
 \description{
 Generic functions associated with the kernel class.
