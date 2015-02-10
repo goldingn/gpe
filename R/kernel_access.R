@@ -189,9 +189,10 @@ setParameters <- function (kernel, parameter_list) {
   
   # clone the previous environment
   # This will clone e1
-  environment(new_kernel) <- as.environment(as.list(environment(kernel),
-                                                    all.names = TRUE))
+#   environment(new_kernel) <- as.environment(as.list(environment(kernel),
+#                                                     all.names = TRUE))
   
+  environment(new_kernel) <- environment(kernel)
   # get kernel's object
   object <- getObject(new_kernel)
   
