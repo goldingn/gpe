@@ -280,3 +280,35 @@ expandFactor <- function (factor) {
   
 }
 
+# basis kernel meta-constructor
+
+# This returns a kernel function (R function of class kernel)
+# with the kernel type `type`, active on columns `columns` and with parameter
+# list `parameters`. The aim of this function is to facilitate kernel function
+# creation and reduce the amount of duplicated code
+createKernelConstructor <- function(type,
+                                    columns,
+                                    parameters,
+                                    evaluator) {
+  
+  # create the model object and initialize parameters
+  object <- list(type = type,
+                 columns = columns,
+                 parameters = parameters)
+  
+  # create a function to return
+  ans <- function(data,
+                  newdata = NULL) {
+    
+    evaluator(object,
+              data,
+              newdata)    
+    
+  }
+  
+  # tell this function it's now a kernel
+  ans <- as.kernel(ans)
+  
+  return(ans)
+  
+}

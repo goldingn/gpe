@@ -64,9 +64,9 @@ sum.kernel <- function (..., na.rm = FALSE) {
 `+.kernel` <- function (kernel1,
                         kernel2) {
   
-  kernel.comp(kernel1,
-              kernel2,
-              'sum')
+  comp(kernel1,
+       kernel2,
+       'sum')
   
 }
 
@@ -132,9 +132,9 @@ prod.kernel <- function (..., na.rm = FALSE) {
 `*.kernel` <- function (kernel1,
                         kernel2) {
   
-  kernel.comp(kernel1,
-              kernel2,
-              'prod')
+  comp(kernel1,
+       kernel2,
+       'prod')
   
 }
 
@@ -155,9 +155,9 @@ kron <- function (kernel1,
   if (is.kernel(kernel1) &
         is.kernel(kernel2)) {
     
-    ans <- kernel.comp(kernel1,
-                       kernel2,
-                       'kron')
+    ans <- comp(kernel1,
+                kernel2,
+                'kron')
     
   } else {
     
@@ -187,9 +187,9 @@ kron <- function (kernel1,
   if (is.kernel(kernel1) &
         is.kernel(kernel2)) {
     
-    ans <- kernel.comp(kernel1,
-                       kernel2,
-                       'kron')
+    ans <- comp(kernel1,
+                kernel2,
+                'kron')
     
   } else {
     
