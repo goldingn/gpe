@@ -3,7 +3,7 @@
 #' @name kernel
 #' @rdname kernel
 #'
-#' @title kernel object
+#' @title gpe kernel class
 #' 
 #' @description Generic functions associated with the kernel class.
 #' @template kcl_kernel
@@ -46,7 +46,6 @@ is.kernel <- function (x) {
 
 # print function for kernels - just a basic structure
 #' @rdname kernel
-#' @param \dots For compatibility with the generic print function, not used.
 #' @export
 #' @examples
 #'  
@@ -74,14 +73,15 @@ print.kernel <- function (x, ...) {
 
 # summary function for kernels
 #' @rdname kernel
-#' @param digits The number of digits to display for the kernel parameters
+#' @param object a kernel object
+#' @param digits the number of digits to display for the kernel parameters
 #' @export
 #' @examples
 #'  
 #' # a more detailed summary of the kernel's structure
 #' summary(k1)
 #'  
-summary.kernel <- function (object, digits = getOption("digits")) {
+summary.kernel <- function (object, ..., digits = max(3, getOption("digits")-3)) {
   
   # get the object's name
   name <- deparse(substitute(object))
