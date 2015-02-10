@@ -96,28 +96,11 @@ kernel.comp <- function (kernel1, kernel2, type) {
 rbf <- function (columns) {
   
   # construct an rbf kernel
-  
-  # create the model object and initialize parameters
-  object <- list(type = 'rbf',
-                 columns = columns,
-                 parameters = list(sigma = 1,
-                                   l = rep(1,
-                                           length(columns))))
-  
-  # create a function to return
-  ans <- function(data,
-                  newdata = NULL) {
-    
-    evalKernel(object,
-               data,
-               newdata)    
-    
-  }
-  
-  # tell this function it's now a kernel
-  ans <- as.kernel(ans)
-  
-  return(ans)
+  createKernelConstructor('rbf',
+                          columns,
+                          list(sigma = 1,
+                               l = rep(1,
+                                       length(columns))))
   
 }
 
@@ -151,30 +134,13 @@ rbf <- function (columns) {
 lin <- function (columns) {
   
   # construct a linear kernel
-  
-  # create the model object and initialize parameters
-  object <- list(type = 'lin',
-                 columns = columns,
-                 parameters = list(sigma2_b = 1,
-                                   sigma2_v = 1,
-                                   c = rep(0,
-                                           length(columns))))
-  
-  # create a function to return
-  ans <- function(data,
-                  newdata = NULL) {
-    
-    evalKernel(object,
-               data,
-               newdata)    
-    
-  }
-  
-  # tell this function it's now a kernel
-  ans <- as.kernel(ans)
-  
-  return(ans)
-  
+  createKernelConstructor('lin',
+                          columns,
+                          list(sigma2_b = 1,
+                               sigma2_v = 1,
+                               c = rep(0,
+                                       length(columns))))
+
 }
 
 #' @title Periodic kernel
@@ -207,28 +173,11 @@ lin <- function (columns) {
 per <- function (columns) {
   
   # construct a periodic kernel
-  
-  # create the model object and initialize parameters
-  object <- list(type = 'per',
-                 columns = columns,
-                 parameters = list(p = 1,
-                                   l = 1,
-                                   sigma2 = 1))
-  
-  # create a function to return
-  ans <- function(data,
-                  newdata = NULL) {
-    
-    evalKernel(object,
-               data,
-               newdata)    
-    
-  }
-  
-  # tell this function it's now a kernel
-  ans <- as.kernel(ans)
-  
-  return(ans)
+  createKernelConstructor('per',
+                          columns,
+                          list(p = 1,
+                               l = 1,
+                               sigma2 = 1))
   
 }
 
@@ -270,18 +219,33 @@ per <- function (columns) {
 #' 
 iid <- function (column = NULL) {
   
-  # construct an iid kernel
-
   # throw an error if more than one column is specified
   if (length(column) > 1) {
     stop (paste0('iid kernels can only be constructed on one column at a time',
-          ', perhaps you should try constructing two and summing them?'))
+                 ', perhaps you should try constructing two and summing them?'))
   }
   
+  # construct an iid kernel
+  createKernelConstructor('iid',
+                          column,
+                          list(sigma = 1))
+  
+}
+
+
+# basis kernel meta-constructor
+# This kernel returns a kernel function (R function of class kernel)
+# with the kernel type `type`, active on columns `columns` and with parameter
+# list `parameters`. The aim of this function is to facilitate kernel function
+# creation and reduce the amount of duplicated code
+createKernelConstructor <- function(type,
+                                    columns,
+                                    parameters) {
+  
   # create the model object and initialize parameters
-  object <- list(type = 'iid',
-                 columns = column,
-                 parameters = list(sigma = 1))
+  object <- list(type = type,
+                 columns = columns,
+                 parameters = parameters)
   
   # create a function to return
   ans <- function(data,
@@ -299,3 +263,9 @@ iid <- function (column = NULL) {
   return(ans)
   
 }
+
+# bias <- function(columns) {
+#   createKernelConstructor('bias',
+#                           columns,
+#                           parameters = list(sigma2 = 1))
+# }
