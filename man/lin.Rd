@@ -20,11 +20,10 @@ Construct a linear kernel.
 
 
 The linear kernel takes the form:
-\deqn{k_{lin}(\mathbf{x}, \mathbf{x}') = \sigma_b^2 + \sigma_v^2 (\mathbf{x} - c)(\mathbf{x}' - c)}
+\deqn{k_{lin}(\mathbf{x}, \mathbf{x}') = \sigma^2 (\mathbf{x} - c)(\mathbf{x}' - c)}
 where \eqn{\mathbf{x}} are the covariates on which the kernel is active,
-\eqn{c} determines the value(s) of \eqn{x} through which all realisations pass,
-\eqn{\sigma_b^2} is a prior over the absolute value of the intercept and
-\eqn{\sigma_v^2} isa  prior over the slopes of the realisations.
+\eqn{c} determines the value(s) of \eqn{x} through which all realisations
+pass and \eqn{\sigma^2} is a prior over the slopes of the realisations.
 }
 \examples{
 # construct a kernel with one feature

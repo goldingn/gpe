@@ -66,7 +66,7 @@ rbfEval <- function(object, data, newdata = NULL) {
   d <- fields::rdist(x, y)
   
   # complete covariance matrix
-  covmat <- sigma * exp(-(d ^ 2) / 2)
+  covmat <- sigma ^ 2 * exp(-(d ^ 2) / 2)
   
   # and return
   return (covmat)

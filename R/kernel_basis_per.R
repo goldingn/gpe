@@ -34,7 +34,7 @@ per <- function (columns) {
                           columns,
                           list(p = 1,
                                l = 1,
-                               sigma2 = 1),
+                               sigma = 1),
                           perEval)
   
 }
@@ -55,13 +55,13 @@ perEval <- function(object, data, newdata = NULL) {
   # extract lengthscales and variance
   p <- parameters$p
   l <- parameters$l
-  sigma2 <- parameters$sigma2
+  sigma <- parameters$sigma
   
   # get distances
   d <- fields::rdist(x, y)
   
   # complete covariance matrix
-  covmat <- sigma2 * exp(-(2 * sin(pi * d / p) ^ 2) / l ^ 2)
+  covmat <- sigma ^ 2 * exp(-(2 * sin(pi * d / p) ^ 2) / l ^ 2)
   
   # and return
   return (covmat)

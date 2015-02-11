@@ -5,11 +5,10 @@
 #' @description Construct a linear kernel.
 #' 
 #' @details The linear kernel takes the form:
-#' \deqn{k_{lin}(\mathbf{x}, \mathbf{x}') = \sigma_b^2 + \sigma_v^2 (\mathbf{x} - c)(\mathbf{x}' - c)}
+#' \deqn{k_{lin}(\mathbf{x}, \mathbf{x}') = \sigma^2 (\mathbf{x} - c)(\mathbf{x}' - c)}
 #' where \eqn{\mathbf{x}} are the covariates on which the kernel is active,
-#' \eqn{c} determines the value(s) of \eqn{x} through which all realisations pass,
-#' \eqn{\sigma_b^2} is a prior over the absolute value of the intercept and
-#' \eqn{\sigma_v^2} isa  prior over the slopes of the realisations.
+#' \eqn{c} determines the value(s) of \eqn{x} through which all realisations 
+#' pass and \eqn{\sigma^2} is a prior over the slopes of the realisations.
 #' 
 #' @template kco
 #' @template kco_basis
@@ -32,8 +31,7 @@ lin <- function (columns) {
   # construct a linear kernel
   createKernelConstructor('lin',
                           columns,
-                          list(sigma2_b = 1,
-                               sigma2_v = 1,
+                          list(sigma = 1,
                                c = rep(0,
                                        length(columns))),
                           linEval)
@@ -53,8 +51,7 @@ linEval <- function(object, data, newdata = NULL) {
   parameters <- object$parameters
   
   # extract lengthscales and variance
-  sigma2_b <- parameters$sigma2_b
-  sigma2_v <- parameters$sigma2_v
+  sigma <- parameters$sigma
   c <- parameters$c
   
   # subtract the x axis offsets
@@ -65,7 +62,7 @@ linEval <- function(object, data, newdata = NULL) {
   d <- x %*% t(y)
   
   # complete covariance matrix
-  covmat <- sigma2_b + sigma2_v * d
+  covmat <- sigma ^ 2 * d
   
   # and return
   return (covmat)
