@@ -89,6 +89,7 @@ image(k_kron(pressure))
 }
 \seealso{
 Other kernel.constructors: \code{\link{iid}};
-  \code{\link{lin}}; \code{\link{per}}; \code{\link{rbf}}
+  \code{\link{int}}; \code{\link{lin}}; \code{\link{per}};
+  \code{\link{rbf}}
 }
 
