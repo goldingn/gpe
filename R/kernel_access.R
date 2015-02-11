@@ -31,7 +31,7 @@ getType <- function (kernel) {
   # get the type of kernel
   
   # check it's a kernel
-  stopifnot(is.kernel(kernel))
+  checkKernel(kernel)
   
   # extract the type
   ans <- environment(kernel)$object$type
@@ -52,7 +52,7 @@ getColumns <- function (kernel) {
   # get the columns used to construct the kernel
   
   # check it's a kernel
-  stopifnot(is.kernel(kernel))
+  checkKernel(kernel)
   
   # extract the type
   ans <- environment(kernel)$object$columns
@@ -75,7 +75,7 @@ getParameters <- function (kernel) {
   # get the kernel parameters
   
   # check it's a kernel
-  stopifnot(is.kernel(kernel))
+  checkKernel(kernel)
   
   # extract the type
   ans <- environment(kernel)$object$parameters
@@ -103,17 +103,11 @@ getSubKernel <- function (kernel, which = 1) {
   # kernel must be a sum, prod or kron kernel and which can be either 1 or 2
   
   # check the class and type
-  stopifnot(is.kernel(kernel))
+  checkKernel(kernel)
   type <- getType(kernel) 
   
-  # if it's not a compositional kernel give a nice error
-  if (!(type %in% c('sum', 'prod', 'kron'))) {
-    
-    stop(paste0('only compositional kernel have sub-kernels,',
-                'this is a basis kernel of type: ',
-                type))
-    
-  }
+  # check it's a basis kernel
+  checkCompositional(kernel)
   
   # check the subkernel selection
   if (!(which %in% 1:2)) {
@@ -174,7 +168,7 @@ getFeatures <- function (object, data, newdata) {
 #' image(k1(pressure))
 #' 
 #' # change the length scale
-#' params$l <- 100
+#' params$l <- 10
 #' k2 <- setParameters(k1, params)
 #' 
 #' # evaluate and visualise the new kernel
@@ -184,73 +178,42 @@ setParameters <- function (kernel, parameter_list) {
   # function to set the values of some or all of the parameters
   # parameter_list must be a named list giving the parameters to be updated
   
+  # check the new parameters
+  checkParameters(kernel, parameter_list)
+  
   # copy over the kernel
   new_kernel <- kernel
   
   # clone the previous environment
-  # This will clone e1
-#   environment(new_kernel) <- as.environment(as.list(environment(kernel),
-#                                                     all.names = TRUE))
-  
   environment(new_kernel) <- environment(kernel)
+
   # get kernel's object
   object <- getObject(new_kernel)
+
+  # get the existing parameters
+  parameters_current <- object$parameters
   
-  # first check the kernel has parameters to set
-  if (object$type %in% c('prod', 'sum', 'kron')) {
+  # loop through each element in parameter_list
+  for (i in 1:length(parameter_list)) {
     
-    stop ('compositional kernels have no parameters to set')
+    # get the new parameter name
+    parameter_name <- names(parameter_list)[i]
     
-  } else {
+    # and length
+    parameter_len <- length(parameter_list[[i]])
     
-    # otherwise, get the existing parameters
-    parameters_current <- object$parameters
+    # find the matching parameter
+    j <- match(parameter_name,
+               names(parameters_current))
     
-    # check each element in parameter_list
-    for (i in 1: length(parameter_list)) {
-      
-      # get the new parameter name
-      parameter_name <- names(parameter_list)[i]
-      
-      # and length
-      parameter_len <- length(parameter_list[[i]])
-      
-      # check it matches a valid kernel parameter 
-      if (!(parameter_name %in% names(parameters_current))) {
-        stop (paste0(parameter_name,
-                     'is not a valid parameter.\nValide parameters are:',
-                     names(parameters_current)))
-      }
-      
-      # otherwise find matching parameter
-      j <- match(parameter_name,
-                 names(parameters_current))
-      
-      # get length of this target parameter
-      target_parameter_len <- length(parameters_current[[j]])
-      
-      # check it is of the correct dimension
-      if (target_parameter_len != parameter_len) {
-        stop (paste0(parameter_name,
-                     'is of length ',
-                     parameter_len,
-                     'but should be of length ',
-                     target_parameter_len))
-      }
-      
-      # --------------------------------
-      # check support of the parameters!
-      # --------------------------------
-      
-      # otherwise, update the parameters
-      parameters_current[[j]] <- parameter_list[[i]]
-      
-    }
-    
-    # insert parameters back into the kernel
-    environment(new_kernel)$object$parameters <- parameters_current
+    # update the parameter
+    parameters_current[[j]] <- parameter_list[[i]]
     
   }
+  
+  # insert parameters back into the kernel
+  environment(new_kernel)$object$parameters <- parameters_current
+    
   
   # return the kernel
   return (new_kernel)
@@ -320,4 +283,3 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
                       trimParentheses(parseKernelStructure(kernel))))
   
 }
-

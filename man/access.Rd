@@ -59,7 +59,7 @@ k3 <- getSubKernel(k2, 1)
 image(k1(pressure))
 
 # change the length scale
-params$l <- 100
+params$l <- 10
 k2 <- setParameters(k1, params)
 
 # evaluate and visualise the new kernel
