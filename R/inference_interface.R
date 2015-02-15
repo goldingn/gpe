@@ -1,28 +1,48 @@
+# interface for fitting Gaussian process models
+
+# this'll need some roxygen
 gp <- function(response,
                kernel,
                data,
                family = gaussian,
                mean_function = NULL,
-               inducing_points = NULL,
+               inducing_data = NULL,
                inference = c('default', 'exact', 'FITC')) {
 
   # capture family as a string
   family <- deparse(substitute(family))
   
-  # and inference
+  # if there's no mean function, use zeroes
+  if (is.null(mean_function)) {
+    
+    # return the default (zeroes)
+    mean_function <- zeroes
+    
+  }
+  
+  # get the inference
   inference <- match.arg(inference)
+
+  # if it's default, look up the default
+  if (inference == 'default') {
+    inference <- defaultInference(family)
+  }
+    
+  # get inference function
+  inference_fun <- getInference(inference, family)
+
   # check it's a valid kernel
   checkKernel(kernel)  
   
-  # get inference function
-  inference <- getInference(inference, family)
-
   # do inference
-  ans <- inference(y,
+  posterior <- inference_fun(y,
                    data,
-                   inducing_data,
                    kernel,
-                   mean_function)
+                   mean_function,
+                   inducing_data)
+  
+  ans <- list(family = family,
+              posterior = posterior)
   
   class(ans) <- 'gp'
   
@@ -30,7 +50,7 @@ gp <- function(response,
   
 }
 
-checkInference(inference, family) {
+checkInference <- function (inference, family) {
   
   if (inference %in% c('exact', 'FITC') &
         family != 'gaussian') {
@@ -54,13 +74,9 @@ defaultInference <- function (family) {
   
 }
 
+# return an inference function, given an inference method and a family
 getInference <- function (inference, family) {
-
-  # if it's default, look up the default
-  if (inference == 'default') {
-    inference <- defaultInference(family)
-  }
-  
+ 
   # check inference method is suitable for the family
   checkInference(inference, family)
   

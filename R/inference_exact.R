@@ -8,7 +8,8 @@
 infExact <- function(y,
                      data,
                      kernel,
-                     mean_function) {
+                     mean_function,
+                     inducing_data = NULL) {
   
   # mean function
   mn_prior <- mean_function(data)
@@ -26,10 +27,35 @@ infExact <- function(y,
   mu <- Kxpx %*% Kxxi %*% (y - mn_prior)
   K <- Kxpx %*% Kxxi %*% Kxxp
   
-  # return list
-  ans <- list(mu = mu,  # posterior mean
-              K = K)  # posterior covariance matrix
+  # return posterior object
+  posterior <- createPosterior(mu = mu,
+                               K = K,
+                               X = data,
+                               kernel = kernel,
+                               inference = 'exact')
+
+  # need to add log marginal likelihood
+  
+  # return a posterior object
+  return (posterior)
+
+}
+
+# projection
+projectExact <- function(posterior, new_data) {
+  Kxpx <- posterior$kernel(new_data,
+                           posterior$X)
+  
+  # project the posterior mean
+  mu <- Kxpx %*% posterior$mu
+  
+  # get the posterior covariance
+  Kxpxp <- posterior$kernel(new_data,
+                            new_data)
+  
+  # return both
+  ans <- list(mu = mu,
+              K = Kxpxp)
   
   return (ans)
-
 }
