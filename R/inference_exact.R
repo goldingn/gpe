@@ -1,27 +1,35 @@
-# exact inference for Gaussian likelihood and full GP
+# Exact inference for Gaussian likelihood and full GP
 
 # y is response data
 # data is a dataframe containing columns on which the kernel acts,
 #   giving observations on which to train the model
-# newdata is a dataframe containing columns on which the kernel acts,
-#   giving observations on which to evaluate the model
 # kernel is a gpe kernel object
-# meanfunction is a gpe mean function (for now just an R function)
+# mean_function is a gpe mean function (for now just an R function)
 infExact <- function(y,
                      data,
-                     newdata,
                      kernel,
-                     meanfunction) {
+                     mean_function) {
   
-  mn_prior <- meanfunction(data)
-  mn_posterior <- meanfunction(newdata)
+  # mean function
+  mn_prior <- mean_function(data)
+  
+  # self kernel and inverse
   Kxx <- kernel(data)
   Kxxi <- solve(Kxx)
-  Kxxp <- kernel(data, newdata)
+  
+  # predict to itself
+  # (different from self kernel, due to observation variance)
+  Kxxp <- kernel(data, data)
   Kxpx <- t(Kxxp)
   
-  mn <- Kxpx %*% Kxxi %*% (y - mn_prior) + mn_posterior
+  # get posterior mean and covariance matrix
+  mu <- Kxpx %*% Kxxi %*% (y - mn_prior)
   K <- Kxpx %*% Kxxi %*% Kxxp
-  ans <- list(mn = mn, K = K)
+  
+  # return list
+  ans <- list(mu = mu,  # posterior mean
+              K = K)  # posterior covariance matrix
+  
   return (ans)
+
 }

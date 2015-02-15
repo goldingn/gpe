@@ -17,6 +17,16 @@ gp <- function(response,
   # get inference function
   inference <- getInference(inference, family)
 
+  # do inference
+  ans <- inference(y,
+                   data,
+                   inducing_data,
+                   kernel,
+                   mean_function)
+  
+  class(ans) <- 'gp'
+  
+  return (ans)
   
 }
 
