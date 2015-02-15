@@ -3,17 +3,20 @@
 # y is response data
 # data is a dataframe containing columns on which the kernel acts,
 #   giving observations on which to train the model
-# inducingdata ia a dataframe giving the locations of inducing points
-# newdata is a dataframe containing columns on which the kernel acts,
+# new_data is a dataframe containing columns on which the kernel acts,
 #   giving observations on which to evaluate the model
+# inducing_data ia a dataframe giving the locations of inducing points
 # kernel is a gpe kernel object
-# meanfunction is a gpe mean function (for now just an R function)
+# mean_function is a gpe mean function (for now just an R function)
 infFITC <- function(y,
                      data,
-                     newdata,
-                     inducingdata,
+                     new_data,  # get rid of this!
+                     inducing_data,
                      kernel,
-                     meanfunction) {
+                     mean_function) {
+  
+  # switch to ignoring new data,
+  # creating a posterior object which can do predictions
   
   # evaluate prior mean function
   mn_pri_x <- meanfunction(data)
