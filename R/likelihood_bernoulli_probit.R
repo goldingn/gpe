@@ -1,12 +1,14 @@
-# likelihood_bernoulli
+# likelihood_bernoulli_probit
 
-bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2')) {
+bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
   # bernoulli log-likelihood (and its derivatives)
   # with the probit link function
   # y is the observed data, either binary (0, 1) or proportion
   # f is the value of the correspnding latent gaussians
   # which determines whether to return the log-likelihood (d0)
   # or it's first or second derivative
+  # \dots doesn't do anything, but is there for compatibility with other
+  # likelihood which might use it
 
   # check which derivative is needed
   which <- match.arg(which)
