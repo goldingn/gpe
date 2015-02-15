@@ -58,4 +58,5 @@ projectExact <- function(posterior, new_data) {
               K = Kxpxp)
   
   return (ans)
+
 }
