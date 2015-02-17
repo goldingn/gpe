@@ -42,8 +42,22 @@ rbf <- function (columns) {
 }
 
 
-rbfEval <- function(object, data, newdata = NULL) {
+rbfEval <- function(object, data, newdata = NULL, diag = FALSE) {
   # evaluate rbf kernel against data
+  
+  # diagonal case
+  if (diag) {
+    
+    # make sure it's symmetric (newdata is null)
+    checkSymmetric(newdata)
+    
+    # if it's fine return sigma squared on the diagonals
+    covmat <- diagSigma(object, data)
+    
+    return (covmat)
+    
+  }
+  
   
   # extract from/to data
   data <- getFeatures(object, data, newdata)

@@ -38,8 +38,19 @@ lin <- function (columns) {
   
 }
 
-linEval <- function(object, data, newdata = NULL) {
+linEval <- function(object, data, newdata = NULL, diag = FALSE) {
   # evaluate linear kernel against data
+  
+  # diagonal case
+  if (diag) {
+    
+    # make sure it's symmetric (newdata is null)
+    checkSymmetric(newdata)
+    
+    # throw an error as it isn't implemented yet
+    stop ('diag not implemented for linear kernel yet')
+    
+  }
   
   # extract from/to data
   data <- getFeatures(object, data, newdata)

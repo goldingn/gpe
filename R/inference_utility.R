@@ -10,6 +10,8 @@ createPosterior <- function (mu,
                              kernel,
                              inference) {
   
+  # need to check some things
+  
   # combine these things into a posterior
   ans <- list(mu = mu,
               K = K,

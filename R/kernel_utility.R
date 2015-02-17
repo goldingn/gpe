@@ -298,11 +298,13 @@ createKernelConstructor <- function(type,
   
   # create a function to return
   ans <- function(data,
-                  newdata = NULL) {
+                  newdata = NULL,
+                  diag = FALSE) {
     
     evaluator(object,
               data,
-              newdata)    
+              newdata,
+              diag = diag)    
     
   }
   
@@ -311,4 +313,22 @@ createKernelConstructor <- function(type,
   
   return(ans)
   
+}
+
+
+# check that the kernel isn't being asked to evaluate the diagonal
+# of a non-symmetric matrix
+checkSymmetric <- function(newdata) {
+  if (!is.null(newdata)) {
+    stop ("can't evaluate a diagonal matrix unless newdata is NULL")
+  }
+}
+
+# diagonal kernel
+diagSigma <- function(object, data) {
+  # if the diagonal of kernel(data) is just a parameter sigma
+  # squared times identity, and object is the kernel's object,
+  # return this diagonal matrix - saves code when writing the diagonal
+  # option of a kernel evaluator
+  ans <- diag(nrow(data)) * object$parameters$sigma ^ 2
 }

@@ -12,6 +12,10 @@ gp <- function(response,
   # capture family as a string
   family <- deparse(substitute(family))
   
+  # need to decide on how family is specified - use glm family and
+  # just pull out likelihood & link?
+  # need a binomial wrapper around bernoulli likelihood
+  
   # if there's no mean function, use zeroes
   if (is.null(mean_function)) {
     
