@@ -17,17 +17,16 @@ getParameters(kernel)
 
 getSubKernel(kernel, which = 1)
 
-setParameters(kernel, parameter_list)
+setParameters(kernel, ...)
 
 demoKernel(kernel, data = NULL, ndraw = 5)
 }
 \arguments{
-\item{kernel}{A kernel object}
+\item{kernel}{a kernel object}
 
-\item{which}{Which of the two \emph{immediate} subkernels of the kernel to extract}
+\item{which}{which of the two \emph{immediate} subkernels of the kernel to extract}
 
-\item{parameter_list}{A named list with names giving the parameters to be
-updated and values giving the new values they should take on.}
+\item{\dots}{parameters to be updated and the new values for them to take (see examples).}
 
 \item{data}{a dataset from which to calculate the range of values over which to draw example GPs.
 If \code{NULL}, the range -5 to 5 is used, arbitrarily.}
@@ -59,11 +58,15 @@ k3 <- getSubKernel(k2, 1)
 image(k1(pressure))
 
 # change the length scale
-params$l <- 10
-k2 <- setParameters(k1, params)
+k2 <- setParameters(k1, l = 10)
+getParameters(k2)
+
+# change the lengthhscale and variance
+k2 <- setParameters(k1, l = 9, sigma = 1.3)
+getParameters(k2)
 
 # evaluate and visualise the new kernel
-image(k1(pressure))
+image(k2(pressure))
 #plot example GPs from this kernel, applied to the pressure dataset
 demoKernel(k1, data = pressure)
 }

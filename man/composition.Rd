@@ -32,7 +32,7 @@ kernel1 \%x\% kernel2
 function}
 }
 \value{
-A kernel object for which there are a range of associated functions.
+a kernel object for which there are a range of associated functions.
 }
 \description{
 Construct a new kernel by combining existing kernels, either

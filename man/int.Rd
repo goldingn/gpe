@@ -6,7 +6,7 @@
 int()
 }
 \value{
-A kernel object for which there are a range of associated functions.
+a kernel object for which there are a range of associated functions.
 }
 \description{
 Construct an intercept kernel

@@ -6,12 +6,12 @@
 per(columns)
 }
 \arguments{
-\item{columns}{A string vector giving the names of features on which the
+\item{columns}{a string vector giving the names of features on which the
 kernel acts. These will be used to access columns from a dataframe when the
 kernel is later used in a GP model.}
 }
 \value{
-A kernel object for which there are a range of associated functions.
+a kernel object for which there are a range of associated functions.
 }
 \description{
 Construct a periodic kernel.

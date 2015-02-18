@@ -47,9 +47,9 @@ comp <- function (kernel1, kernel2, type) {
                  kernel2 = kernel2)
   
   # create a function to evaluate it
-  ans <- function(data, newdata = NULL) {
+  ans <- function(data, newdata = NULL, diag = FALSE) {
     
-    compEval(object, data, newdata, type)    
+    compEval(object, data, newdata, type, diag = diag)    
     
   }
   
@@ -61,13 +61,13 @@ comp <- function (kernel1, kernel2, type) {
 }
 
 # evaluate compositional kernel
-compEval <- function(object, data, newdata, operation) {
+compEval <- function(object, data, newdata, operation, diag) {
   
   stopifnot(operation %in% c('sum', 'prod', 'kron'))
   
   # evaluate the sub kernels
-  covmat1 <- object$kernel1(data, newdata)
-  covmat2 <- object$kernel2(data, newdata)
+  covmat1 <- object$kernel1(data, newdata, diag)
+  covmat2 <- object$kernel2(data, newdata, diag)
   
   # get the compositional covariance matrix
   if (operation == 'sum') {

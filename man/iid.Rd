@@ -12,7 +12,7 @@ a dataframe when the kernel is evaluated . If \code{NULL} then the iid
 effect acts on each datapoint, rather than on groups.}
 }
 \value{
-A kernel object for which there are a range of associated functions.
+a kernel object for which there are a range of associated functions.
 }
 \description{
 Construct an iid normal 'random effect' kernel.
