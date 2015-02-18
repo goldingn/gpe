@@ -61,6 +61,9 @@ getColumns <- function (kernel) {
   ans <- unique(unlist(lapply(kernel_list,
                               function(x) x$columns)))
   
+  # remove any which are blank
+  ans <- ans[ans != ""]
+  
   # and return it
   return (ans)
   
@@ -254,13 +257,14 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
   
   # get the columns
   columns <- getColumns(kernel)
+  
   D <- length(columns)
   
   if (D != 1) {
     stop ("sorry, only one-dimensional kernels are currently supported")
   }
   
-  if (columns == "") {
+  if (length(columns) == 0) {
     stop ("sorry, only kernels which use a covariate are currently supported")
   }
   
