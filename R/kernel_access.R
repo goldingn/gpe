@@ -54,8 +54,12 @@ getColumns <- function (kernel) {
   # check it's a kernel
   checkKernel(kernel)
   
-  # extract the type
-  ans <- environment(kernel)$object$columns
+  # flatten into a list of the basis kernels
+  kernel_list <- flattenKernel(kernel)$data_list
+  
+  # loop through listing only unique columns
+  ans <- unique(unlist(lapply(kernel_list,
+                              function(x) x$columns)))
   
   # and return it
   return (ans)
@@ -243,10 +247,10 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
   
   # plotting example draws from a kernel
   
-  # for now, throw an error the kernel is compositional
-  if (getType(kernel) %in% c('sum', 'prod', 'kron')) {
-    stop ("sorry, this functionality is currently only available for basis kernels")
-  }
+#   # for now, throw an error the kernel is compositional
+#   if (getType(kernel) %in% c('sum', 'prod', 'kron')) {
+#     stop ("sorry, this functionality is currently only available for basis kernels")
+#   }
   
   # get the columns
   columns <- getColumns(kernel)
@@ -256,7 +260,11 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
     stop ("sorry, only one-dimensional kernels are currently supported")
   }
   
-  # make this handle discrete data
+  if (columns == "") {
+    stop ("sorry, only kernels which use a covariate are currently supported")
+  }
+  
+  # need to make this handle discrete data
   
   # get the range of data to plot
   if (is.null(data)) {
