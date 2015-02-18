@@ -19,22 +19,22 @@ infFITC <- function(y,
   # creating a posterior object which can do predictions
   
   # evaluate prior mean function
-  mn_pri_x <- meanfunction(data)
-  mn_pri_xp <- meanfunction(newdata)
+  mn_pri_x <- mean_function(data)
+  mn_pri_xp <- mean_function(new_data)
 
   # get self kernels for old and new data
   # want self-variance on the old data (so one arg)
   Kxx <- kernel(data)
   # but not on the new data as we want expected not observed
   # (so both args)
-  Kxpxp <- kernel(newdata, newdata)
+  Kxpxp <- kernel(new_data, new_data)
   
   # FITC components
-  Kzz <- kernel(inducingdata)
+  Kzz <- kernel(inducing_data)
   Kzzi <- solve(Kzz)
-  Kxz <- kernel(data, inducingdata)
+  Kxz <- kernel(data, inducing_data)
   Kzx <- t(Kxz)
-  Kxpz <- kernel(newdata, inducingdata)
+  Kxpz <- kernel(new_data, inducing_data)
   Kzxp <- t(Kxpz)
   
   # (from Quinonero-candela & Rasmussen)
