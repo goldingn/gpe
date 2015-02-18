@@ -86,7 +86,7 @@ getParameters <- function (kernel) {
 }
 
 #' @rdname access
-#' @param which Which of the two \emph{immediate} subkernels of the kernel to extract
+#' @param which which of the two \emph{immediate} subkernels of the kernel to extract
 #' @export
 #' @examples
 #'  
@@ -159,8 +159,7 @@ getFeatures <- function (object, data, newdata) {
 
 #' @rdname access
 #' 
-#' @param parameter_list A named list with names giving the parameters to be 
-#' updated and values giving the new values they should take on.
+#' @param \dots parameters to be updated and the new values for them to take (see examples).
 #' 
 #' @export
 #' @examples
@@ -168,15 +167,22 @@ getFeatures <- function (object, data, newdata) {
 #' image(k1(pressure))
 #' 
 #' # change the length scale
-#' params$l <- 10
-#' k2 <- setParameters(k1, params)
+#' k2 <- setParameters(k1, l = 10)
+#' getParameters(k2)
+#' 
+#' # change the lengthhscale and variance
+#' k2 <- setParameters(k1, l = 9, sigma = 1.3)
+#' getParameters(k2)
 #' 
 #' # evaluate and visualise the new kernel
-#' image(k1(pressure))
+#' image(k2(pressure))
 #'  
-setParameters <- function (kernel, parameter_list) {
+setParameters <- function (kernel, ...) {
   # function to set the values of some or all of the parameters
   # parameter_list must be a named list giving the parameters to be updated
+  
+  # capture dots argument
+  parameter_list <- list(...)
   
   # check the new parameters
   checkParameters(kernel, parameter_list)
