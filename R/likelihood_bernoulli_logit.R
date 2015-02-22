@@ -51,19 +51,47 @@ bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
     
     # for proportion data, convert to univariate Gaussian and evaluate
     y[pr] <- qlogis(y[pr])
-    if (any(pr)) stop ('No derivatives for proportions with logit link. Yet.')
-#    ans[pr] <- y[pr] - f[pr]
+
+    # hold tight, this is going to get messy...
     
-# for binary data...
+    expfmy <- exp(f[pr] - y[pr])
+    
+    a <- expfmy / (expfmy + 1) ^ 2
+    
+    b <- (2 * exp(2 * f[pr] - 2 * y[pr])) / (expfmy + 1) ^ 3
+
+    c <- exp(y[pr] - f[pr]) * (expfmy + 1) ^ 2
+    
+    ans[pr] <- (a - b) * c
+    
+    # for binary data...
     ans[npr] <- (y[npr] + 1) / 2 - plogis(f[npr])
     
   } else {
     # second derivative
     
-    # all proportions get -1, apparently
-    if (any(pr)) stop ('No derivatives for proportions with logit link. Yet.')
-    #     ans[pr] <- -1
+    # proportion data
+ 
+    # convert to logistic scale
+    y[pr] <- qlogis(y[pr])
     
+    # even worse than the first derivative...
+    expfmy <- exp(f[pr] - y[pr])
+    exp2fmy <- exp(2 * (f[pr] - y[pr]))
+    exp3fmy <- exp(3 * (f[pr] - y[pr]))
+    expfmyp1 <- expfmy + 1
+    expymf <- exp(y[pr] - f[pr])
+    
+    a <- (expfmy - (2 * exp2fmy) / expfmyp1) * expymf
+    
+    b <- (expfmy - (6 * exp2fmy) / expfmyp1 +
+            (6 * exp3fmy) / expfmyp1 ^ 2) * expymf
+    
+    c <- (1 / expfmyp1) * (2 * expfmy - (4 * exp2fmy) / expfmyp1)
+    
+    ans[pr] <- -a + b + c
+    
+    # for binary data
     # get \pi as in Rasmussen & Williams for all non-proportion data
     pi_ <- plogis(f[npr])
 

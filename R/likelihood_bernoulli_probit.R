@@ -59,7 +59,6 @@ bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
   } else {
     # second derivative
     
-    # all proportions get -1, apparently
     ans[pr] <- -1
     
     # the binary data gets something more complex
