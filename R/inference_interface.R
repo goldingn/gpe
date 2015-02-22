@@ -65,8 +65,8 @@
 #' # construct a kernel (including the observation error)
 #' kernel <- rbf('x') + iid()
 #' 
-#' # fit a GP model (without updating the hyperparameters) with
-#' # exact inference (full GP) as this is the default
+#' # fit a full (non-sparse) GP model (without updating the hyperparameters) 
+#' # as this is the default
 #' m1 <- gp(y, kernel, df, gaussian)
 #' 
 #' # fit another with FITC sparsity
@@ -80,7 +80,7 @@ gp <- function(response,
                family = gaussian,
                mean_function = NULL,
                inducing_data = NULL,
-               inference = c('default', 'exact', 'FITC','Laplace'),
+               inference = c('default', 'full', 'FITC','Laplace'),
                verbose = FALSE) {
   
   # catch the call
@@ -131,9 +131,9 @@ gp <- function(response,
 
 checkInference <- function (inference, likelihood, inducing_data) {
   
-  if (inference %in% c('exact', 'FITC') &
+  if (inference %in% c('full', 'FITC') &
         likelihood$name != 'likelihood_gaussian_identity') {
-    stop ('Exact and FITC inference are only possible with the gaussian family and identity link')
+    stop ('full and FITC inference are only possible with the gaussian family and identity link')
   }
   
   if (inference %in% c('FITC', 'LaplaceFITC') &
@@ -146,7 +146,7 @@ checkInference <- function (inference, likelihood, inducing_data) {
 defaultInference <- function (likelihood) {
   
   inference <- switch(likelihood$name,
-                      likelihood_gaussian_identity = 'exact',
+                      likelihood_gaussian_identity = 'full',
                       likelihood_binomial_logit = 'Laplace',
                       likelihood_binomial_probit = 'Laplace')
   
@@ -174,9 +174,9 @@ getInference <- function (inference, likelihood, inducing_data) {
   # get the inference name
   inference_name <- switch(inference,
                            FITC = 'direct_fitc',
-                           exact = 'direct_exact',
+                           full = 'direct_full',
                            LaplaceFITC = 'laplace_fitc',
-                           Laplace = 'laplace_exact')
+                           Laplace = 'laplace_full')
   
   # if the inference method wasn't found throw an error
   if (is.null(inference_name)) {

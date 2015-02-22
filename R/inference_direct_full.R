@@ -1,13 +1,13 @@
-# inference_direct_exact
+# inference_direct_full
 
-# Exact inference for Gaussian likelihood and full GP
+# Direct inference for Gaussian likelihood and full GP
 
 # y is response data
 # data is a dataframe containing columns on which the kernel acts,
 #   giving observations on which to train the model
 # kernel is a gpe kernel object
 # mean_function is a gpe mean function (for now just an R function)
-inference_direct_exact <- function(y,
+inference_direct_full <- function(y,
                                    data,
                                    kernel,
                                    likelihood,
@@ -35,7 +35,7 @@ inference_direct_exact <- function(y,
     (n * log(2 * pi)) / 2
   
   # return posterior object
-  posterior <- createPosterior(inference_name = 'inference_direct_exact',
+  posterior <- createPosterior(inference_name = 'inference_direct_full',
                                lZ = lZ,
                                data = data,
                                kernel = kernel,
@@ -52,7 +52,7 @@ inference_direct_exact <- function(y,
 }
 
 # projection
-project_direct_exact <- function(posterior,
+project_direct_full <- function(posterior,
                                  new_data,
                                  observation_error = TRUE) {
 

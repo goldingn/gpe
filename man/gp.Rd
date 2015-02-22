@@ -4,8 +4,8 @@
 \title{Gaussian process models}
 \usage{
 gp(response, kernel, data, family = gaussian, mean_function = NULL,
-  inducing_data = NULL, inference = c("default", "exact", "FITC",
-  "Laplace"), verbose = FALSE)
+  inducing_data = NULL, inference = c("default", "full", "FITC", "Laplace"),
+  verbose = FALSE)
 }
 \arguments{
 \item{response}{A vector or matrix containing values of the response
@@ -70,8 +70,8 @@ y <- rnorm(n, f, 1)
 # construct a kernel (including the observation error)
 kernel <- rbf('x') + iid()
 
-# fit a GP model (without updating the hyperparameters) with
-# exact inference (full GP) as this is the default
+# fit a full (non-sparse) GP model (without updating the hyperparameters)
+# as this is the default
 m1 <- gp(y, kernel, df, gaussian)
 
 # fit another with FITC sparsity
