@@ -12,7 +12,8 @@ inference_direct_exact <- function(y,
                                    kernel,
                                    likelihood,
                                    mean_function,
-                                   inducing_data) {
+                                   inducing_data,
+                                   verbose = verbose) {
   
   # NB likelihood and inducing_data are ignored
   
@@ -23,7 +24,7 @@ inference_direct_exact <- function(y,
   K <- kernel(data, data)
   
   # its cholesky decomposition
-  L <- jitchol(K)
+  L <- jitchol(K, verbose = verbose)
   
   # uncorrelated latent vector a
   a <- backsolve(L, forwardsolve(t(L), (y - mn_prior)))
@@ -32,7 +33,6 @@ inference_direct_exact <- function(y,
   lZ <- - (t(y - mn_prior) %*% a)[1, 1] / 2 -
     sum(log(diag(L))) -
     (n * log(2 * pi)) / 2
-  
   
   # return posterior object
   posterior <- createPosterior(inference_name = 'inference_direct_exact',

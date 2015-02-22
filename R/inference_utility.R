@@ -5,7 +5,7 @@ zeroes <- function (data) rep(0, nrow(data))
 
 # create a posterior object (doesn't actually do much ...)
 createPosterior <- function (inference_name,
-                             mnll,
+                             lZ,
                              data,
                              kernel,
                              likelihood,

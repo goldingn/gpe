@@ -15,7 +15,8 @@ inference_direct_fitc <- function(y,
                                   kernel,
                                   likelihood,
                                   mean_function,
-                                  inducing_data) {
+                                  inducing_data,
+                                  verbose = verbose) {
 
   # NB likelihood is ignored
   
@@ -27,7 +28,7 @@ inference_direct_fitc <- function(y,
   Ixx_noise <- diag(nrow(data)) * 10 ^ -6
   
   # evaluate prior mean function
-  mn_pri_x <- mean_function(data)
+  mn_prior <- mean_function(data)
   
   # get self kernels for old and new data
   # want self-variance on the old data (so one arg)
