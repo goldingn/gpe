@@ -1,3 +1,5 @@
+# inference_direct_exact
+
 # Exact inference for Gaussian likelihood and full GP
 
 # y is response data
@@ -5,7 +7,7 @@
 #   giving observations on which to train the model
 # kernel is a gpe kernel object
 # mean_function is a gpe mean function (for now just an R function)
-infExact <- function(y,
+inference_direct_exact <- function(y,
                      data,
                      kernel,
                      mean_function,
@@ -32,7 +34,7 @@ infExact <- function(y,
                                K = K,
                                X = data,
                                kernel = kernel,
-                               inference = 'exact')
+                               inference = 'inference_direct_exact')
 
   # need to add log marginal likelihood
   
@@ -42,7 +44,7 @@ infExact <- function(y,
 }
 
 # projection
-projectExact <- function(posterior, new_data) {
+project_direct_exact <- function(posterior, new_data) {
   Kxpx <- posterior$kernel(new_data,
                            posterior$X)
   

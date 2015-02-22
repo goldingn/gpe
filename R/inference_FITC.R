@@ -1,3 +1,5 @@
+# inference_direct_fitc
+
 # FITC inference for Gaussian likelihood and sparse GP
 
 # y is response data
@@ -8,17 +10,17 @@
 # inducing_data ia a dataframe giving the locations of inducing points
 # kernel is a gpe kernel object
 # mean_function is a gpe mean function (for now just an R function)
-infFITC <- function(y,
-                     data,
-                     new_data,  # get rid of this!
-                     inducing_data,
-                     kernel,
-                     mean_function) {
+inference_direct_fitc <- function(y,
+                                  data,
+                                  new_data,  # get rid of this!
+                                  inducing_data,
+                                  kernel,
+                                  mean_function) {
   
   # switch to ignoring new data,
   # creating a posterior object which can do predictions
   # later switch to efficient cholesky version
-
+  
   # define noise on inducing points (very little)
   inducing_noise <- 10 ^ -6
   
@@ -28,7 +30,7 @@ infFITC <- function(y,
   # evaluate prior mean function
   mn_pri_x <- mean_function(data)
   mn_pri_xp <- mean_function(new_data)
-
+  
   # get self kernels for old and new data
   # want self-variance on the old data (so one arg)
   Kxx <- kernel(data)
@@ -47,7 +49,7 @@ infFITC <- function(y,
   # (from Quinonero-candela & Rasmussen)
   Qxx <- Kxz %*% Kzzi %*% Kzx
   Qxpxp <- Kxpz %*% Kzzi %*% Kzxp
-
+  
   # calculate $\Lambda$
   Lambda <- diag(diag(Kxx - Qxx + Ixx_noise))
   # invert $\Lambda$ (it's diagonal, so just that bit)
@@ -63,5 +65,5 @@ infFITC <- function(y,
   ans <- list(mn = mn, K = K)
   
   return (ans)
-
+  
 }
