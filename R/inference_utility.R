@@ -25,3 +25,104 @@ createPosterior <- function (mu,
   return (ans)
   
 }
+
+# safe Cholesky factorisation
+jitchol <- function (A, maxtries = 5, verbose = TRUE) {
+  # attempt to find the cholesky decomposition, and add 'jitter'
+  # (a small amount of variance) to the diagonal maxtries times to try and
+  # make it positive-definite
+  L <- tryCatch(chol(A),
+                error = function(x) return(NULL))
+  
+  if (is.null(L)) {
+    
+    # first check whether there are any negative elements
+    if (any(diag(A) < 0)) {
+      stop ('A Cholesky factorisation could not be found as the matrix is not positive-definite - it has negative diagonal elements')
+    }
+    
+    # otherwise try adding jitter to the diagonal
+    
+    # get jitter as a fraction of the diagonal mean
+    jitter <- mean(diag(A)) * 1e-6
+    
+    attempt <- 0
+    while(is.null(L) & attempt <= maxtries) {
+      # increment the counter
+      attempt <- attempt + 1
+      # increase the jitter
+      jitter <- jitter * 10
+      L <- tryCatch(chol(A + diag(nrow(A)) * jitter),
+                    error = function(x) return(NULL))
+    }
+    
+    # check whether L is a matrix (is not, it must be NULL)
+    if (is.matrix(L)) {
+      
+      if (verbose) {
+        # if a matrix was returned, and the user wants verbosity,
+        # issue a warning
+        warning (paste0('A Cholesky factorisation could not initially be computed, so ',
+                        prettyNum(jitter),
+                        ' was added to the diagonal.'))
+      }
+      
+    } else {
+      
+      # otherwise throw an error
+      stop (paste0('A Cholesky factorisation could not be computed, even after adding ',
+                   prettyNum(jitter),
+                   ' to the diagonal.'))
+    }
+    
+  }
+  
+  # return the factorisation
+  return (L)
+  
+}
+
+
+getU <- function (x,
+                  n = pmin(length(x), 100),
+                  method = c('kmeans')) {
+  
+  # find the method required
+  method <- match.arg(method)
+  
+  # if kmeans
+  if (method == 'kmeans') {
+    # get the cluster centres
+    u <- kmeans(x, n)$centers
+    # remove any names
+    rownames(u) <- NULL
+  }
+  # return the inducing points
+  return (u)
+}
+
+laplace_psi <-
+  # $\psi$ (after Rasmussen & Williams) objective function for
+  # Laplace approximation using newton iteration
+  function(a, f, mn, y, d0, wt) {
+    0.5 * t(a) %*% (f - mn) - sum(wt * d0(y, f))
+  }
+
+laplace_psiline_fitc <-
+  # calculate psi for a given value of s (step size of the Newton iterations)
+  # under an FITC GP
+  function(s, adiff, a, Lambda_diag, B, y, d0, mn = 0, wt) {
+    a <- a + s * as.vector(adiff)
+    # split this bit out into projection function
+    f <- Lambda_diag * a + t(B) %*% (B %*% a) + mn
+    psi(a, f, mn, y, d0, wt)
+  }
+
+laplace_psiline_exact <-
+  # calculate psi for a given value of s (step size of the Newton iterations)
+  # under an direct (non-sparse) GP
+  function(s, adiff, a, K, y, d0, mn = 0, wt) {
+    a <- a + s * as.vector(adiff)
+    f <- K %*% a + mn
+    psi(a, f, mn, y, d0, wt)
+  }
