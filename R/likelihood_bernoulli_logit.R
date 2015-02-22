@@ -1,6 +1,6 @@
 # likelihood_bernoulli_logit
 
-bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
+likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
   # bernoulli log-likelihood (and its derivatives)
   # with the logit link function
   # y is the observed data, either binary (0, 1) or proportion

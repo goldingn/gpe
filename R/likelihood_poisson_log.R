@@ -1,6 +1,6 @@
 # likelihood_poisson_log
 
-poisson_log <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
+likelihood_poisson_log <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
   # poisson log-likelihood (and its derivatives)
   # with the log link function
   # y is the observed data, must be counts

@@ -1,10 +1,38 @@
-getLikelihood <- function(likelihood, link) {
- 
-  # given strings giving the names of a likelihood and link,
+getLikelihood <- function(family) {
+
+  # given the family argument passed to gp, parse and check the input and
   # return an object containing the derivative functions
   
+  # adapted this from glm():
+  if (is.character(family)) 
+    
+    # look up two environments (assume getLikelihood is directly within gp)
+    # if that changes, change n here
+    family <- get(family,
+                  mode = "function",
+                  envir = parent.frame(n = 2))
+
+  if (is.function(family)) 
+  
+    family <- family()
+  
+  if (is.null(family$family)) {
+  
+    # does this ever get called?
+    print(family)
+    stop("'family' not recognized")
+  
+  } 
+  
+  # family should now be a family object
+  # get the likelihood and link names
+  
+  likelihood <- family$family
+  link <- family$link
+  
   # get the name of the function to look for
-  likelihood_string <- paste(likelihood,
+  likelihood_string <- paste('likelihood',
+                             likelihood,
                              link,
                              sep = '_')
   
