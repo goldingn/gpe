@@ -4,23 +4,31 @@
 zeroes <- function (data) rep(0, nrow(data))
 
 # create a posterior object (doesn't actually do much ...)
-createPosterior <- function (mu,
-                             K,
-                             X,
+createPosterior <- function (inference_name,
+                             mnll,
+                             data,
                              kernel,
-                             inference) {
-  
+                             likelihood,
+                             mean_function,
+                             inducing_data,
+                             ...) {
+  # A posterior object must have the named arguments,
+  # but may also contain method-specific things via the dots argument.
+  # These will be combined into the element 'components'
   # need to check some things
   
-  # combine these things into a posterior
-  ans <- list(mu = mu,
-              K = K,
-              X = X,
+  # combine these things into a single posterior object
+  ans <- list(inference_name = inference_name,
+              lZ = lZ,
+              data = data,
               kernel = kernel,
-              inference = inference)
+              likelihood = likelihood,
+              mean_function = mean_function,
+              inducing_data = inducing_data,
+              components = list(...))
   
   # set it to a posterior class
-  class(ans) <- c(inference, 'posterior')
+  class(ans) <- 'posterior'
   
   return (ans)
   
