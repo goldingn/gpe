@@ -9,9 +9,7 @@ gp <- function(response,
                inducing_data = NULL,
                inference = c('default', 'exact', 'FITC')) {
 
-  # capture family as a string
-  family <- deparse(substitute(family))
-  
+
   # need to decide on how family is specified - use glm family and
   # just pull out likelihood & link?
   # need a binomial wrapper around bernoulli likelihood
@@ -24,16 +22,19 @@ gp <- function(response,
     
   }
   
+  # get the likelihood
+  likelihood <- getLikelihood(family)
+  
   # get the inference
   inference <- match.arg(inference)
 
   # if it's default, look up the default
   if (inference == 'default') {
-    inference <- defaultInference(family)
+    inference <- defaultInference(likelihood)
   }
     
   # get inference function
-  inference_fun <- getInference(inference, family)
+  inference_fun <- getInference(inference, likelihood)
 
   # check it's a valid kernel
   checkKernel(kernel)  
@@ -54,24 +55,26 @@ gp <- function(response,
   
 }
 
-checkInference <- function (inference, family) {
+checkInference <- function (inference, likelihood) {
   
   if (inference %in% c('exact', 'FITC') &
-        family != 'gaussian') {
-    stop ('exact and FITC inference are only possible with the gaussian family')
+        likelihood$name != 'likelihood_gaussian_identity') {
+    stop ('exact and FITC inference are only possible with the gaussian family and identity link')
   }
   
 }
 
-defaultInference <- function (family) {
+defaultInference <- function (likelihood) {
   
-  inference <- switch(family,
-                      gaussian = 'exact')
+  inference <- switch(likelihood$name,
+                      likelihood_gaussian_identity = 'inference_direct_exact',
+                      likelihood_binomial_logit = 'inference_laplace_exact',
+                      likelihood_binomial_probit = 'inference_laplace_exact',)
   
   # if nothing found, throw an error
   if (is.null(inference)) {
-    stop (paste0('no default inference method found for family: ',
-                 family))
+    stop (paste0('no default inference method found for likelihood ',
+                 likelihood$name))
   }
   
   return (inference)
@@ -79,20 +82,16 @@ defaultInference <- function (family) {
 }
 
 # return an inference function, given an inference method and a family
-getInference <- function (inference, family) {
+getInference <- function (inference, likelihood) {
  
-  # check inference method is suitable for the family
-  checkInference(inference, family)
+  # check inference method is suitable for the likelihood
+  checkInference(inference, likelihood)
   
-  # switch inference to method
-  inference <- switch(inference,
-                      exact = infExact,
-                      FITC = infFITC)
-  
-  if (is.null(inference)) {
-    stop ('inference method not available')
-  }
-  
+  # fetch the function
+  inference <- get(inference)
+    
+  # return this function
   return (inference)
 
 }
+
