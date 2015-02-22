@@ -17,6 +17,13 @@ infFITC <- function(y,
   
   # switch to ignoring new data,
   # creating a posterior object which can do predictions
+  # later switch to efficient cholesky version
+
+  # define noise on inducing points (very little)
+  inducing_noise <- 10 ^ -6
+  
+  # create a diagonal matrix with this noise
+  Ixx_noise <- diag(nrow(data)) * inducing_noise
   
   # evaluate prior mean function
   mn_pri_x <- mean_function(data)
@@ -42,7 +49,7 @@ infFITC <- function(y,
   Qxpxp <- Kxpz %*% Kzzi %*% Kzxp
 
   # calculate $\Lambda$
-  Lambda <- diag(diag(Kxx - Qxx))
+  Lambda <- diag(diag(Kxx - Qxx + Ixx_noise))
   # invert $\Lambda$ (it's diagonal, so just that bit)
   iLambda <- diag(1 / diag(Lambda))
   
