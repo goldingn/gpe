@@ -55,7 +55,7 @@ inference_direct_fitc <- function(y,
   # I think it's in Vanhatalo et al. sparse ... disease ...
   lZ <- - (log(det(Qxx + Lambda))) / 2 + 
     (t(y - mn_prior) %*% solve(Qxx + Lambda) %*% (y - mn_prior)) / 2 -
-    (nrow(data) * log * 2 * pi) / 2
+    (nrow(data) * log(2 * pi)) / 2
   
   # return posterior object
   posterior <- createPosterior(inference_name = 'inference_direct_exact',
@@ -83,18 +83,21 @@ project_direct_fitc <- function(posterior, new_data) {
   mn_prior_xp <- posterior$mean_function(new_data)
   
   # prior covariance over the test locations
-  Kxpxp <- posterior$kernel(new_data, new_data)
+  Kxpxp <- posterior$kernel(new_data)
 
   # FITC components
-  Kxpz <- posterior$kernel(new_data, inducing_data)
+  Kxpz <- posterior$kernel(new_data,
+                           posterior$inducing_data)
   Kzxp <- t(Kxpz)
-  Qxpxp <- Kxpz %*% posterior$Kzzi %*% Kzxp
+  Qxpxp <- Kxpz %*% posterior$components$Kzzi %*% Kzxp
   
-  mu <- Kxpz %*% posterior$Sigma %*% posterior$Kzx %*%
-    posterior$iLambda %*% (posterior$y - posterior$mn_prior) +
+  mu <- Kxpz %*% posterior$components$Sigma %*%
+    posterior$components$Kzx %*%
+    posterior$components$iLambda %*%
+    (posterior$components$y - posterior$components$mn_prior) +
     mn_prior_xp
   
-  K <- Kxpxp - Qxpxp + Kxpz %*% posterior$Sigma %*% Kzxp
+  K <- Kxpxp - Qxpxp + Kxpz %*% posterior$components$Sigma %*% Kzxp
   
   # return both
   ans <- list(mu = mu,

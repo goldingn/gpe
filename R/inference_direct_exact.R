@@ -29,7 +29,7 @@ inference_direct_exact <- function(y,
   a <- backsolve(L, forwardsolve(t(L), (y - mn_prior)))
 
   # log marginal likelihood
-  lZ <- - (t(y - mn_prior) %*% a) / 2 -
+  lZ <- - (t(y - mn_prior) %*% a)[1, 1] / 2 -
     sum(log(diag(L))) -
     (n * log(2 * pi)) / 2
   
@@ -52,7 +52,9 @@ inference_direct_exact <- function(y,
 }
 
 # projection
-project_direct_exact <- function(posterior, new_data) {
+project_direct_exact <- function(posterior,
+                                 new_data,
+                                 observation_error = TRUE) {
 
   # get covariance matrices
   
@@ -63,15 +65,17 @@ project_direct_exact <- function(posterior, new_data) {
   # its transpose
   Kxpx <- t(Kxxp)
   
-  # test self matrix
-  Kxpxp <- posterior$kernel(new_data,
-                            new_data)
+  # test self-matrix
+  Kxpxp <- posterior$kernel(new_data)
   
   # get posterior mean
-  mu <- Kxpx %*% posterior$a
+  mu <- Kxpx %*% posterior$components$a
   
   # get posterior covariance
-  v <- backsolve(L, Kxxp, transpose = T)
+  v <- backsolve(posterior$components$L,
+                 Kxxp,
+                 transpose = TRUE)
+  
   K <- Kxpxp - crossprod(v)
   
   # NB can easily modify this to return only the diagonal elements
@@ -81,7 +85,7 @@ project_direct_exact <- function(posterior, new_data) {
                    
   # return both
   ans <- list(mu = mu,
-              K = Kxpxp)
+              K = K)
   
   return (ans)
   
