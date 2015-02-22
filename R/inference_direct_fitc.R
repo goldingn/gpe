@@ -12,43 +12,35 @@
 # mean_function is a gpe mean function (for now just an R function)
 inference_direct_fitc <- function(y,
                                   data,
-                                  new_data,  # get rid of this!
-                                  inducing_data,
                                   kernel,
-                                  mean_function) {
+                                  likelihood,
+                                  mean_function,
+                                  inducing_data) {
+
+  # NB likelihood is ignored
   
   # switch to ignoring new data,
   # creating a posterior object which can do predictions
   # later switch to efficient cholesky version
   
-  # define noise on inducing points (very little)
-  inducing_noise <- 10 ^ -6
-  
-  # create a diagonal matrix with this noise
-  Ixx_noise <- diag(nrow(data)) * inducing_noise
+  # create a diagonal matrix with a small amount of noise for inducing points
+  Ixx_noise <- diag(nrow(data)) * 10 ^ -6
   
   # evaluate prior mean function
   mn_pri_x <- mean_function(data)
-  mn_pri_xp <- mean_function(new_data)
   
   # get self kernels for old and new data
   # want self-variance on the old data (so one arg)
   Kxx <- kernel(data)
-  # but not on the new data as we want expected not observed
-  # (so both args)
-  Kxpxp <- kernel(new_data, new_data)
   
   # FITC components
   Kzz <- kernel(inducing_data)
   Kzzi <- solve(Kzz)
   Kxz <- kernel(data, inducing_data)
   Kzx <- t(Kxz)
-  Kxpz <- kernel(new_data, inducing_data)
-  Kzxp <- t(Kxpz)
   
   # (from Quinonero-candela & Rasmussen)
   Qxx <- Kxz %*% Kzzi %*% Kzx
-  Qxpxp <- Kxpz %*% Kzzi %*% Kzxp
   
   # calculate $\Lambda$
   Lambda <- diag(diag(Kxx - Qxx + Ixx_noise))
@@ -58,11 +50,55 @@ inference_direct_fitc <- function(y,
   # calculate $\Sigma$
   Sigma <- solve(Kzz + Kzx %*% iLambda %*% Kxz)
   
-  mn <- Kxpz %*% Sigma %*% Kzx %*% iLambda %*% (y - mn_pri_x) +
-    mn_pri_xp
-  K <- Kxpxp - Qxpxp + Kxpz %*% Sigma %*% Kzxp
+  # log marginal likelihood
+  # look into speeding up determinant and inversion
+  # I think it's in Vanhatalo et al. sparse ... disease ...
+  lZ <- - (log(det(Qxx + Lambda))) / 2 + 
+    (t(y - mn_prior) %*% solve(Qxx + Lambda) %*% (y - mn_prior)) / 2 -
+    (nrow(data) * log * 2 * pi) / 2
   
-  ans <- list(mn = mn, K = K)
+  # return posterior object
+  posterior <- createPosterior(inference_name = 'inference_direct_exact',
+                               lZ = lZ,
+                               data = data,
+                               kernel = kernel,
+                               likelihood = likelihood,
+                               mean_function = mean_function,
+                               inducing_data = inducing_data,
+                               Kzzi = Kzzi,
+                               Kzx = Kzx,
+                               Sigma = Sigma,
+                               iLambda = iLambda,
+                               y = y,
+                               mn_prior = mn_prior)
+  
+  return (posterior)
+  
+}
+
+# projection
+project_direct_fitc <- function(posterior, new_data) {
+
+  # prior mean over the test locations
+  mn_prior_xp <- posterior$mean_function(new_data)
+  
+  # prior covariance over the test locations
+  Kxpxp <- posterior$kernel(new_data, new_data)
+
+  # FITC components
+  Kxpz <- posterior$kernel(new_data, inducing_data)
+  Kzxp <- t(Kxpz)
+  Qxpxp <- Kxpz %*% posterior$Kzzi %*% Kzxp
+  
+  mu <- Kxpz %*% posterior$Sigma %*% posterior$Kzx %*%
+    posterior$iLambda %*% (posterior$y - posterior$mn_prior) +
+    mn_prior_xp
+  
+  K <- Kxpxp - Qxpxp + Kxpz %*% posterior$Sigma %*% Kzxp
+  
+  # return both
+  ans <- list(mu = mu,
+              K = K)
   
   return (ans)
   

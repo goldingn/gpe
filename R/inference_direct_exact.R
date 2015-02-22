@@ -8,57 +8,81 @@
 # kernel is a gpe kernel object
 # mean_function is a gpe mean function (for now just an R function)
 inference_direct_exact <- function(y,
-                     data,
-                     kernel,
-                     mean_function,
-                     inducing_data = NULL) {
+                                   data,
+                                   kernel,
+                                   likelihood,
+                                   mean_function,
+                                   inducing_data) {
   
-  # mean function
+  # NB likelihood and inducing_data are ignored
+  
+  # apply mean function to get prior mean at observation locations
   mn_prior <- mean_function(data)
   
-  # self kernel and inverse
-  Kxx <- kernel(data)
-  Kxxi <- solve(Kxx)
+  # self kernel (with observation noise)
+  K <- kernel(data, data)
   
-  # predict to itself
-  # (different from self kernel, due to observation variance)
-  Kxxp <- kernel(data, data)
-  Kxpx <- t(Kxxp)
+  # its cholesky decomposition
+  L <- jitchol(K)
   
-  # get posterior mean and covariance matrix
-  mu <- Kxpx %*% Kxxi %*% (y - mn_prior)
-  K <- Kxpx %*% Kxxi %*% Kxxp
+  # uncorrelated latent vector a
+  a <- backsolve(L, forwardsolve(t(L), (y - mn_prior)))
+
+  # log marginal likelihood
+  lZ <- - (t(y - mn_prior) %*% a) / 2 -
+    sum(log(diag(L))) -
+    (n * log(2 * pi)) / 2
+  
   
   # return posterior object
-  posterior <- createPosterior(mu = mu,
-                               K = K,
-                               X = data,
+  posterior <- createPosterior(inference_name = 'inference_direct_exact',
+                               lZ = lZ,
+                               data = data,
                                kernel = kernel,
-                               inference = 'inference_direct_exact')
-
-  # need to add log marginal likelihood
+                               likelihood = likelihood,
+                               mean_function = mean_function,
+                               inducing_data = inducing_data,
+                               mn_prior = mn_prior,
+                               L = L,
+                               a = a)
   
   # return a posterior object
   return (posterior)
-
+  
 }
 
 # projection
 project_direct_exact <- function(posterior, new_data) {
-  Kxpx <- posterior$kernel(new_data,
-                           posterior$X)
+
+  # get covariance matrices
   
-  # project the posterior mean
-  mu <- Kxpx %*% posterior$mu
+  # projection matrix
+  Kxxp <- posterior$kernel(posterior$data,
+                           new_data)
   
-  # get the posterior covariance
+  # its transpose
+  Kxpx <- t(Kxxp)
+  
+  # test self matrix
   Kxpxp <- posterior$kernel(new_data,
                             new_data)
   
+  # get posterior mean
+  mu <- Kxpx %*% posterior$a
+  
+  # get posterior covariance
+  v <- backsolve(L, Kxxp, transpose = T)
+  K <- Kxpxp - crossprod(v)
+  
+  # NB can easily modify this to return only the diagonal elements
+  # (variances) with kernel(..., diag = TRUE)
+  # calculation of the diagonal of t(v) %*% v is also easy:
+  # (colSums(v ^ 2))
+                   
   # return both
   ans <- list(mu = mu,
               K = Kxpxp)
   
   return (ans)
-
+  
 }
