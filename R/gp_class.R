@@ -322,7 +322,7 @@ print.gp <- function (x, ...) {
   cat('A Gaussian process model fitted against',
       nrow(x$data$training_data),
       'observations\n')
-
+  
   cat('\tcall: \t\t\t',
       deparse(x$call),
       '\n')
