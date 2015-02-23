@@ -2,6 +2,7 @@
 
 S3method("*",kernel)
 S3method("+",kernel)
+S3method(plot,kernel)
 S3method(print,kernel)
 S3method(prod,kernel)
 S3method(sum,kernel)

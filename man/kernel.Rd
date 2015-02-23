@@ -2,6 +2,7 @@
 \name{kernel}
 \alias{is.kernel}
 \alias{kernel}
+\alias{plot.kernel}
 \alias{print.kernel}
 \alias{summary.kernel}
 \title{gpe kernel class}
@@ -12,6 +13,8 @@ is.kernel(x)
 
 \method{summary}{kernel}(object, ..., digits = max(3, getOption("digits") -
   3))
+
+\method{plot}{kernel}(x, which = NULL, range = c(-5, 5), ref = 0, ...)
 }
 \arguments{
 \item{x}{a kernel object, or some other object to be tested}
@@ -21,9 +24,27 @@ is.kernel(x)
 \item{object}{a kernel object}
 
 \item{digits}{the number of digits to display for the kernel parameters}
+
+\item{which}{a string giving the column name for which to plot the
+covariance structure. If \code{NULL} a plot will be produced for each
+caolumn on which the kernel acts}
+
+\item{range}{the range of distances between points over which to plot
+covariances}
+
+\item{ref}{the reference value against which to compare other points
+of a given distance}
 }
 \description{
 Generic functions associated with the kernel class.
+}
+\details{
+\code{is.kernel} returns a logical indicating whether the
+object is a gpe kernel. \code{print} returns a very simple summary of the
+kernel structure. \code{summary} returns a more detailed summary of the
+kernel structure, including the values of the kernel parameters.
+\code{plot} plots the covariance structure of the kernel (how covariance)
+between two points depends on the distance between them.
 }
 \examples{
 # construct a kernel with one feature
@@ -37,5 +58,7 @@ print(k1)
 k1
 # a more detailed summary of the kernel's structure
 summary(k1)
+# plot the covariance structure of the GP
+plot(k1)
 }
 
