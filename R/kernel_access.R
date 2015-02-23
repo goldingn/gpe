@@ -7,8 +7,8 @@
 #' 
 #' @description Access and interact with kernel objects. 
 #' These functions allow you to report the type of kernel (\code{getType}), 
-#' view the overall kernel structure (\code{?}), extract subkernels (\code{getSubKernel})  
-#' report kernel parameters (\code{getParameters}) and update them (\code{setParameters}).
+#' extract subkernels (\code{getSubKernel}) report kernel parameters 
+#' (\code{getParameters}) and update them (\code{setParameters}).
 #' 
 #' @template kac_kernel
 #' 
@@ -249,11 +249,6 @@ setParameters <- function (kernel, ...) {
 demoKernel <- function (kernel, data = NULL, ndraw = 5) {
   
   # plotting example draws from a kernel
-  
-#   # for now, throw an error the kernel is compositional
-#   if (getType(kernel) %in% c('sum', 'prod', 'kron')) {
-#     stop ("sorry, this functionality is currently only available for basis kernels")
-#   }
   
   # get the columns
   columns <- getColumns(kernel)

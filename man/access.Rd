@@ -36,8 +36,8 @@ If \code{NULL}, the range -5 to 5 is used, arbitrarily.}
 \description{
 Access and interact with kernel objects.
 These functions allow you to report the type of kernel (\code{getType}),
-view the overall kernel structure (\code{?}), extract subkernels (\code{getSubKernel})
-report kernel parameters (\code{getParameters}) and update them (\code{setParameters}).
+extract subkernels (\code{getSubKernel}) report kernel parameters
+(\code{getParameters}) and update them (\code{setParameters}).
 }
 \examples{
 # construct a kernel with one feature
