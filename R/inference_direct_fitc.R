@@ -17,7 +17,7 @@ inference_direct_fitc <- function(y,
                                   mean_function,
                                   inducing_data,
                                   verbose = verbose) {
-
+  
   # NB likelihood is ignored
   
   # switch to ignoring new data,
@@ -59,7 +59,7 @@ inference_direct_fitc <- function(y,
     (nrow(data) * log(2 * pi)) / 2
   
   # return posterior object
-  posterior <- createPosterior(inference_name = 'inference_direct_exact',
+  posterior <- createPosterior(inference_name = 'inference_direct_fitc',
                                lZ = lZ,
                                data = data,
                                kernel = kernel,
@@ -78,7 +78,12 @@ inference_direct_fitc <- function(y,
 }
 
 # projection for FITC models
-project_direct_fitc <- function(posterior, new_data) {
+project_direct_fitc <- function(posterior,
+                                new_data,
+                                variance = c('none', 'diag', 'matrix')) {
+  
+  # get the required variance argument
+  variance <- match.arg(variance)
   
   # prior mean over the test locations
   mn_prior_xp <- posterior$mean_function(new_data)
@@ -89,8 +94,6 @@ project_direct_fitc <- function(posterior, new_data) {
   # FITC components
   Kxpz <- posterior$kernel(new_data,
                            posterior$inducing_data)
-  Kzxp <- t(Kxpz)
-  Qxpxp <- Kxpz %*% posterior$components$Kzzi %*% Kzxp
   
   mu <- Kxpz %*% posterior$components$Sigma %*%
     posterior$components$Kzx %*%
@@ -98,11 +101,36 @@ project_direct_fitc <- function(posterior, new_data) {
     (posterior$components$y - posterior$components$mn_prior) +
     mn_prior_xp
   
-  K <- Kxpxp - Qxpxp + Kxpz %*% posterior$components$Sigma %*% Kzxp
+  if (variance == 'none') {
+    
+    # if mean only
+    var <- NULL
+    
+  } else {
+    
+    # compute common variance components
+    Kzxp <- t(Kxpz)
+    Qxpxp <- Kxpz %*% posterior$components$Kzzi %*% Kzxp
+    K <- Kxpxp - Qxpxp + Kxpz %*% posterior$components$Sigma %*% Kzxp    
+    
+    if (variance == 'diag') {
+      
+      # if diagonal (elementwise) variance only
+      
+      # make this more efficient!
+      var <- diag(K)
+      
+    } else {
+      
+      # if full variance
+      var <- K
+      
+    }
+  }
   
   # return both
   ans <- list(mu = mu,
-              K = K)
+              var = var)
   
   return (ans)
   

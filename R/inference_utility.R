@@ -134,3 +134,74 @@ laplace_psiline_full <-
     f <- K %*% a + mn
     laplace_psi(a, f, mn, y, d0)
   }
+
+
+# return an inference function, given an inference method and a family
+getInference <- function (inference, likelihood, inducing_data) {
+  
+  # if inference is default, look up the default for that likelihood
+  if (inference == 'default') {
+    inference <- defaultInference(likelihood)
+  }
+  
+  # check inference method is suitable for the likelihood
+  checkInference(inference, likelihood, inducing_data)
+  
+  # get the inference name
+  inference_name <- switch(inference,
+                           FITC = 'direct_fitc',
+                           full = 'direct_full',
+                           LaplaceFITC = 'laplace_fitc',
+                           Laplace = 'laplace_full')
+  
+  # if the inference method wasn't found throw an error
+  if (is.null(inference_name)) {
+    stop (paste0('Inference method ',
+                 inference,
+                 ' not found.'))
+  }
+  
+  # prepend 'inference' to the name
+  inference_name <- paste0('inference_',
+                           inference_name)
+  
+  # fetch the function
+  inference <- get(inference_name)
+  
+  # return this function
+  return (inference)
+  
+}
+
+defaultInference <- function (likelihood) {
+  
+  inference <- switch(likelihood$name,
+                      likelihood_gaussian_identity = 'full',
+                      likelihood_binomial_logit = 'Laplace',
+                      likelihood_binomial_probit = 'Laplace',
+                      likelihood_poisson_log = 'Laplace')
+  
+  # if nothing found, throw an error
+  if (is.null(inference)) {
+    stop (paste0('no default inference method found for likelihood ',
+                 likelihood$name))
+  }
+  
+  return (inference)
+  
+}
+
+
+checkInference <- function (inference, likelihood, inducing_data) {
+  
+  if (inference %in% c('full', 'FITC') &
+        likelihood$name != 'likelihood_gaussian_identity') {
+    stop ('full and FITC inference are only possible with the gaussian family and identity link')
+  }
+  
+  if (inference %in% c('FITC', 'LaplaceFITC') &
+        is.null(inducing_data)) {
+    stop ('If FITC inference is required, inducing_data must be provided.')
+  }
+  
+}

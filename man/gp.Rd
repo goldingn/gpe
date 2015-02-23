@@ -46,7 +46,7 @@ A fitted gp object for which there aren't yet any associated
 functions. But there will be.
 }
 \description{
-Fiting (latent) Gaussian process models using a range of
+Fitting (latent) Gaussian process models using a range of
 inference methods.
 }
 \details{
@@ -86,6 +86,6 @@ y2 <- rpois(n, exp(f))
 
 # fit a GP model by Laplace approximation
 # (note no observation error in this model)
-m2 <- gp(y2, rbf('x'), df, poisson)
+m3 <- gp(y2, rbf('x'), df, poisson)
 }
 

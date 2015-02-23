@@ -1,8 +1,8 @@
-# interface for fitting Gaussian process models
+# gp class for fitting and interacting with Gaussian process models
 
 #' @title Gaussian process models
 #' 
-#' @description Fiting (latent) Gaussian process models using a range of 
+#' @description Fitting (latent) Gaussian process models using a range of 
 #' inference methods.
 #' 
 #' @param response A vector or matrix containing values of the response 
@@ -81,10 +81,8 @@
 #' 
 #' # fit a GP model by Laplace approximation
 #' # (note no observation error in this model)
-#' m2 <- gp(y2, rbf('x'), df, poisson)
+#' m3 <- gp(y2, rbf('x'), df, poisson)
 #' 
-
-# this'll need some roxygen
 gp <- function(response,
                kernel,
                data,
@@ -140,71 +138,173 @@ gp <- function(response,
   
 }
 
-checkInference <- function (inference, likelihood, inducing_data) {
+
+
+# user-facing predict function 
+# add more options later to predicting with a new kernel,
+# integrating over the point posterior, returning the full 
+# posterior covariance etc.
+#' @title predict method for Gaussian process models
+#' 
+#' @description Makes predictions from a fitted GP model in a similar way 
+#' to \code{predict.glm} from GLMs
+#' 
+#' @param object a fitted GP model; an object of class \code{gp} produced by
+#' \code{\link{gp}}. 
+#'
+#' @param newdata an optional data frame containing new data to predict to.
+#' If \code{NULL}, the training data is used instead.
+#' 
+#' @param type the type of prediction required. The default (\code{'link'} 
+#' predicts the value of the latent Gaussian process at the new locations,
+#' \code{'response'} instead predicts on the scale of the response variable.
+#' 
+#' @param sd whether to report standard deviations of the prediction.
+#' 
+#' @param \dots further arguments to be passed to other methods, currently 
+#' ignored
+#' 
+#' @return if \code{sd = FALSE} a vector of predictions. If 
+#' \code{sd = TRUE}, a list with components: \code{fit} the 
+#' predictions (as for \code{sd = FALSE}); \code{sd} estimated
+#' standard deviations of the latent gaussians.
+#' 
+#' fitted gp object for which there aren't yet any associated 
+#' functions. But there will be.
+#' 
+# @details
+#' 
+#' @export
+#' @name predict.gp
+#' 
+#' @examples
+#' # make some fake data
+#' n <- 100  # observations
+#' 
+#' # dataframes
+#' df <- data.frame(x = sort(runif(n, -5, 5)))
+#' prediction_df <- data.frame(x = seq(min(df$x), max(df$x), len = 500))
+#' 
+#' # fake Gaussian response data
+#' f <- sin(df$x)
+#' y <- rnorm(n, f, 1)
+#' 
+#' # construct a kernel (including the observation error)
+#' kernel <- rbf('x') + iid()
+#' 
+#' # fit a full (non-sparse) GP model (without updating the hyperparameters)
+#' # as this is the default
+#' m1 <- gp(y, kernel, df, gaussian)
+#' 
+#' # make predictions from it (only the mean)
+#' mu <- predict(m1, prediction_df)
+#' 
+#' plot(mu ~ prediction_df$x, type = 'l', ylim = range(y))
+#' points(y ~ df$x, pch = 16)
+#' 
+#' # now predict with the standard deviations
+#' res <- predict(m1, prediction_df, sd = TRUE)
+#' 
+#' # get upper and lower 95% credible intervals
+#' upper <- res$fit + 1.96 * res$sd
+#' lower <- res$fit - 1.96 * res$sd
+#'
+#' plot(mu ~ prediction_df$x, type = 'l',
+#'  ylim = range(y, upper, lower))
+#' lines(upper ~ prediction_df$x, lty = 2)
+#' lines(lower ~ prediction_df$x, lty = 2)
+#' points(y ~ df$x, pch = 16)
+
+
+
+predict.gp <- function(object, newdata = NULL,
+                       type = c('link', 'response'),
+                       sd = FALSE,
+                       ...) {
   
-  if (inference %in% c('full', 'FITC') &
-        likelihood$name != 'likelihood_gaussian_identity') {
-    stop ('full and FITC inference are only possible with the gaussian family and identity link')
+  # match the type of prediction
+  type <- match.arg(type)
+  
+  # if new data isn't provided, predict back to the training data
+  if (is.null(newdata)) {
+    newdata <- object$data$training_data
   }
   
-  if (inference %in% c('FITC', 'LaplaceFITC') &
-        is.null(inducing_data)) {
-    stop ('If FITC inference is required, inducing_data must be provided.')
+  # get the appropriate projector function
+  projector <- getProjector(object$posterior)
+  
+  # project to the new data
+  
+  if (sd) {
+    
+    # if they want sds too, calculate the diagonal components
+    res <- projector(object$posterior,
+                     newdata,
+                     variance = 'diag')
+    
+  } else {
+    
+    # otherwise don't calculate any variance components
+    res <- projector(object$posterior,
+                     newdata,
+                     variance = 'none')
+    
   }
+  
+  # N.B. could also add an option for the full posterior covariance matrix
+  
+  # calculate stuff
+  
+  if (type =='link') {
+    
+    # get the likelihood object
+    # note this needs a y argument too, which can be NULL
+    link <- object$likelihood$link
+    
+    # get answer on the link scale
+    fit <- link(NULL, res$mu)
+    
+  } else {
+    
+    # otherwise, fit is on the link scale
+    fit <- res$mu
+    
+  }
+  
+  # now work out what to return
+  if (sd) {
+    
+    # if they want the sds
+    ans <- list(fit = fit,
+                sd = sqrt(res$var))
+    
+  } else {
+    
+    # otherwise, just the fit
+    ans <- fit
+    
+  }
+  
+  # return the result
+  return (ans)
   
 }
 
-defaultInference <- function (likelihood) {
+# given a posterior object, return a compatible projector function
+getProjector <- function (posterior) {
   
-  inference <- switch(likelihood$name,
-                      likelihood_gaussian_identity = 'full',
-                      likelihood_binomial_logit = 'Laplace',
-                      likelihood_binomial_probit = 'Laplace',
-                      likelihood_poisson_log = 'Laplace')
+  # get inference name
+  inference_name <- posterior$inference_name
   
-  # if nothing found, throw an error
-  if (is.null(inference)) {
-    stop (paste0('no default inference method found for likelihood ',
-                 likelihood$name))
-  }
+  # get the corresponding projector name
+  projector_name <- gsub('inference',
+                         'project',
+                         inference_name)
   
-  return (inference)
+  # get the corresponding function
+  projector <- get(projector_name)
   
-}
-
-# return an inference function, given an inference method and a family
-getInference <- function (inference, likelihood, inducing_data) {
-  
-  # if inference is default, look up the default for that likelihood
-  if (inference == 'default') {
-    inference <- defaultInference(likelihood)
-  }
-  
-  # check inference method is suitable for the likelihood
-  checkInference(inference, likelihood, inducing_data)
-  
-  # get the inference name
-  inference_name <- switch(inference,
-                           FITC = 'direct_fitc',
-                           full = 'direct_full',
-                           LaplaceFITC = 'laplace_fitc',
-                           Laplace = 'laplace_full')
-  
-  # if the inference method wasn't found throw an error
-  if (is.null(inference_name)) {
-    stop (paste0('Inference method ',
-                 inference,
-                 ' not found.'))
-  }
-  
-  # prepend 'inference' to the name
-  inference_name <- paste0('inference_',
-                          inference_name)
-  
-  # fetch the function
-  inference <- get(inference_name)
-  
-  # return this function
-  return (inference)
+  # return this
+  return (projector)
   
 }

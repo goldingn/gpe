@@ -119,8 +119,11 @@ inference_laplace_full <- function(y,
 
 # projection for full inference
 project_laplace_full <- function(posterior,
-                                new_data) {
+                                new_data,
+                                variance = c('none', 'diag', 'matrix')) {
   
+  # get the required variance argument
+  variance <- match.arg(variance)
   
   # prior mean over the test locations
   mn_prior_xp <- posterior$mean_function(new_data)
@@ -132,29 +135,62 @@ project_laplace_full <- function(posterior,
   # its transpose
   Kxpx <- t(Kxxp)
   
-  # test data self-matrix
-  Kxpxp <- posterior$kernel(new_data)
-  
   # get posterior mean
   mu <- Kxpx %*% posterior$components$a + mn_prior_xp
-
-  rW <- sqrt(as.vector(posterior$components$W))
-  
-  # get posterior covariance
-  v <- backsolve(posterior$components$L,
-                 rW * Kxxp,
-                 transpose = TRUE)
-  
-  K <- Kxpxp - crossprod(v)
   
   # NB can easily modify this to return only the diagonal elements
   # (variances) with kernel(..., diag = TRUE)
   # calculation of the diagonal of t(v) %*% v is also easy:
   # (colSums(v ^ 2))
   
+  if (variance == 'none') {
+    
+    # if mean only
+    var <- NULL
+    
+  } else {
+    
+    # compute common variance components
+    rW <- sqrt(as.vector(posterior$components$W))
+    
+    # get posterior covariance
+    v <- backsolve(posterior$components$L,
+                   rW * Kxxp,
+                   transpose = TRUE)
+    
+
+    if (variance == 'diag') {
+      
+      # if diagonal (elementwise) variance only
+      # diagonal matrix of the prior covariance on xp
+      Kxpxp_diag <- posterior$kernel(new_data, diag = TRUE)
+      
+      # diagonal elements of t(v) %*% v
+      vtv_diag <- colSums(v ^ 2)
+      
+      # diagonal elements of the posterior
+      K_diag <- diag(Kxpxp_diag) - vtv_diag
+      
+      var <- K_diag
+      
+    } else {
+      
+      # if full variance
+      
+      # prior covariance on xp
+      Kxpxp <- posterior$kernel(new_data)
+      
+      # posterior covariance on xp
+      K <- Kxpxp - crossprod(v)
+
+      var <- K
+      
+    }
+  }
+  
   # return both
   ans <- list(mu = mu,
-              K = K)
+              var = var)
   
   return (ans)
   
