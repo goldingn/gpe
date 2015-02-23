@@ -66,7 +66,7 @@ There is now an interface for fitting GP models to Gaussian and some non-Gaussia
 
 ```r
 # make a fake 'true' function
-f <- function(x) 2 * sin(x) #+ 0.3 * x
+f <- function(x) 2 * sin(x)
 
 # make a fake dataset
 x <- sort(runif(100, -2, 2))
@@ -74,7 +74,7 @@ y <- rpois(100, exp(f(x)))
 df <- data.frame(y, x)
 
 # make kernel to represent the true model
-k <- rbf('x') #+ lin('x')
+k <- rbf('x') 
 
 # fit the model
 m <- gp(df$y, k, data = df, family = poisson)

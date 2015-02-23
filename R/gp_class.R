@@ -172,7 +172,6 @@ gp <- function(response,
 #' fitted gp object for which there aren't yet any associated 
 #' functions. But there will be.
 #' 
-# @details
 #' 
 #' @export
 #' @name predict.gp
@@ -252,7 +251,7 @@ predict.gp <- function(object, newdata = NULL,
   
   # calculate stuff
   
-  if (type =='link') {
+  if (type =='response') {
     
     # get the likelihood object
     # note this needs a y argument too, which can be NULL
