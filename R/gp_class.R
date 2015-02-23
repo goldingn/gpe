@@ -308,3 +308,47 @@ getProjector <- function (posterior) {
   return (projector)
   
 }
+
+#' @rdname gp
+#' @export
+#' @examples
+#' 
+#' # is it a gp? 
+#' is.gp(m1)
+#'  
+is.gp <- function (x) {
+  
+  # test whether x is a gp object
+  ans <- inherits(x, "gp")
+  
+  # return the answer
+  return (ans)
+  
+}
+
+# print function for gps - just a basic structure
+#' @rdname gp
+#' @export
+#' @examples
+#'  
+#' # print a basic summary about the gp
+#' print(m1)
+#'  
+#' # this is also the default action for displaying the object:
+#' m1
+#'   
+print.gp <- function (x, ...) {
+  # basic print function for a gp object (fitted gp model)
+  
+  cat('A Gaussian process model fitted against',
+      nrow(x$data$training_data),
+      'observations\n')
+
+  cat('\tcall: \t\t\t',
+      deparse(x$call),
+      '\n')
+  
+  cat('\tkernel:',
+      capture.output(print(x$kernel)),
+      '\n')
+}
