@@ -1,6 +1,6 @@
 # likelihood_bernoulli_logit
 
-likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
+likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # bernoulli log-likelihood (and its derivatives)
   # with the logit link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -67,7 +67,7 @@ likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
     # for binary data...
     ans[npr] <- (y[npr] + 1) / 2 - plogis(f[npr])
     
-  } else {
+  } else if (which == 'd2') {
     # second derivative
     
     # proportion data
@@ -96,6 +96,11 @@ likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
     pi_ <- plogis(f[npr])
 
     ans[npr] <- -pi_ * (1 - pi_)
+    
+  } else {
+    
+    # otherwise the link function *not* logged
+    ans <- plogis(f)
     
   }
   

@@ -1,6 +1,6 @@
 # likelihood_bernoulli_probit
 
-likelihood_bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
+likelihood_bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # bernoulli log-likelihood (and its derivatives)
   # with the probit link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -56,7 +56,7 @@ likelihood_bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) 
     # for binary data...
     ans[npr] <- y[npr] * dnorm(f[npr]) / pnorm(y[npr] * f[npr])
     
-  } else {
+  } else if (which == 'd2') {
     # second derivative
     
     ans[pr] <- -1
@@ -66,6 +66,11 @@ likelihood_bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) 
     b <- y[npr] * f[npr] * dnorm(f[npr]) / pnorm(y[npr] * f[npr])
     ans[npr] <- -a - b
 
+  } else {
+    
+    # otherwise the link, *not* on the log scale
+    ans <- pnorm(f)
+    
   }
   
   return (ans)

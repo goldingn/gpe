@@ -1,6 +1,6 @@
 # likelihood_gaussian_identity
 
-likelihood_gaussian_identity <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
+likelihood_gaussian_identity <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # Gaussian log-likelihood (and its derivatives)
   # with the identity link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -38,13 +38,18 @@ likelihood_gaussian_identity <- function(y, f, which = c('d0', 'd1', 'd2'), ...)
     
     stop ('Gaussian likelihood (for non-direct inference) not yet implemented.')
     
-  } else {
+  } else if (which == 'd2') {
     # second derivative
     
     # can't do this yet as we don't have a way of dealing with
     # hyperparameters on the likelihood
     
     stop ('Gaussian likelihood (for non-direct inference) not yet implemented.')
+    
+  } else {
+    
+    # otherwise the link function (identity)
+    ans <- f
     
   }
   

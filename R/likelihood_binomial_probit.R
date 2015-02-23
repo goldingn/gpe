@@ -1,6 +1,6 @@
 # likelihood_binomial_probit
 
-likelihood_binomial_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
+likelihood_binomial_probit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # binomial log-likelihood (and its derivatives)
   # with the probit link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -9,6 +9,21 @@ likelihood_binomial_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
   # or it's first or second derivative
   # \dots doesn't do anything, but is there for compatibility with other
   # likelihood which might use it
+
+  # handle NULLs passed for the link function
+  if (is.null(y)) {
+    if (which == 'link') {
+      
+      ans <- likelihood_bernoulli_probit(y,
+                                         f,
+                                         which = which,
+                                         ...)
+    } else {
+      
+      stop ('y cannot be NULL unless the link function is being used')
+    
+    }
+  }
   
   # check whether y is passed as a matrix
   if (is.matrix(y)) {

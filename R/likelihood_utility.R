@@ -67,11 +67,16 @@ getLikelihood <- function(family) {
     evaluator(y, f, which = 'd2', ...)
   }
   
+  link <- function(y, f, ...) {
+    evaluator(y, f, which = 'link', ...)
+  }
+  
   # put it all in a list
   ans <- list(name = likelihood_string,
               d0 = d0,
               d1 = d1,
-              d2 = d2)
+              d2 = d2,
+              link = link)
   
   class(ans) <- 'likelihood'
   
