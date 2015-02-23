@@ -10,29 +10,38 @@ likelihood_binomial_probit <- function(y, f, which = c('d0', 'd1', 'd2'), ...) {
   # \dots doesn't do anything, but is there for compatibility with other
   # likelihood which might use it
   
-  # check whether it's passed as two columns (binomial) or as one (bernoulli)
-  if (ncol(y) == 2) {
-    # if they want a proper binomial, throw an error as this isn't implemented
-    # yet
+  # check whether y is passed as a matrix
+  if (is.matrix(y)) {
     
-    stop ('The binomial distribution with sample sizes greater than one is not \
-yet implemented. Sorry about that. The Bernoulli distribution \
-          is available however.')
-
+    if (ncol(y) == 2) {
+      # if they want a proper binomial, throw an error as this isn't implemented
+      # yet   
+      
+      stop ('The binomial distribution with sample sizes greater than one is not \
+            yet implemented. Sorry about that. The Bernoulli distribution \
+            is available however.')
+      
     } else if (ncol(y) == 1) {
-    
-    # call the bernoulli likelihood
-    ans <- likelihood_bernoulli_probit(y,
-                                       f,
-                                       which = which,
-                                       ...)
-    
-    return (ans)
-    
-  } else {
-
-    # if there's any other number, throw an error
-    stop ('For the binomial distribution the response variable must have either one or two columns')
-    
+      
+      # if it's a single variable as a matrix, convert to a vector
+      y <- y[, 1]
+      
+    } else {
+      
+      # if there's any other number, throw an error
+      stop ('For the binomial distribution the response variable must have either one or two columns')
+      
+    }
   }
+  
+  if (is.vector(y)) {
+    # if it's a vector call the bernoulli likelihood
+    ans <- likelihood_bernoulli_probit(y,
+                                      f,
+                                      which = which,
+                                      ...)
+  }
+  
+  return (ans)
+  
 }

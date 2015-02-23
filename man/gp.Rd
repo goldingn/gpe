@@ -19,8 +19,8 @@ the response variable. This must have the same number of rows as
 \code{kernel}.}
 
 \item{family}{A \code{\link{family}} object giving the likelihood and link
-function to be used to fit the model. Currently only \code{gaussian} is
-supported.}
+function to be used to fit the model. Currently only \code{gaussian},
+\code{poisson} and \code{binomial} (only Bernoulli) are supported.}
 
 \item{mean_function}{An optional function specifying the prior over the mean
 of the gp, in other words a 'first guess' at what the true function is.
@@ -51,7 +51,10 @@ inference methods.
 }
 \details{
 The default inference method for a model with the family
-\code{gaussian(link = 'identity')} is full, direct inference.
+\code{gaussian(link = 'identity')} is full, direct inference, for
+\code{binomial(link = 'logit')} and \code{binomial(link = 'probit')}
+the default is full, Laplace inference (though note that only bernoulli)
+data is handled at the moment.
 }
 \examples{
 # make some fake data
@@ -77,5 +80,12 @@ m1 <- gp(y, kernel, df, gaussian)
 # fit another with FITC sparsity
 m2 <- gp(y, kernel, df, gaussian, inference = 'FITC', inducing_data = df)#inducing_df)
 # summary stats, other associated functions still to come
+
+# construct a poisson response variable
+y2 <- rpois(n, exp(f))
+
+# fit a GP model by Laplace approximation
+# (note no observation error in this model)
+m2 <- gp(y2, rbf('x'), df, poisson)
 }
 

@@ -77,15 +77,15 @@ inference_direct_fitc <- function(y,
   
 }
 
-# projection
+# projection for FITC models
 project_direct_fitc <- function(posterior, new_data) {
-
+  
   # prior mean over the test locations
   mn_prior_xp <- posterior$mean_function(new_data)
   
   # prior covariance over the test locations
   Kxpxp <- posterior$kernel(new_data)
-
+  
   # FITC components
   Kxpz <- posterior$kernel(new_data,
                            posterior$inducing_data)

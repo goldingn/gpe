@@ -51,12 +51,13 @@ inference_direct_full <- function(y,
   
 }
 
-# projection
+# projection for full inference
 project_direct_full <- function(posterior,
-                                 new_data,
-                                 observation_error = TRUE) {
-
-  # get covariance matrices
+                                new_data) {
+  
+  
+  # prior mean over the test locations
+  mn_prior_xp <- posterior$mean_function(new_data)
   
   # projection matrix
   Kxxp <- posterior$kernel(posterior$data,
@@ -65,11 +66,11 @@ project_direct_full <- function(posterior,
   # its transpose
   Kxpx <- t(Kxxp)
   
-  # test self-matrix
+  # test data self-matrix
   Kxpxp <- posterior$kernel(new_data)
   
   # get posterior mean
-  mu <- Kxpx %*% posterior$components$a
+  mu <- Kxpx %*% posterior$components$a + mn_prior_xp
   
   # get posterior covariance
   v <- backsolve(posterior$components$L,
@@ -82,7 +83,7 @@ project_direct_full <- function(posterior,
   # (variances) with kernel(..., diag = TRUE)
   # calculation of the diagonal of t(v) %*% v is also easy:
   # (colSums(v ^ 2))
-                   
+  
   # return both
   ans <- list(mu = mu,
               K = K)
