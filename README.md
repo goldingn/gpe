@@ -1,6 +1,6 @@
 # Gaussian process everything
 
-gpe is an R package implementing a Gaussian process (GP) statistical modelling framework. The aims of the project are to provide *some* of the functionality of fully featured GP toolboxes available in other languages, such as [GPy](https://github.com/SheffieldML/GPy) for python and [GPstuff](http://becs.aalto.fi/en/research/bayes/gpstuff/) for MATLAB.
+gpe is an R package implementing a Gaussian process (GP) statistical modelling framework. The aims of the project are to provide *some* of the functionality of fully featured GP toolboxes available in other languages, such as [GPy](https://github.com/SheffieldML/GPy) for python and [GPstuff](http://becs.aalto.fi/en/research/bayes/gpstuff/) for MATLAB. Mostly though it's about communicating the power of the GP approach to an applied statistical audience.
 
 ## Why?
 
@@ -58,7 +58,7 @@ demoKernel(k4)
 
 ### GPs
 
-There is now an interface for fitting GP models to Gaussian and some non-Gaussian (Poisson and Bernoulli at the moment) data, though functions to summarise their output, make predictions and learn the kernel parameters are yet to be implemented.
+There is now an interface for fitting GP models to Gaussian and some non-Gaussian (Poisson and Bernoulli at the moment) data, and a function to make predictions from these models, though functions to summarise their output and learn the kernel parameters are yet to be implemented.
 
 ## License
 
