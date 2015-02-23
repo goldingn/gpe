@@ -214,9 +214,6 @@ gp <- function(response,
 #' lines(upper ~ prediction_df$x, lty = 2)
 #' lines(lower ~ prediction_df$x, lty = 2)
 #' points(y ~ df$x, pch = 16)
-
-
-
 predict.gp <- function(object, newdata = NULL,
                        type = c('link', 'response'),
                        sd = FALSE,
@@ -307,4 +304,30 @@ getProjector <- function (posterior) {
   # return this
   return (projector)
   
+}
+
+is.gp <- function (x) {
+  
+  # test whether x is a gp object
+  ans <- inherits(x, "gp")
+  
+  # return the answer
+  return (ans)
+  
+}
+
+print.gp <- function (x, ...) {
+  # basic print function for a gp object (fitted gp model)
+  
+  cat('A Gaussian process model fitted against',
+      nrow(x$data$training_data),
+      'observations\n')
+
+  cat('\tcall: \t\t\t',
+      deparse(x$call),
+      '\n')
+  
+  cat('\tkernel:',
+      capture.output(print(x$kernel)),
+      '\n')
 }
