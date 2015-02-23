@@ -43,22 +43,56 @@ k2 <- lin('temperature')
 k2 <- setParameters(k2, sigma = 0.5)
 # plot draws from it
 demoKernel(k2)
+# a GP model with a linear kernel is the same as (Bayesian) linear regression
 
 # add the two together
 k3 <- k1 + k2
 # and visualise them
 demoKernel(k3)
+# this is the same as adding the random draws together
 
 # multiply this by a periodic kernel
 k4 <- k3 * per('temperature')
-# visualise
+# visualise this one
 plot(k4)
 demoKernel(k4)
+
+# and you can go on and on, combining kernels infinitely!
 ```
 
 ### GPs
 
-There is now an interface for fitting GP models to Gaussian and some non-Gaussian (Poisson and Bernoulli at the moment) data, and a function to make predictions from these models, though functions to summarise their output and learn the kernel parameters are yet to be implemented.
+There is now an interface for fitting GP models to Gaussian and some non-Gaussian (Poisson and Bernoulli at the moment) data and making predictions from them:
+
+```r
+# make a fake 'true' function
+f <- function(x) 2 * sin(x) #+ 0.3 * x
+
+# make a fake dataset
+x <- sort(runif(100, -2, 2))
+y <- rpois(100, exp(f(x)))
+df <- data.frame(y, x)
+
+# make kernel to represent the true model
+k <- rbf('x') #+ lin('x')
+
+# fit the model
+m <- gp(df$y, k, data = df, family = poisson)
+
+# predict from it
+pred_df <- data.frame(x = seq(min(df$x), max(df$x), len = 500))
+lambda <- predict(m, pred_df, type = 'response')
+
+# plot the predicted rate parameter, the true model and the data
+plot(lambda ~ pred_df$x, type = 'l', lwd = 2, ylim = range(y))
+lines(exp(f(pred_df$x)) ~ pred_df$x, lty = 2)
+points(y ~ x, data = df)
+
+# note you can get the posterior (prediction uncertainty) too,
+# just set 'sd = TRUE' when predicting
+```
+
+Though nice glm-style summaries of the fitted models and learning of the kernel parameters are yet to be implemented.
 
 ## License
 
