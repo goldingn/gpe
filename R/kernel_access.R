@@ -136,13 +136,48 @@ getSubKernel <- function (kernel, which = 1) {
   
 }
 
+# 
 getObject <- function (kernel) {
+  
+  # check it first
+  checkKernel(kernel)
   
   # get a kernel object, from a kernel
   ans <- environment(kernel)$object
   
   # return this
   return (ans)
+  
+}
+
+# given a kernel object (such as one produced by getObject)
+# re-create the kernel from which it came
+# The kernel can be either compositional or basis.
+setObject <- function (object) {
+  
+  is_comp <- all(names(object) == c('type',
+                                    'kernel1',
+                                    'kernel2'))
+  
+  is_basis <- all(names(object) == c('type',
+                                     'columns',
+                                     'parameters'))
+  
+  if ((!is_comp & !is_basis) | (is_comp & is_basis)) {
+    stop ('apparently not a valid kernel object')
+  }
+  
+  if (is_comp) {
+    kernel <- get(object$type)(object$kernel1, object$kernel2)
+  } else {
+    kernel <- get(object$type)(object$columns)
+    kernel <- do.call(setParameters, c(kernel, object$parameters))
+  }
+  
+  # check it's valid
+  checkKernel(kernel)
+  
+  return (kernel)
   
 }
 
@@ -162,7 +197,7 @@ getFeatures <- function (object, data, newdata) {
   return(list(x = as.matrix(x),
               y = as.matrix(y)))
   
-}
+} 
 
 #' @rdname access
 #' 
