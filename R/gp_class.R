@@ -169,10 +169,6 @@ gp <- function(response,
 #' predictions (as for \code{sd = FALSE}); \code{sd} estimated
 #' standard deviations of the latent gaussians.
 #' 
-#' fitted gp object for which there aren't yet any associated 
-#' functions. But there will be.
-#' 
-#' 
 #' @export
 #' @name predict.gp
 #' 
