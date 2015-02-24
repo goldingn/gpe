@@ -97,4 +97,4 @@ Nice glm-style summaries of the fitted models and learning of the kernel paramet
 
 ## License
 
-The package is distributed under the MIT license, which I think means you can do pretty much anything with it, but see the LICENSE file for details
+The package is distributed under the MIT license, which I think means you can do pretty much anything with it as long as you keep my name on the code and don't sue me, but see the LICENSE file for details
