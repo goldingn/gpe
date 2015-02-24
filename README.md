@@ -93,7 +93,7 @@ points(y ~ x, data = df)
 # just set 'sd = TRUE' when predicting
 ```
 
-Though nice glm-style summaries of the fitted models and learning of the kernel parameters are yet to be implemented.
+Nice glm-style summaries of the fitted models and learning of the kernel parameters are in the pipeline, but not yet implemented.
 
 ## License
 
