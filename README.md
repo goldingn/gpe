@@ -10,11 +10,12 @@ The aim of the package (and a planned accompanying demonstration repo) is to dem
 
 ## Installation
 
-You can install this package directly from github using the wonderful devtools package as follows:
+You can install and load this package directly from github using the wonderful devtools package as follows:
 
 ```r
 library(devtools)
 install_github('goldingn/gpe')
+library(gpe)
 ```
 
 ## Progress
