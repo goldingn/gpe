@@ -138,6 +138,79 @@ unpackKernel <- function (kernel) {
   
 }
 
+# do the opposite, take an unpacked kernel and repack it
+repackKernel <- function (unpacked_kernel) {
+  
+  # convert the data_list basis function kernels
+  # into kernel functions again
+  unpacked_kernel$data_list <- lapply(unpacked_kernel$data_list,
+                                      setObject)
+  
+  # now substitute these back into the symbolic string and evaluate
+  kernel <- eval(parse(text = unpacked_kernel$symbolic_string),
+                 envir = unpacked_kernel$data_list)
+  
+  return (kernel)
+  
+}
+
+# build the following two into getParameters / setParameters
+# to enable users to change parameters after constructing kernels
+
+# get the parameters of a kernel (or unpacked kernel)
+# as a vector, or vector-like list
+getParVec <- function (x) {
+  
+  # if x is a kernel, unpack it first
+  if (is.kernel(x)) {
+    x <- unpackKernel(x)
+  }
+  
+  # get parameters only as an unstructured list or vector
+  par_list <- lapply(x$data_list,
+                     function (x) x$parameters)
+  
+  # and as a vector or flat list
+  par_vec <- unlist(par_list)
+  
+  return (par_vec)
+  
+}
+
+# given a kernel (or unpacked kernel) and a corresponding vector
+# or vector-like list, such as one given by getParVec, replace the
+# the parameters with the elements of this list
+setParVec <- function (x, par_vec) {
+  
+  # flag for whether to return as a kernel or an unpacked kernel
+  was_kernel <- FALSE
+  
+  # if x is a kernel, unpack it first
+  if (is.kernel(x)) {
+    was_kernel <- TRUE
+    x <- unpackKernel(x)
+  }
+  
+  # get parameters only as an unstructured list or vector
+  par_list <- lapply(x$data_list,
+                     function (x) x$parameters)
+  
+  # relist the vector into this structure
+  par_list <- relist(par_vec, par_list)
+  
+  # loop through basis kernels, relpacing the parameters
+  for (basis in 1:length(par_list)) {
+    x$data_list[[basis]]$parameters <- par_list[[basis]]
+  }
+  
+  if (was_kernel) {
+    x <- repackKernel(x)
+  }
+  
+  return (x)
+  
+}
+
 # function to recurse through a kernel object and flatten the structure
 flattenKernel <- function (kernel, counter = NULL, data_list = NULL) {
   # counter is used to keep track of the components so far
@@ -332,3 +405,5 @@ diagSigma <- function(object, data) {
   # option of a kernel evaluator
   ans <- diag(nrow(data)) * object$parameters$sigma ^ 2
 }
+
+
