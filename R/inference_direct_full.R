@@ -17,6 +17,9 @@ inference_direct_full <- function(y,
   
   # NB likelihood and inducing_data are ignored
   
+  # get number of observations
+  n <- nrow(data)
+  
   # apply mean function to get prior mean at observation locations
   mn_prior <- mean_function(data)
   
