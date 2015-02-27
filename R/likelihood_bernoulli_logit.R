@@ -9,6 +9,9 @@ likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2', 'link')
   # or it's first or second derivative
   # \dots doesn't do anything, but is there for compatibility with other
   # likelihood which might use it
+
+  # check response variable
+  checkUnitInterval(y)
   
   # check which derivative is needed
   which <- match.arg(which)

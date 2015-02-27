@@ -10,6 +10,9 @@ likelihood_poisson_log <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ..
   # \dots doesn't do anything, but is there for compatibility with other
   # likelihood which might use it
   
+  # check response input
+  checkNonNegative(y)
+  
   # check which derivative is needed
   which <- match.arg(which)
   

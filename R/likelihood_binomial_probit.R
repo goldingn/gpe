@@ -10,6 +10,9 @@ likelihood_binomial_probit <- function(y, f, which = c('d0', 'd1', 'd2', 'link')
   # \dots doesn't do anything, but is there for compatibility with other
   # likelihood which might use it
 
+  # check response input
+  checkNonNegative(y)
+  
   # handle NULLs passed for the link function
   if (is.null(y)) {
     if (which == 'link') {

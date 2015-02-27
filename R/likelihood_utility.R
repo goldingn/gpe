@@ -83,3 +83,32 @@ getLikelihood <- function(family) {
   return (ans)
   
 }
+
+# sanity checks for data types
+checkNonNegative <- function (response) {
+  # throw an error if the response data provided is not a positive integer
+  if (any(response < 0)) {
+    stop("negative values are not allowed for this family")    
+  }
+}
+
+checkNonNegative <- function (response) {
+  # throw an error if the response data provided is not a positive integer
+  if (any(response < 0)) {
+    stop ("negative values not allowed in the response variable with this family")    
+  }
+}
+
+checkUnitInterval <- function (response) {
+  # throw an error if the response data is not on the unit interval
+  if (any(response < 0 | response > 1)) {
+    stop ("response values greater than one or less than zero are not allowed for this family")    
+  }
+
+  # issue a warning if any of it is non-integer(ish)
+  if (any(response > 0 & response < 1)) {
+    warning ("non-integer values in the response variable, these will be treated as having an infinite sample size")    
+  }
+  
+}
+
