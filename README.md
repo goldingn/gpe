@@ -74,11 +74,8 @@ x <- sort(runif(100, -2, 2))
 y <- rpois(100, exp(f(x)))
 df <- data.frame(y, x)
 
-# make kernel to represent the true model
-k <- rbf('x') 
-
-# fit the model
-m <- gp(df$y, k, data = df, family = poisson)
+# fit a Poisson GP model with an rbf kernel
+m <- gp(y ~ rbf('x'), k, data = df, family = poisson)
 
 # predict from it
 pred_df <- data.frame(x = seq(min(df$x), max(df$x), len = 500))
