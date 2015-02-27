@@ -10,11 +10,12 @@ The aim of the package (and a planned accompanying demonstration repo) is to dem
 
 ## Installation
 
-You can install this package directly from github using the wonderful devtools package as follows:
+You can install and load this package directly from github using the wonderful devtools package as follows:
 
 ```r
 library(devtools)
 install_github('goldingn/gpe')
+library(gpe)
 ```
 
 ## Progress
@@ -92,8 +93,8 @@ points(y ~ x, data = df)
 # just set 'sd = TRUE' when predicting
 ```
 
-Though nice glm-style summaries of the fitted models and learning of the kernel parameters are yet to be implemented.
+Nice glm-style summaries of the fitted models and learning of the kernel parameters are in the pipeline, but not yet implemented.
 
 ## License
 
-The package is distributed under the MIT license, which I think means you can do pretty much anything with it, but see the LICENSE file for details
+The package is distributed under the MIT license, which I think means you can do pretty much anything with it as long as you keep my name on the code and don't sue me, but see the LICENSE file for details
