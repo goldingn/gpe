@@ -5,10 +5,9 @@
 #' @description Fitting (latent) Gaussian process models using a range of 
 #' inference methods.
 #' 
-#' @param response A vector or matrix containing values of the response 
-#' variable to be modelled.
-#'
-#' @param kernel A kernel object.
+#' @param formula an object of class \code{\link{formula}} giving a symbolic 
+#' description of the model to be fitted - the right hand side must be a 
+#' valid kernel object or the commands to construct one.
 #' 
 #' @param data A data frame containing the covariates against which to model 
 #' the response variable. This must have the same number of rows as 
@@ -65,15 +64,14 @@
 #' f <- sin(df$x)
 #' y <- rnorm(n, f, 1)
 #' 
-#' # construct a kernel (including the observation error)
-#' kernel <- rbf('x') + iid()
-#' 
 #' # fit a full (non-sparse) GP model (without updating the hyperparameters) 
-#' # as this is the default
-#' m1 <- gp(y, kernel, df, gaussian)
+#' # as this is the default. Notice we add the observation error to the kernel.
+#' m1 <- gp(y ~ rbf('x') + iid(), df, gaussian)
 #' 
 #' # fit another with FITC sparsity
-#' m2 <- gp(y, kernel, df, gaussian, inference = 'FITC', inducing_data = df)#inducing_df)
+#' m2 <- gp(y ~ rbf('x') + iid(), df, gaussian, inference = 'FITC', 
+#'          inducing_data = df)
+#'          
 #' # summary stats, other associated functions still to come
 #' 
 #' # construct a poisson response variable
@@ -81,10 +79,9 @@
 #' 
 #' # fit a GP model by Laplace approximation
 #' # (note no observation error in this model)
-#' m3 <- gp(y2, rbf('x'), df, poisson)
+#' m3 <- gp(y2 ~ rbf('x'), df, poisson)
 #' 
-gp <- function(response,
-               kernel,
+gp <- function(formula,
                data,
                family = gaussian,
                mean_function = NULL,
@@ -94,6 +91,10 @@ gp <- function(response,
   
   # catch the call
   call <- match.call()
+  
+  # get response and kernel from the formula
+  response <- parseResponse(formula, data)
+  kernel <- parseKernel(formula)
   
   # if there's no mean function, use zeroes
   if (is.null(mean_function)) {
@@ -184,12 +185,9 @@ gp <- function(response,
 #' f <- sin(df$x)
 #' y <- rnorm(n, f, 1)
 #' 
-#' # construct a kernel (including the observation error)
-#' kernel <- rbf('x') + iid()
-#' 
 #' # fit a full (non-sparse) GP model (without updating the hyperparameters)
-#' # as this is the default
-#' m1 <- gp(y, kernel, df, gaussian)
+#' # with rbf kernel and observation error
+#' m1 <- gp(y ~ rbf('x') + iid(), df, gaussian)
 #' 
 #' # make predictions from it (only the mean)
 #' mu <- predict(m1, prediction_df)
@@ -325,4 +323,42 @@ print.gp <- function (x, ...) {
   cat('\tkernel:',
       capture.output(print(x$kernel)),
       '\n')
+}
+
+parseResponse <- function(formula, data) {
+  # given a formula and a dataframe, extract the response variable
+  # first looking in the dataframe, then the parent environment
+  
+  # get name of reponse variable
+  response_name <- as.character(formula[[2]])
+  
+  # names of entries in dataframe
+  data_names <- names(data)
+  
+  # if it's in there...
+  if (response_name %in% data_names) {
+    
+    # get it
+    response <- data[, match(response_name, data_names)]
+    
+  } else {
+    
+    # otherwise look up for it
+    response <- get(response_name, envir = parent.frame())
+    
+  }
+  
+  # return
+  return (response)
+  
+}
+
+parseKernel <- function (formula) {
+  # given a formula, extract the kernel object
+  kernel <- eval(parse(text = deparse(formula[[3]])))
+  
+  # check it's a kernel object
+  stopifnot(is.kernel(kernel))
+  
+  return (kernel)
 }
