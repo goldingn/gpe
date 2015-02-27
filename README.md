@@ -77,7 +77,7 @@ df <- data.frame(y, x)
 k <- rbf('x') 
 
 # fit the model
-m <- gp(y, k, data = df, family = poisson)
+m <- gp(df$y, k, data = df, family = poisson)
 
 # predict from it
 pred_df <- data.frame(x = seq(min(df$x), max(df$x), len = 500))
