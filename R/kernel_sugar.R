@@ -19,6 +19,9 @@ sum.kernel <- function (..., na.rm = FALSE) {
   # parse all arguments as a list
   dots <- list(...)
   
+  # check they're all kernels
+  lapply(dots, checkKernel)
+
   # get length of the list
   narg <- length(dots)
   
@@ -63,10 +66,16 @@ sum.kernel <- function (..., na.rm = FALSE) {
 #'  
 `+.kernel` <- function (kernel1,
                         kernel2) {
+
+  # check they're both kernels
+  checkKernel(kernel1)
+  checkKernel(kernel2)
   
-  comp(kernel1,
+  ans <- comp(kernel1,
        kernel2,
        'sum')
+  
+  return (ans)
   
 }
 
@@ -85,6 +94,9 @@ prod.kernel <- function (..., na.rm = FALSE) {
   
   # parse all arguments as a list
   dots <- list(...)
+
+  # check they're all kernels
+  lapply(dots, checkKernel)
   
   # get length of the list
   narg <- length(dots)
@@ -131,10 +143,16 @@ prod.kernel <- function (..., na.rm = FALSE) {
 #'  
 `*.kernel` <- function (kernel1,
                         kernel2) {
+
+  # check they're both kernels
+  checkKernel(kernel1)
+  checkKernel(kernel2)
   
-  comp(kernel1,
+  ans <- comp(kernel1,
        kernel2,
        'prod')
+  
+  return (ans)
   
 }
 
@@ -151,20 +169,14 @@ prod.kernel <- function (..., na.rm = FALSE) {
 kron <- function (kernel1,
                   kernel2) {
   
-  # if both things are kernels, get a kronecker product kernel
-  if (is.kernel(kernel1) &
-        is.kernel(kernel2)) {
-    
-    ans <- comp(kernel1,
-                kernel2,
-                'kron')
-    
-  } else {
-    
-    stop ('kernel1 and kernel2 must be objects of class kernel')
-    
-  }
+  # check they're both kernels
+  checkKernel(kernel1)
+  checkKernel(kernel2)
   
+  ans <- comp(kernel1,
+              kernel2,
+              'kron')
+
   # return the result
   return (ans)
   
