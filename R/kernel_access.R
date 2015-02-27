@@ -181,9 +181,10 @@ setObject <- function (object) {
   
 }
 
-getFeatures <- function (object, data, newdata) {
+getFeatures <- function (object, data, newdata, to_matrix = TRUE) {
   
-  # extract and tidy data for kernel evaluation
+  # extract and tidy data for kernel evaluation,
+  # optionally (default) convert response to a matrix
   
   # if no evaluation data provided, use the training data
   if (is.null(newdata)) newdata <- data
@@ -194,8 +195,14 @@ getFeatures <- function (object, data, newdata) {
   x <- data[, columns]
   y <- newdata[, columns]
   
-  return(list(x = as.matrix(x),
-              y = as.matrix(y)))
+  # optionally convert to matrices
+  if (to_matrix) {
+    x <- as.matrix(x)
+    y <- as.matrix(y)
+  }
+  
+  return(list(x = x,
+              y = y))
   
 } 
 

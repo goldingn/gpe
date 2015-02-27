@@ -343,6 +343,9 @@ getFakeData <- function (kernel,
 
 expandFactor <- function (factor) {
   
+  # check it's a factor
+  checkFactor(factor)
+  
   # stick the factor in a dataframe
   df <- data.frame(x = factor)
   
@@ -407,3 +410,10 @@ diagSigma <- function(object, data) {
 }
 
 
+checkFactor <- function (factor) {
+  # throw an error if this is not a factor
+  if (!is.factor(factor)) {
+    stop ("expected a factor, but found a non-factor")
+  }
+  
+}

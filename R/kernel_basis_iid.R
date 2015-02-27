@@ -103,8 +103,8 @@ iidEval <- function(object, data, newdata = NULL, diag = FALSE) {
     
     # otherwise, iid on some grouping factor
     
-    # extract from/to data
-    data <- getFeatures(object, data, newdata)
+    # extract from/to data, don't vconvert them to matrices
+    data <- getFeatures(object, data, newdata, to_matrix = FALSE)
     
     # turn factors into full set of indicator variables
     x <- expandFactor(data$x)
