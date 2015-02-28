@@ -1,5 +1,4 @@
 # class of transformation constructors, similar to kernel mechanism
-
 # boilerplate function to aid construction of transformation
 # functions.
 # type is the transform name, value is the initial value it takes
@@ -184,29 +183,5 @@ fun2string <- function (fn) {
   
   # return this
   return (fn_string)
+
 }
-
-p <- pos()
-p()
-p(TRUE)
-test(p)(0.1)
-test(p)(-0.1)
-
-p <- update(p, 0.1)
-p()
-p <- update(p, -5, cont = TRUE)
-p()
-p(TRUE)
-
-
-# p <- unit()
-# p()
-# p(TRUE)
-# test(p)(0.1)
-# test(p)(-0.1)
-# 
-# p <- update(p, 0.1)
-# p()
-# p <- update(p, -5, cont = TRUE)
-# p()
-# p(TRUE)
