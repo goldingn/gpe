@@ -16,7 +16,9 @@
 #' @details \code{is.covarmat} returns a logical indicating whether the 
 #' object is a gpe \code{covarmat} object and \code{image.covarmat} provides 
 #' a nice plot of the values in the covariance matrix; in the style of, and 
-#' depending on \code{\link{image.plot}}.
+#' depending on \code{\link{image.plot}}. \code{palPuRd} uses the PuRd color
+#' palette from \code{\link{RColorBrewer}} to produce a non-divergent colour
+#' palette for visualising these matrices.
 #' 
 #' @examples
 #'  
@@ -53,6 +55,8 @@ is.covarmat <- function (x) {
 #' @param axes whether to add axes to the image plot of \code{x}.
 #' 
 #' @param legend whether to add a legend to the image plot of \code{x}.
+#'
+#' @param col colour table used to plot the image
 #' 
 #' @param \dots other arguments to be passed to lower-level functions, such as 
 #' image.
@@ -69,8 +73,16 @@ is.covarmat <- function (x) {
 #' # visualise the covariance matrix between the two dataframes
 #' image(k1(df, df2))
 #' 
-image.covarmat <- function (x, axes = TRUE, legend = TRUE, ...) {
+image.covarmat <- function (x,
+                            axes = TRUE,
+                            legend = TRUE,
+                            col = palPuRd(100),
+                            ...) {
   # define a plot function for covariance matrices
+  
+  # set nlevel to the same length as col
+  # so that matrix and legend agree
+  nlevel <- length(col)
   
   # dimension
   nx <- ncol(x)
@@ -92,7 +104,9 @@ image.covarmat <- function (x, axes = TRUE, legend = TRUE, ...) {
                                      xlab = '',
                                      axes = FALSE,
                                      ...,
-                                     legend.shrink = NA),
+                                     legend.shrink = NA,
+                                     nlevel = nlevel,
+                                     col = col),
                   error = function(e) NULL)
   
   if (axes) {
@@ -145,6 +159,30 @@ image.covarmat <- function (x, axes = TRUE, legend = TRUE, ...) {
                        ...,
                        legend.only = TRUE,
                        add = TRUE,
-                       ...)
+                       nlevel = nlevel,
+                       col = col)
   }
+}
+
+
+
+# colour palettes
+# purple to red, skipping the lightest tones
+
+#' @rdname covarmat
+#' 
+#' @param axes whether to add axes to the image plot of \code{x}.
+#' 
+#' @export
+#' @examples
+#' 
+#' # visualise the covariance matrix between these dataframes using
+#' # the purple-red colour scheme (actually the default) but with fewer levels
+#' image(k1(df, df2), col = palPuRd(10))
+#' 
+palPuRd <- function (n) {
+  cols <- RColorBrewer::brewer.pal(9, 'PuRd')[-(1:2)]
+  pal <- colorRampPalette(colors = cols)
+  ans <- pal(n)
+  return (ans)
 }

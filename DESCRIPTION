@@ -11,4 +11,5 @@ License: MIT + file LICENSE
 Suggests:
     testthat
 Imports:
-    fields
+    fields,
+    RColorBrewer

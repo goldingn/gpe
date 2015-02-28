@@ -4,11 +4,15 @@
 \alias{covarmat}
 \alias{image.covarmat}
 \alias{is.covarmat}
+\alias{palPuRd}
 \title{gpe covariance matrix class}
 \usage{
 is.covarmat(x)
 
-\method{image}{covarmat}(x, axes = TRUE, legend = TRUE, ...)
+\method{image}{covarmat}(x, axes = TRUE, legend = TRUE,
+  col = palPuRd(100), ...)
+
+palPuRd(n)
 }
 \arguments{
 \item{x}{an object of class \code{covarmat}, or an object to be tested as one.}
@@ -17,8 +21,12 @@ is.covarmat(x)
 
 \item{legend}{whether to add a legend to the image plot of \code{x}.}
 
+\item{col}{colour table used to plot the image}
+
 \item{\dots}{other arguments to be passed to lower-level functions, such as
 image.}
+
+\item{axes}{whether to add axes to the image plot of \code{x}.}
 }
 \description{
 Generic functions associated with the covarmat class.
@@ -27,7 +35,9 @@ Generic functions associated with the covarmat class.
 \code{is.covarmat} returns a logical indicating whether the
 object is a gpe \code{covarmat} object and \code{image.covarmat} provides
 a nice plot of the values in the covariance matrix; in the style of, and
-depending on \code{\link{image.plot}}.
+depending on \code{\link{image.plot}}. \code{palPuRd} uses the PuRd color
+palette from \code{\link{RColorBrewer}} to produce a non-divergent colour
+palette for visualising these matrices.
 }
 \examples{
 # construct a kernel with one feature
@@ -48,5 +58,8 @@ df2 <- data.frame(a = sort(runif(100, -3, 3)))
 
 # visualise the covariance matrix between the two dataframes
 image(k1(df, df2))
+# visualise the covariance matrix between these dataframes using
+# the purple-red colour scheme (actually the default) but with fewer levels
+image(k1(df, df2), col = palPuRd(10))
 }
 
