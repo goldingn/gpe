@@ -377,10 +377,14 @@ createKernelConstructor <- function(type,
                   newdata = NULL,
                   diag = FALSE) {
     
-    evaluator(object,
-              data,
-              newdata,
-              diag = diag)    
+    res <- evaluator(object,
+                     data,
+                     newdata,
+                     diag = diag)    
+    
+    res <- as.covarmat(res)
+    
+    return (res)
     
   }
   
