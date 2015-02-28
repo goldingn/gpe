@@ -2,27 +2,30 @@
 % Please edit documentation in R/gp_class.R
 \name{gp}
 \alias{gp}
+\alias{print.gp}
 \title{Gaussian process models}
 \usage{
 gp(formula, data, family = gaussian, mean_function = NULL,
   inducing_data = NULL, inference = c("default", "full", "FITC", "Laplace"),
   verbose = FALSE)
+
+\method{print}{gp}(x, ...)
 }
 \arguments{
 \item{formula}{an object of class \code{\link{formula}} giving a symbolic
 description of the model to be fitted - the right hand side must be a
 valid kernel object or the commands to construct one.}
 
-\item{data}{A data frame containing the covariates against which to model
+\item{data}{a data frame containing the covariates against which to model
 the response variable. This must have the same number of rows as
 \code{response} and contain named variables matching those referred to by
 \code{kernel}.}
 
-\item{family}{A \code{\link{family}} object giving the likelihood and link
+\item{family}{a \code{\link{family}} object giving the likelihood and link
 function to be used to fit the model. Currently only \code{gaussian},
 \code{poisson} and \code{binomial} (only Bernoulli) are supported.}
 
-\item{mean_function}{An optional function specifying the prior over the mean
+\item{mean_function}{an optional function specifying the prior over the mean
 of the gp, in other words a 'first guess' at what the true function is.
 This must act on a dataframe with named variables matching some of those in
 \code{data} and return a vector giving a single value for each row in the
@@ -30,31 +33,41 @@ dataframe. Note that this function must return a prediction on the scale of
 the link, rather than the response. If \code{NULL} then a prior mean is
 assumed to be 0 for all observations.}
 
-\item{inducing_data}{An optional dataframe containing the locations of
+\item{inducing_data}{an optional dataframe containing the locations of
 inducing points to be used when carrying out sparse inference (e.g. FITC).
 This must contain variables with names matching those referenced by
 \code{kernel} and \code{mean_function}. This should have fewer rows than
 \code{data} and \code{response}.}
 
-\item{inference}{A string specifying the inference method to be used to
+\item{inference}{a string specifying the inference method to be used to
 estimate the values of the latent parameters. If \code{'default'} an
 appropriate method is picked for the likelihood specified. See details
 section for the list of default inference methods.}
+
+\item{verbose}{whether to return non-critical information to the user
+during model fitting.}
+
+\item{x}{an object of class \code{gp}, constructed by the function \code{gp}
+giving a fitted gaussian process model}
+
+\item{\dots}{additional arguments for compatibility with generic functions}
 }
 \value{
 A fitted gp object for which there aren't yet any associated
 functions. But there will be.
 }
 \description{
-Fitting (latent) Gaussian process models using a range of
-inference methods.
+Fitting, summarizing and predicting from Gaussian process
+models using a range of inference methods.
 }
 \details{
 The default inference method for a model with the family
-\code{gaussian(link = 'identity')} is full, direct inference, for
-\code{binomial(link = 'logit')} and \code{binomial(link = 'probit')}
-the default is full, Laplace inference (though note that only bernoulli)
-data is handled at the moment.
+\code{gaussian(link = 'identity')} is full direct inference (\code{'full'}),
+for \code{binomial(link = 'logit')} and \code{binomial(link = 'probit')}
+the default is full Laplace inference (\code{'Laplace'}; though note that
+only Bernoulli data is handled at the moment). Sparse inference can be
+carried out by specifying \code{inference = 'FITC'}, this is currently only
+available for a model with a Gaussian likelihood.
 }
 \examples{
 # make some fake data
@@ -86,5 +99,7 @@ y2 <- rpois(n, exp(f))
 # fit a GP model by Laplace approximation
 # (note no observation error in this model)
 m3 <- gp(y2 ~ rbf('x'), df, poisson)
+print(m3)
+m3
 }
 

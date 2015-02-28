@@ -1,24 +1,32 @@
-# gp class for fitting and interacting with Gaussian process models
+# functions for the gp class for fitting and interacting with Gaussian 
+# process models
 
+#' @name gp
+#' @rdname gp
+#'
 #' @title Gaussian process models
 #' 
-#' @description Fitting (latent) Gaussian process models using a range of 
-#' inference methods.
+#' @description Fitting, summarizing and predicting from Gaussian process 
+#' models using a range of inference methods.
 #' 
+NULL
+
+#' @rdname gp
+#' @export
 #' @param formula an object of class \code{\link{formula}} giving a symbolic 
 #' description of the model to be fitted - the right hand side must be a 
 #' valid kernel object or the commands to construct one.
 #' 
-#' @param data A data frame containing the covariates against which to model 
+#' @param data a data frame containing the covariates against which to model 
 #' the response variable. This must have the same number of rows as 
 #' \code{response} and contain named variables matching those referred to by
 #' \code{kernel}.
 #' 
-#' @param family A \code{\link{family}} object giving the likelihood and link 
+#' @param family a \code{\link{family}} object giving the likelihood and link 
 #' function to be used to fit the model. Currently only \code{gaussian}, 
 #' \code{poisson} and \code{binomial} (only Bernoulli) are supported.
 #' 
-#' @param mean_function An optional function specifying the prior over the mean
+#' @param mean_function an optional function specifying the prior over the mean
 #' of the gp, in other words a 'first guess' at what the true function is.
 #' This must act on a dataframe with named variables matching some of those in 
 #' \code{data} and return a vector giving a single value for each row in the 
@@ -26,31 +34,32 @@
 #' the link, rather than the response. If \code{NULL} then a prior mean is 
 #' assumed to be 0 for all observations.
 #' 
-#' @param inducing_data An optional dataframe containing the locations of 
+#' @param inducing_data an optional dataframe containing the locations of 
 #' inducing points to be used when carrying out sparse inference (e.g. FITC).
 #' This must contain variables with names matching those referenced by 
 #' \code{kernel} and \code{mean_function}. This should have fewer rows than 
 #' \code{data} and \code{response}. 
 #' 
-#' @param inference A string specifying the inference method to be used to 
+#' @param inference a string specifying the inference method to be used to 
 #' estimate the values of the latent parameters. If \code{'default'} an 
 #' appropriate method is picked for the likelihood specified. See details 
 #' section for the list of default inference methods.
+#' 
+#' @param verbose whether to return non-critical information to the user 
+#' during model fitting.
 #' 
 #' @return A fitted gp object for which there aren't yet any associated 
 #' functions. But there will be.
 #' 
 #' @details The default inference method for a model with the family 
-#' \code{gaussian(link = 'identity')} is full, direct inference, for
-#' \code{binomial(link = 'logit')} and \code{binomial(link = 'probit')}
-#' the default is full, Laplace inference (though note that only bernoulli)
-#' data is handled at the moment.
-#' 
-#' @export
-#' @name gp
+#' \code{gaussian(link = 'identity')} is full direct inference (\code{'full'}),
+#' for \code{binomial(link = 'logit')} and \code{binomial(link = 'probit')}
+#' the default is full Laplace inference (\code{'Laplace'}; though note that 
+#' only Bernoulli data is handled at the moment). Sparse inference can be 
+#' carried out by specifying \code{inference = 'FITC'}, this is currently only
+#' available for a model with a Gaussian likelihood.
 #' 
 #' @examples
-#' 
 #' # make some fake data
 #' n <- 100  # observations
 #' m <- 10  # inducing points
@@ -86,7 +95,7 @@ gp <- function(formula,
                family = gaussian,
                mean_function = NULL,
                inducing_data = NULL,
-               inference = c('default', 'full', 'FITC','Laplace'),
+               inference = c('default', 'full', 'FITC', 'Laplace'),
                verbose = FALSE) {
   
   # catch the call
@@ -131,7 +140,8 @@ gp <- function(formula,
               data = list(response = response,
                           training_data = data,
                           inducing_data = inducing_data),
-              posterior = posterior)
+              posterior = posterior,
+              verbose = verbose)
   
   class(ans) <- 'gp'
   
@@ -139,8 +149,35 @@ gp <- function(formula,
   
 }
 
-
-
+#' @rdname gp
+#' 
+#' @export
+#' 
+#' @param x an object of class \code{gp}, constructed by the function \code{gp}
+#' giving a fitted gaussian process model
+#' 
+#' @param \dots additional arguments for compatibility with generic functions
+#'  
+#' @examples
+#' 
+#' print(m3)
+#' m3
+#' 
+print.gp <- function (x, ...) {
+  # basic print function for a gp object (fitted gp model)
+  
+  cat('A Gaussian process model fitted against',
+      nrow(x$data$training_data),
+      'observations\n')
+  
+  cat('\tcall: \t\t\t',
+      deparse(x$call),
+      '\n')
+  
+  cat('\tkernel:',
+      capture.output(print(x$kernel)),
+      '\n')
+}
 # user-facing predict function 
 # add more options later to predicting with a new kernel,
 # integrating over the point posterior, returning the full 
@@ -309,21 +346,6 @@ is.gp <- function (x) {
   
 }
 
-print.gp <- function (x, ...) {
-  # basic print function for a gp object (fitted gp model)
-  
-  cat('A Gaussian process model fitted against',
-      nrow(x$data$training_data),
-      'observations\n')
-  
-  cat('\tcall: \t\t\t',
-      deparse(x$call),
-      '\n')
-  
-  cat('\tkernel:',
-      capture.output(print(x$kernel)),
-      '\n')
-}
 
 parseResponse <- function(formula, data) {
   # given a formula and a dataframe, extract the response variable
@@ -344,7 +366,7 @@ parseResponse <- function(formula, data) {
   } else {
     
     # otherwise look up for it
-    response <- get(response_name, envir = parent.frame())
+    response <- get(response_name, envir = environment(formula))
     
   }
   
@@ -354,11 +376,26 @@ parseResponse <- function(formula, data) {
 }
 
 parseKernel <- function (formula) {
-  # given a formula, extract the kernel object
-  kernel <- eval(parse(text = deparse(formula[[3]])))
+  # given a formula, fetch the kernel object
+  
+  # get the string from the formula
+  kernel_string <- deparse(formula[[3]])
+  
+  # first try evaluating it
+  kernel <- eval(parse(text = kernel_string))
+  
+  # if it's not a valid kernel
+  if (!is.kernel(kernel)) {
+    
+    # fetch the object with that name from the environment of the formula
+    kernel <- get(kernel_string, envir = environment(formula))
+    
+  }
   
   # check it's a kernel object
-  stopifnot(is.kernel(kernel))
+  checkKernel(kernel)
   
+  # and return
   return (kernel)
+
 }

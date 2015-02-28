@@ -92,6 +92,30 @@ checkNonNegative <- function (response) {
   }
 }
 
+getFamily <- function (likelihood) {
+  # given a likelihood object, get the family object from which it came
+  
+  # get the name
+  likelihood_name <- likelihood$name
+  
+  # split it up
+  likelihood_split <- strsplit(likelihood_name, '_')[[1]]
+  
+  # split out the family and link names
+  family_name <- likelihood_split[2]
+  link_name <- likelihood_split[3]
+  
+  # get the family object
+  family <- eval(parse(text = paste0(family_name,
+                                       '("',
+                                       link_name,
+                                       '")')))
+  
+  # return it
+  return (family)
+  
+}
+
 checkNonNegative <- function (response) {
   # throw an error if the response data provided is not a positive integer
   if (any(response < 0)) {

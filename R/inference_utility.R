@@ -173,6 +173,25 @@ getInference <- function (inference, likelihood, inducing_data) {
   
 }
 
+getInferenceType <- function (inference_name) {
+  # get the short name for an inference method from the function name
+  
+  # strip the inference bit off
+  inference_split <- strsplit(inference_name, split = '_')[[1]]
+  inference_name <- paste0(inference_split[-1], collapse = '_')
+  
+  # get the inference name
+  inference_type <- switch(inference_name,
+                           direct_fitc = 'FITC',
+                           direct_full = 'full',
+                           laplace_fitc = 'LaplaceFITC',
+                           laplace_full = 'Laplace')
+  
+  # return it
+  return (inference_type)
+
+}
+
 defaultInference <- function (likelihood) {
   
   inference <- switch(likelihood$name,
@@ -203,5 +222,59 @@ checkInference <- function (inference, likelihood, inducing_data) {
         is.null(inducing_data)) {
     stop ('If FITC inference is required, inducing_data must be provided.')
   }
+  
+}
+
+updateModel <- function (m,
+                         response = NULL,
+                         kernel = NULL,
+                         data = NULL,
+                         family = NULL,
+                         mean_function = NULL,
+                         inducing_data = NULL,
+                         inference = NULL,
+                         verbose = NULL) {
+  # take a fitted model object, update some of its components
+  # (data, kernel, inducing points, inference method etc.) and refit
+
+  # set up defaults
+  if (is.null(response)) {
+    response <- m$data$response
+  }
+  if (is.null(kernel)) {
+    kernel <- m$kernel
+  }
+  if (is.null(data)) {
+    data <- m$data$training_data
+  }
+  if (is.null(family)) {
+    family <- getFamily(m$likelihood)
+  }
+  if (is.null(mean_function)) {
+    mean_function <- m$mean_function
+  }
+  if (is.null(inducing_data)) {
+    inducing_data <- m$data$inducing_data
+  }
+  if (is.null(inference)) {
+    inference <- getInferenceType(m$posterior$inference_name)
+  }
+  if (is.null(verbose)) {
+    verbose <- m$verbose
+  }
+  
+  # fit new model
+  m_new <- gp(formula = response ~ kernel,
+              data = data,
+              family = family,
+              mean_function = mean_function,
+              inducing_data = inducing_data,
+              inference = inference,
+              verbose = verbose)
+
+  # replace the call with the original
+  m_new$call <- m$call
+  
+  return (m_new)
   
 }

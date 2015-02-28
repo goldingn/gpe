@@ -1,4 +1,4 @@
-# functions for the kernel class -all S3 classes
+# functions for the kernel class
 
 #' @name kernel
 #' @rdname kernel
