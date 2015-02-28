@@ -320,6 +320,14 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
   
   draws <- rgp(n = ndraw, kernel = kernel, data = df_covs)
   
+  # define colour palette
+  col <- RColorBrewer::brewer.pal(9, 'Set1')
+  
+  # repeat it multiple times if necessary
+  if (ndraw > 9) {
+    col <- rep(col, ceiling(ndraw / 9))
+  }
+  
   plot(draws[, 1] ~ df_covs[[1]],
        type = 'n',
        ylim = range(draws),
@@ -330,7 +338,7 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
     lines(draws[, i] ~ df_covs[[1]],
           type = 'l',
           lwd = 2,
-          col = grey(0.5))
+          col = col[i])
   }
   
   title(main = paste0(ndraw,
