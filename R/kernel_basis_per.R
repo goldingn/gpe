@@ -5,7 +5,7 @@
 #' @description Construct a periodic kernel.
 #' 
 #' @details The periodic kernel takes the form:
-#' \deqn{k_{lin}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp \left(-\frac{2sin^2(\pi | \mathbf{x} - \mathbf{x}' | /p)}{l^2} \right)}
+#' \deqn{k_{per}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp \left(-\frac{2sin^2(\pi | \mathbf{x} - \mathbf{x}' | /p)}{l^2} \right)}
 #' where \eqn{\mathbf{x}} are the covariates on which the kernel is active,
 #' \eqn{p} determines the periodicity (distance between successive peaks),
 #' \eqn{l} is a characteristic lengthscale, as in the rbf kernel, and \eqn{\sigma^2}
