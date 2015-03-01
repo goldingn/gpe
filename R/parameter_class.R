@@ -32,7 +32,8 @@
 #' 
 #' \code{unit} creates a parameter constrained to be on the unit interval 
 #' (greater than 0 and less than 1).
-#' \code{pos} creates a paramter constrained to be positive.
+#' \code{pos} creates a parameter constrained to be positive.
+#' \code{unc} creates an unconstrained (continuously supported) parameter.
 #' 
 #' The value (either the true value or a continuous transformation) of the 
 #' parameter can be returned by executing the object.
@@ -88,6 +89,31 @@ pos <- function (value = 1) {
                              true2cont = function(x) log(x),
                              cont2true = function(x) exp(x),
                              test = function(x) all(x > 0))
+  
+}
+
+#' @rdname parameter
+#' @export
+#' @examples
+#' 
+#' # create an unconstrained (continuous support) parameter
+#' # with initial value of -3
+#' x <- unc(-3)
+#' 
+#' # return value (on true scale)
+#' x()
+#' 
+#' # return value on continuous scale
+#' x(continuous = TRUE)
+#' 
+unc <- function (value = 0) {
+  # define unconstrained parameter
+  
+  createParameterConstructor(type = 'unc',
+                             value = value,
+                             true2cont = function(x) x,
+                             cont2true = function(x) x,
+                             test = function(x) all(is.numeric(x)))
   
 }
 
@@ -159,10 +185,10 @@ update.parameter <- function(object, new_value, continuous = FALSE) {
 #' @export
 #' @examples
 #' 
-#' # print summaries of p and sigma and their member functions
+#' # print summaries of these parameters and their member functions
 #' p
 #' sigma
-#' 
+#' x
 print.parameter <- function (x, ...) {
   # print function for parameter objects  
   # first check it's a valid parameter object
