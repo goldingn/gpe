@@ -60,7 +60,7 @@ inference_direct_fitc <- function(y,
   
   # return posterior object
   posterior <- createPosterior(inference_name = 'inference_direct_fitc',
-                               lZ = lZ,
+                               lZ = lZ[1, 1],
                                data = data,
                                kernel = kernel,
                                likelihood = likelihood,
