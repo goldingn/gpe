@@ -173,6 +173,7 @@ update.parameter <- function(object, new_value, continuous = FALSE) {
     stop ('new_value is not within the constraints of this parameter')
   }
   
+  # this is doing global assignment! Oh noes!
   # update the value
   environment(object)$object$value <- new_value
   
