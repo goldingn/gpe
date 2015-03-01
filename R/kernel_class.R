@@ -177,6 +177,10 @@ plot.kernel <- function(x, which = NULL, range = c(-5, 5), ref = 0, ...) {
            range = range,
            ref = ref,
            ...)
+      
+      title(main = paste0('Covariance of the kernel:\n',
+                          trimParentheses(parseKernelStructure(x)),
+                          '\nagainst ', column))
     }
     
     
