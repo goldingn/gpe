@@ -1,4 +1,4 @@
-# utility functions
+# utility functions for kernel objects
 
 trimParentheses <- function (string) {
   # check whether the string starts with a parenthesis and remove outer
@@ -26,7 +26,7 @@ dumpDetails <- function(x, digits) {
   for(i in 1:length(x$parameters)) {
     cat(names(x$parameters)[i],
         ' = ',
-        paste(round(x$parameters[[i]], digits), collapse = ', '),
+        paste(round(x$parameters[[i]](), digits), collapse = ', '),
         '\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t')
   }
 }
@@ -157,9 +157,9 @@ repackKernel <- function (unpacked_kernel) {
 # build the following two into getParameters / setParameters
 # to enable users to change parameters after constructing kernels
 
-# get the parameters of a kernel (or unpacked kernel)
-# as a vector, or vector-like list
-getParVec <- function (x) {
+# get the parameters of a compositional kernel (or unpacked kernel)
+# as a vector of their values
+getParVec <- function (x, continuous = TRUE) {
   
   # if x is a kernel, unpack it first
   if (is.kernel(x)) {
@@ -170,8 +170,15 @@ getParVec <- function (x) {
   par_list <- lapply(x$data_list,
                      function (x) x$parameters)
   
-  # and as a vector or flat list
+  # and as a flat list
   par_vec <- unlist(par_list)
+  
+  # extract their values
+  par_vec <- lapply(par_vec,
+                    function(x) x(continuous = continuous))
+
+  # coerce to a vector
+  par_vec <- unlist(par_vec)
   
   return (par_vec)
   
@@ -179,8 +186,8 @@ getParVec <- function (x) {
 
 # given a kernel (or unpacked kernel) and a corresponding vector
 # or vector-like list, such as one given by getParVec, replace the
-# the parameters with the elements of this list
-setParVec <- function (x, par_vec) {
+# the parameters with the elements of this list and return the kernel
+setParVec <- function (x, par_vec, continuous = TRUE) {
   
   # flag for whether to return as a kernel or an unpacked kernel
   was_kernel <- FALSE
@@ -191,16 +198,57 @@ setParVec <- function (x, par_vec) {
     x <- unpackKernel(x)
   }
   
-  # get parameters only as an unstructured list or vector
-  par_list <- lapply(x$data_list,
+  # get list of parameter lists for each basis kernel
+  basis_par_list <- lapply(x$data_list,
                      function (x) x$parameters)
   
-  # relist the vector into this structure
-  par_list <- relist(par_vec, par_list)
+  # get list of parameters
+  par_list <- unlist(basis_par_list)
+
+  # get the total number of scalars we're looking for
+  n <- length(unlist(lapply(par_list, function(x) x())))
   
-  # loop through basis kernels, relpacing the parameters
-  for (basis in 1:length(par_list)) {
-    x$data_list[[basis]]$parameters <- par_list[[basis]]
+  # throw an error if it doesn't match up
+  stopifnot(length(par_vec) == n)
+
+  # loop through par_list and par_vec
+  # updating the parameters with the relevant new values
+  
+  # initialise the counter for the vector
+  par_vec_counter <- 1
+  
+  for (i in 1:length(basis_par_list)) {
+    
+    for (j in 1:length(basis_par_list[[i]])) {
+
+      # get length of vector needed
+      len <- length(basis_par_list[[i]][[j]]()) - 1
+      
+      # get index for par_vec
+      idx <- par_vec_counter + (0:len)
+      
+      # update parameter object
+      basis_par_list[[i]][[j]] <- update(basis_par_list[[i]][[j]],
+                              par_vec[idx],
+                              continuous = continuous)
+      
+      # increment the counter
+      par_vec_counter <- par_vec_counter + len + 1
+      
+      
+      
+    }
+    
+  }
+  
+#   # relist par_list into basis_par_list
+#   basis_par_list <- relist(par_list, basis_par_list)
+
+  # loop through basis kernels, replacing the parameters
+  for (basis in 1:length(basis_par_list)) {
+    
+    x$data_list[[basis]]$parameters <- basis_par_list[[basis]] 
+    
   }
   
   if (was_kernel) {
@@ -410,7 +458,7 @@ diagSigma <- function(object, data) {
   # squared times identity, and object is the kernel's object,
   # return this diagonal matrix - saves code when writing the diagonal
   # option of a kernel evaluator
-  ans <- diag(nrow(data)) * object$parameters$sigma ^ 2
+  ans <- diag(nrow(data)) * object$parameters$sigma() ^ 2
 }
 
 

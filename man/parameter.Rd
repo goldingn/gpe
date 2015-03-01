@@ -5,6 +5,7 @@
 \alias{parameter}
 \alias{pos}
 \alias{print.parameter}
+\alias{unc}
 \alias{unit}
 \alias{update.parameter}
 \title{gpe parameter class}
@@ -12,6 +13,8 @@
 unit(value = 0.5)
 
 pos(value = 1)
+
+unc(value = 0)
 
 is.parameter(x)
 
@@ -46,7 +49,8 @@ between the true value and a continuous transformation of it.
 
 \code{unit} creates a parameter constrained to be on the unit interval
 (greater than 0 and less than 1).
-\code{pos} creates a paramter constrained to be positive.
+\code{pos} creates a parameter constrained to be positive.
+\code{unc} creates an unconstrained (continuously supported) parameter.
 
 The value (either the true value or a continuous transformation) of the
 parameter can be returned by executing the object.
@@ -74,6 +78,15 @@ sigma()
 
 # return value on continuous scale
 sigma(continuous = TRUE)
+# create an unconstrained (continuous support) parameter
+# with initial value of -3
+x <- unc(-3)
+
+# return value (on true scale)
+x()
+
+# return value on continuous scale
+x(continuous = TRUE)
 # are these parameters?
 is.parameter(p)
 is.parameter(sigma)
@@ -84,8 +97,9 @@ p()
 # update on the continuous scale
 p <- update(p, -1, continuous = TRUE)
 p()
-# print summaries of p and sigma and their member functions
+# print summaries of these parameters and their member functions
 p
 sigma
+x
 }
 

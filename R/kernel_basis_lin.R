@@ -31,9 +31,9 @@ lin <- function (columns) {
   # construct a linear kernel
   createKernelConstructor('lin',
                           columns,
-                          list(sigma = 1,
-                               c = rep(0,
-                                       length(columns))),
+                          list(sigma = pos(1),
+                               c = unc(rep(0,
+                                       length(columns)))),
                           linEval)
   
 }
@@ -51,8 +51,8 @@ linEval <- function(object, data, newdata = NULL, diag = FALSE) {
   parameters <- object$parameters
   
   # extract lengthscales and variance
-  sigma <- parameters$sigma
-  c <- parameters$c
+  sigma <- parameters$sigma()
+  c <- parameters$c()
   
   # diagonal case
   if (diag) {

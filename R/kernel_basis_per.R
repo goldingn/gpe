@@ -32,9 +32,9 @@ per <- function (columns) {
   # construct a periodic kernel
   createKernelConstructor('per',
                           columns,
-                          list(p = 1,
-                               l = 1,
-                               sigma = 1),
+                          list(p = pos(1),
+                               l = pos(1),
+                               sigma = pos(1)),
                           perEval)
   
 }
@@ -65,9 +65,9 @@ perEval <- function(object, data, newdata = NULL, diag = FALSE) {
   parameters <- object$parameters
   
   # extract lengthscales and variance
-  p <- parameters$p
-  l <- parameters$l
-  sigma <- parameters$sigma
+  p <- parameters$p()
+  l <- parameters$l()
+  sigma <- parameters$sigma()
   
   # get distances
   d <- fields::rdist(x, y)

@@ -46,7 +46,7 @@ iid <- function (column = NULL) {
   # construct an iid kernel
   createKernelConstructor('iid',
                           column,
-                          list(sigma = 1),
+                          list(sigma = pos(1)),
                           iidEval)
   
 }
@@ -72,7 +72,7 @@ iidEval <- function(object, data, newdata = NULL, diag = FALSE) {
   parameters <- object$parameters
   
   # extract lengthscales and variance
-  sigma <- parameters$sigma
+  sigma <- parameters$sigma()
   
   # if columns is null, it's iid on all observations
   if (is.null(object$columns)) {

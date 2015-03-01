@@ -34,9 +34,9 @@ rbf <- function (columns) {
   # construct an rbf kernel
   createKernelConstructor('rbf',
                           columns,
-                          list(sigma = 1,
-                               l = rep(1,
-                                       length(columns))),
+                          list(sigma = pos(1),
+                               l = pos(rep(1,
+                                       length(columns)))),
                           rbfEval)
   
 }
@@ -69,12 +69,12 @@ rbfEval <- function(object, data, newdata = NULL, diag = FALSE) {
   parameters <- object$parameters
   
   # extract lengthscales and variance
-  l <- parameters$l
-  sigma <- parameters$sigma
+  l <- parameters$l()
+  sigma <- parameters$sigma()
   
   # apply the lengthscale parameters
-  x <- sweep(x, 2, l^2, '/')
-  y <- sweep(y, 2, l^2, '/')
+  x <- sweep(x, 2, l ^ 2, '/')
+  y <- sweep(y, 2, l ^ 2, '/')
   
   # get distances
   d <- fields::rdist(x, y)

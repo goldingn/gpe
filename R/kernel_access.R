@@ -70,6 +70,11 @@ getColumns <- function (kernel) {
 }
 
 #' @rdname access
+#' 
+#' @param continuous whether the parameter values should be reported (and set)
+#' on the scale of their continuous transformation rather than their true value
+#' (the default).
+
 #' @export
 #' @examples
 #'  
@@ -77,20 +82,175 @@ getColumns <- function (kernel) {
 #' params <- getParameters(k1)
 #' params
 #'  
-getParameters <- function (kernel) {
+getParameters <- function (kernel, continuous = FALSE) {
   
   # get the kernel parameters
   
   # check it's a kernel
   checkKernel(kernel)
   
-  # extract the type
+  # extract the parameter objects
   ans <- environment(kernel)$object$parameters
   
-  # and return it
+  # evaluate them all
+  ans <- lapply(ans,
+                function(x) x(continuous = continuous))
+  
+  # and return them
   return (ans)
   
 }
+
+# 
+getObject <- function (kernel) {
+  
+  # check it first
+  checkKernel(kernel)
+  
+  # get a kernel object, from a kernel
+  ans <- environment(kernel)$object
+  
+  # return this
+  return (ans)
+  
+}
+
+# given a kernel object (such as one produced by getObject)
+# re-create the kernel from which it came
+# The kernel can be either compositional or basis.
+setObject <- function (object) {
+  
+  is_comp <- all(names(object) == c('type',
+                                    'kernel1',
+                                    'kernel2'))
+  
+  is_basis <- all(names(object) == c('type',
+                                     'columns',
+                                     'parameters'))
+  
+  if ((!is_comp & !is_basis) | (is_comp & is_basis)) {
+    stop ('apparently not a valid kernel object')
+  }
+  
+  # if it's compositional, just recreate it
+  if (is_comp) {
+    kernel <- get(object$type)(object$kernel1, object$kernel2)
+  } else {
+    # otherwise, get the type and columns
+    kernel <- get(object$type)(object$columns)
+    
+    # get the parameter values
+    params <- lapply(object$parameters,
+                     function(x) x())
+    
+    # update the parameters with these
+    kernel <- do.call(setParameters, c(kernel, params))
+  }
+  
+  # check it's valid
+  checkKernel(kernel)
+  
+  return (kernel)
+  
+}
+
+getFeatures <- function (object, data, newdata, to_matrix = TRUE) {
+  
+  # extract and tidy data for kernel evaluation,
+  # optionally (default) convert response to a matrix
+  
+  # if no evaluation data provided, use the training data
+  if (is.null(newdata)) newdata <- data
+  
+  # get the kernel's active columns
+  columns <- object$columns
+  
+  x <- data[, columns]
+  y <- newdata[, columns]
+  
+  # optionally convert to matrices
+  if (to_matrix) {
+    x <- as.matrix(x)
+    y <- as.matrix(y)
+  }
+  
+  return(list(x = x,
+              y = y))
+  
+} 
+
+#' @rdname access
+#' 
+#' @param \dots parameters to be updated and the new values for them to take 
+#' (see examples). Note that these must be passed as values, not as parameter
+#' objects
+#' 
+#' @export
+#' @examples
+#' # evaluate and visualise it
+#' image(k1(pressure))
+#' 
+#' # change the length scale
+#' k2 <- setParameters(k1, l = 10)
+#' getParameters(k2)
+#' 
+#' # change the lengthhscale and variance
+#' k2 <- setParameters(k1, l = 9, sigma = 1.3)
+#' getParameters(k2)
+#' 
+#' # evaluate and visualise the new kernel
+#' image(k2(pressure))
+#'  
+setParameters <- function (kernel, ..., continuous = FALSE) {
+  # function to set the values of some or all of the parameters
+
+  # capture dots argument
+  parameter_list <- list(...)
+  
+  # check the new parameters
+  checkParameters(kernel, parameter_list)
+  
+  # copy over the kernel
+  new_kernel <- kernel
+  
+  # clone the previous environment
+  environment(new_kernel) <- environment(kernel)
+
+  # get kernel's object
+  object <- getObject(new_kernel)
+
+  # get the existing parameters
+  parameters_current <- object$parameters
+  
+  # loop through each element in parameter_list
+  for (i in 1:length(parameter_list)) {
+    
+    # get the new parameter name
+    parameter_name <- names(parameter_list)[i]
+    
+    # and length
+    parameter_len <- length(parameter_list[[i]])
+    
+    # find the matching parameter
+    j <- match(parameter_name,
+               names(parameters_current))
+    
+    # update the parameter
+    parameters_current[[j]] <- update(parameters_current[[j]],
+                                      parameter_list[[i]],
+                                      continuous = continuous)
+    
+  }
+  
+  # insert parameters back into the kernel
+  environment(new_kernel)$object$parameters <- parameters_current
+    
+  
+  # return the kernel
+  return (new_kernel)
+  
+}
+
 
 #' @rdname access
 #' @param which which of the two \emph{immediate} subkernels of the kernel to extract
@@ -133,145 +293,6 @@ getSubKernel <- function (kernel, which = 1) {
   
   # return the kernel
   return (kernel)
-  
-}
-
-# 
-getObject <- function (kernel) {
-  
-  # check it first
-  checkKernel(kernel)
-  
-  # get a kernel object, from a kernel
-  ans <- environment(kernel)$object
-  
-  # return this
-  return (ans)
-  
-}
-
-# given a kernel object (such as one produced by getObject)
-# re-create the kernel from which it came
-# The kernel can be either compositional or basis.
-setObject <- function (object) {
-  
-  is_comp <- all(names(object) == c('type',
-                                    'kernel1',
-                                    'kernel2'))
-  
-  is_basis <- all(names(object) == c('type',
-                                     'columns',
-                                     'parameters'))
-  
-  if ((!is_comp & !is_basis) | (is_comp & is_basis)) {
-    stop ('apparently not a valid kernel object')
-  }
-  
-  if (is_comp) {
-    kernel <- get(object$type)(object$kernel1, object$kernel2)
-  } else {
-    kernel <- get(object$type)(object$columns)
-    kernel <- do.call(setParameters, c(kernel, object$parameters))
-  }
-  
-  # check it's valid
-  checkKernel(kernel)
-  
-  return (kernel)
-  
-}
-
-getFeatures <- function (object, data, newdata, to_matrix = TRUE) {
-  
-  # extract and tidy data for kernel evaluation,
-  # optionally (default) convert response to a matrix
-  
-  # if no evaluation data provided, use the training data
-  if (is.null(newdata)) newdata <- data
-  
-  # get the kernel's active columns
-  columns <- object$columns
-  
-  x <- data[, columns]
-  y <- newdata[, columns]
-  
-  # optionally convert to matrices
-  if (to_matrix) {
-    x <- as.matrix(x)
-    y <- as.matrix(y)
-  }
-  
-  return(list(x = x,
-              y = y))
-  
-} 
-
-#' @rdname access
-#' 
-#' @param \dots parameters to be updated and the new values for them to take (see examples).
-#' 
-#' @export
-#' @examples
-#' # evaluate and visualise it
-#' image(k1(pressure))
-#' 
-#' # change the length scale
-#' k2 <- setParameters(k1, l = 10)
-#' getParameters(k2)
-#' 
-#' # change the lengthhscale and variance
-#' k2 <- setParameters(k1, l = 9, sigma = 1.3)
-#' getParameters(k2)
-#' 
-#' # evaluate and visualise the new kernel
-#' image(k2(pressure))
-#'  
-setParameters <- function (kernel, ...) {
-  # function to set the values of some or all of the parameters
-  # parameter_list must be a named list giving the parameters to be updated
-  
-  # capture dots argument
-  parameter_list <- list(...)
-  
-  # check the new parameters
-  checkParameters(kernel, parameter_list)
-  
-  # copy over the kernel
-  new_kernel <- kernel
-  
-  # clone the previous environment
-  environment(new_kernel) <- environment(kernel)
-
-  # get kernel's object
-  object <- getObject(new_kernel)
-
-  # get the existing parameters
-  parameters_current <- object$parameters
-  
-  # loop through each element in parameter_list
-  for (i in 1:length(parameter_list)) {
-    
-    # get the new parameter name
-    parameter_name <- names(parameter_list)[i]
-    
-    # and length
-    parameter_len <- length(parameter_list[[i]])
-    
-    # find the matching parameter
-    j <- match(parameter_name,
-               names(parameters_current))
-    
-    # update the parameter
-    parameters_current[[j]] <- parameter_list[[i]]
-    
-  }
-  
-  # insert parameters back into the kernel
-  environment(new_kernel)$object$parameters <- parameters_current
-    
-  
-  # return the kernel
-  return (new_kernel)
   
 }
 
@@ -346,3 +367,4 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
                       trimParentheses(parseKernelStructure(kernel))))
   
 }
+

@@ -14,16 +14,20 @@ getType(kernel)
 
 getColumns(kernel)
 
-getParameters(kernel)
+getParameters(kernel, continuous = FALSE)
+
+setParameters(kernel, ..., continuous = FALSE)
 
 getSubKernel(kernel, which = 1)
-
-setParameters(kernel, ...)
 
 demoKernel(kernel, data = NULL, ndraw = 5)
 }
 \arguments{
 \item{kernel}{a kernel object}
+
+\item{continuous}{whether the parameter values should be reported (and set)
+on the scale of their continuous transformation rather than their true value
+(the default).}
 
 \item{which}{which of the two \emph{immediate} subkernels of the kernel to extract}
 
@@ -32,7 +36,9 @@ If \code{NULL}, the range -5 to 5 is used, arbitrarily.}
 
 \item{ndraw}{the number of (zero-mean) GP realisations from the the kernel to plot.}
 
-\item{\dots}{parameters to be updated and the new values for them to take (see examples).}
+\item{\dots}{parameters to be updated and the new values for them to take
+(see examples). Note that these must be passed as values, not as parameter
+objects}
 }
 \description{
 Access and interact with kernel objects.
@@ -50,11 +56,6 @@ getColumns(k1)
 # get the parameters of the kernel
 params <- getParameters(k1)
 params
-# build a compositional kernel
-k2 <- k1 + k1 * k1
-
-# extract a subkernel
-k3 <- getSubKernel(k2, 1)
 # evaluate and visualise it
 image(k1(pressure))
 
@@ -68,6 +69,11 @@ getParameters(k2)
 
 # evaluate and visualise the new kernel
 image(k2(pressure))
+# build a compositional kernel
+k2 <- k1 + k1 * k1
+
+# extract a subkernel
+k3 <- getSubKernel(k2, 1)
 #plot example GPs from this kernel, applied to the pressure dataset
 demoKernel(k1, data = pressure)
 }

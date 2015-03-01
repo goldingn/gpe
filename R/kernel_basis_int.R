@@ -27,7 +27,7 @@ int <- function () {
   # construct an iid kernel
   createKernelConstructor('int',
                           '',
-                          list(sigma = 1),
+                          list(sigma = pos(1)),
                           intEval)
   
 }
@@ -52,8 +52,8 @@ intEval <- function(object, data, newdata = NULL, diag = FALSE) {
   # get kernel parameters
   parameters <- object$parameters
   
-  # extract lengthscales and variance
-  sigma <- parameters$sigma
+  # extract variance
+  sigma <- parameters$sigma()
   
   # get training n
   n_x <- nrow(data) 
