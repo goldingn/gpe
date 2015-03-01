@@ -63,7 +63,7 @@ unit <- function (value = 0.5) {
                              value = value,
                              true2cont = function(x) qlogis(x),
                              cont2true = function(x) plogis(x),
-                             test = function(x) x < 1 & x > 0)
+                             test = function(x) all(x < 1 & x > 0))
   
 }
 
@@ -87,7 +87,7 @@ pos <- function (value = 1) {
                              value = value,
                              true2cont = function(x) log(x),
                              cont2true = function(x) exp(x),
-                             test = function(x) x > 0)
+                             test = function(x) all(x > 0))
   
 }
 
@@ -128,6 +128,11 @@ update.parameter <- function(object, new_value, continuous = FALSE) {
   
   # check it's a valid parameter
   checkParameter(object)
+
+  # check the length of new_value
+  if (length(object()) != length(new_value)) {
+    stop ('new_value is the wrong length')
+  }
   
   # if the value is provided on the continuous scale
   if (continuous) {
@@ -169,6 +174,8 @@ print.parameter <- function (x, ...) {
   # print all of these things
   cat('parameter object of type:',
       type,
+      '\n\tcurrent value:\t\t\t\t\t\t\t',
+      paste(x(), collapse = ', '),
       '\n\ttest function:\t\t\t\t\t\t\t',
       fun2string(test(x)),
       '\n\tcont2true function:\t\t',
