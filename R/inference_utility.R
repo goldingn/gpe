@@ -271,9 +271,6 @@ updateModel <- function (m,
               inducing_data = inducing_data,
               inference = inference,
               verbose = verbose)
-
-  # replace the call with the original
-  m_new$call <- m$call
   
   return (m_new)
   
