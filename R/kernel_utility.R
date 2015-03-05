@@ -235,10 +235,15 @@ setParVec <- function (x, par_vec, continuous = TRUE) {
       # increment the counter
       par_vec_counter <- par_vec_counter + len + 1
       
+      
+      
     }
     
   }
   
+#   # relist par_list into basis_par_list
+#   basis_par_list <- relist(par_list, basis_par_list)
+
   # loop through basis kernels, replacing the parameters
   for (basis in 1:length(basis_par_list)) {
     

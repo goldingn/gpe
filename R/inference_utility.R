@@ -189,7 +189,7 @@ getInferenceType <- function (inference_name) {
   
   # return it
   return (inference_type)
-  
+
 }
 
 defaultInference <- function (likelihood) {
@@ -225,7 +225,7 @@ checkInference <- function (inference, likelihood, inducing_data) {
   
 }
 
-updateModel <- function (model,
+updateModel <- function (m,
                          response = NULL,
                          kernel = NULL,
                          data = NULL,
@@ -236,42 +236,42 @@ updateModel <- function (model,
                          verbose = NULL) {
   # take a fitted model object, update some of its components
   # (data, kernel, inducing points, inference method etc.) and refit
-  
+
   # set up defaults
   if (is.null(response)) {
-    response <- model$data$response
+    response <- m$data$response
   }
   if (is.null(kernel)) {
-    kernel <- model$kernel
+    kernel <- m$kernel
   }
   if (is.null(data)) {
-    data <- model$data$training_data
+    data <- m$data$training_data
   }
   if (is.null(family)) {
-    family <- getFamily(model$likelihood)
+    family <- getFamily(m$likelihood)
   }
   if (is.null(mean_function)) {
-    mean_function <- model$mean_function
+    mean_function <- m$mean_function
   }
   if (is.null(inducing_data)) {
-    inducing_data <- model$data$inducing_data
+    inducing_data <- m$data$inducing_data
   }
   if (is.null(inference)) {
-    inference <- getInferenceType(model$posterior$inference_name)
+    inference <- getInferenceType(m$posterior$inference_name)
   }
   if (is.null(verbose)) {
-    verbose <- model$verbose
+    verbose <- m$verbose
   }
   
   # fit new model
-  model_new <- gp(formula = response ~ kernel,
-                  data = data,
-                  family = family,
-                  mean_function = mean_function,
-                  inducing_data = inducing_data,
-                  inference = inference,
-                  verbose = verbose)
+  m_new <- gp(formula = response ~ kernel,
+              data = data,
+              family = family,
+              mean_function = mean_function,
+              inducing_data = inducing_data,
+              inference = inference,
+              verbose = verbose)
   
-  return (model_new)
+  return (m_new)
   
 }
