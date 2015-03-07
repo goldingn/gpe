@@ -109,22 +109,22 @@ getU <- function (x,
   return (u)
 }
 
-laplace_psi <-
+laplace_psi <- function(a, f, mn, y, d0) {
   # $\psi$ (after Rasmussen & Williams) objective function for
   # Laplace approximation using newton iteration
-  function(a, f, mn, y, d0) {
-    0.5 * t(a) %*% (f - mn) - sum(d0(y, f))
+  ans <- 0.5 * t(a) %*% (f - mn) - sum(d0(y, f))
+    dim(ans) <- NULL
+    return (ans)
   }
 
-laplace_psiline_fitc <-
+laplace_psiline_fitc <- function(s, adiff, a, Lambda_diag, B, y, d0, mn) {
   # calculate psi for a given value of s (step size of the Newton iterations)
   # under an FITC GP
-  function(s, adiff, a, Lambda_diag, B, y, d0, mn) {
-    a <- a + s * as.vector(adiff)
-    # split this bit out into projection function
-    f <- Lambda_diag * a + t(B) %*% (B %*% a) + mn
-    laplace_psi(a, f, mn, y, d0)
-  }
+  a <- a + s * as.vector(adiff)
+  # split this bit out into projection function
+  f <- Lambda_diag * a + t(B) %*% (B %*% a) + mn
+  laplace_psi(a, f, mn, y, d0)
+}
 
 laplace_psiline_full <-
   # calculate psi for a given value of s (step size of the Newton iterations)

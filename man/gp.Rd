@@ -6,9 +6,9 @@
 \title{Gaussian process models}
 \usage{
 gp(formula, data, family = gaussian, mean_function = NULL,
-  inducing_data = NULL, inference = c("default", "full", "FITC", "Laplace"),
-  hyperinference = c("default", "BFGS", "BFGSrestarts", "none"),
-  verbose = FALSE)
+  inducing_data = NULL, inference = c("default", "full", "FITC", "Laplace",
+  "LaplaceFITC"), hyperinference = c("default", "BFGS", "BFGSrestarts",
+  "none"), verbose = FALSE)
 
 \method{print}{gp}(x, ...)
 }

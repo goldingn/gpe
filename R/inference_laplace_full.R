@@ -71,13 +71,13 @@ inference_laplace_full <- function(y,
     
     # find optimum step size toward the mode using Brent's method
     res <- optimise(laplace_psiline_full,
-                    c(0, 2),
-                    adiff,
-                    a,
-                    Kxx,
-                    y,
-                    likelihood$d0,
-                    mn_prior)
+                    interval = c(0, 2),
+                    adiff = adiff,
+                    a = a,
+                    K = Kxx,
+                    y = y,
+                    d0 = likelihood$d0,
+                    mn = mn_prior)
     
     # move to the new posterior mode
     a <- a + res$minimum * adiff

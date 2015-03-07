@@ -5,8 +5,6 @@
 # y is response data
 # data is a dataframe containing columns on which the kernel acts,
 #   giving observations on which to train the model
-# new_data is a dataframe containing columns on which the kernel acts,
-#   giving observations on which to evaluate the model
 # inducing_data ia a dataframe giving the locations of inducing points
 # kernel is a gpe kernel object
 # mean_function is a gpe mean function (for now just an R function)
