@@ -4,13 +4,16 @@
 \alias{iid}
 \title{IID random effects kernel}
 \usage{
-iid(column = NULL)
+iid(column = NULL, sigma = 1)
 }
 \arguments{
 \item{column}{optionally, a single string giving the name of a \emph{factor}
 feature on which the kernel acts. This will be used to access columns from
 a dataframe when the kernel is evaluated . If \code{NULL} then the iid
 effect acts on each datapoint, rather than on groups.}
+
+\item{sigma}{a positive scalar parameter giving (the square-root of) the
+overall variance of the kernel}
 }
 \value{
 a kernel object for which there are a range of associated functions.

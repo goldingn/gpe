@@ -4,12 +4,24 @@
 \alias{per}
 \title{Periodic kernel}
 \usage{
-per(columns)
+per(columns, p = 1, l = 1, sigma = 1)
 }
 \arguments{
 \item{columns}{a string vector giving the names of features on which the
 kernel acts. These will be used to access columns from a dataframe when the
 kernel is later used in a GP model.}
+
+\item{p}{a positive scalar parameter giving the periodicity of the kernel,
+the difference between values of the covariate at which period signal
+repeats}
+
+\item{l}{a positive scalar or vector parameter giving the characteristic lengthscale
+of the kernel (how rapidly the covariance decays with difference in the
+value of the covariate). Larger values of \code{l} imply less complex
+functions.}
+
+\item{sigma}{a positive scalar parameter giving (the square-root of) the
+overall variance of the kernel}
 }
 \value{
 a kernel object for which there are a range of associated functions.

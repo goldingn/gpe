@@ -11,8 +11,8 @@ rbf(columns, sigma = 1, l = rep(1, length(columns)))
 kernel acts. These will be used to access columns from a dataframe when the
 kernel is later used in a GP model.}
 
-\item{sigma}{a positive scalar parameter giving the overall
-variance of the kernel}
+\item{sigma}{a positive scalar parameter giving (the square-root of) the
+overall variance of the kernel}
 
 \item{l}{a positive scalar or vector parameter giving the characteristic lengthscale
 of the kernel (how rapidly the covariance decays with difference in the

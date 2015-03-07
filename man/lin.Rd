@@ -4,12 +4,18 @@
 \alias{lin}
 \title{Linear kernel}
 \usage{
-lin(columns)
+lin(columns, sigma = 1, c = rep(0, length(columns)))
 }
 \arguments{
 \item{columns}{a string vector giving the names of features on which the
 kernel acts. These will be used to access columns from a dataframe when the
 kernel is later used in a GP model.}
+
+\item{sigma}{a positive scalar parameter giving (the square-root of) the
+overall variance of the kernel}
+
+\item{c}{a scalar or vector parameter with continuous support giving
+the location on the x axis where y = 0 (an x-axis intercept)}
 }
 \value{
 a kernel object for which there are a range of associated functions.

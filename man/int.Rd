@@ -4,7 +4,11 @@
 \alias{int}
 \title{Intercept kernel}
 \usage{
-int()
+int(sigma = 1)
+}
+\arguments{
+\item{sigma}{a positive scalar parameter giving (the square-root of) the
+overall variance of the kernel}
 }
 \value{
 a kernel object for which there are a range of associated functions.

@@ -20,6 +20,7 @@
 #' In practice, the active column should actually be a single factor and the 
 #' indicator variables will be built internally.
 #' 
+#' @template par_sigma
 #' @template kco
 #' @export
 #' @name iid
@@ -35,7 +36,7 @@
 #' # evaluate and visualise it
 #' image(k1(pressure))
 #' 
-iid <- function (column = NULL) {
+iid <- function (column = NULL, sigma = 1) {
   
   # throw an error if more than one column is specified
   if (length(column) > 1) {
@@ -46,7 +47,7 @@ iid <- function (column = NULL) {
   # construct an iid kernel
   createKernelConstructor('iid',
                           column,
-                          list(sigma = pos(1)),
+                          list(sigma = pos(sigma)),
                           iidEval)
   
 }

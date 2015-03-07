@@ -10,6 +10,8 @@
 #' \eqn{c} determines the value(s) of \eqn{x} through which all realisations 
 #' pass and \eqn{\sigma^2} is a prior over the slopes of the realisations.
 #' 
+#' @template par_sigma
+#' @template par_c
 #' @template kco
 #' @template kco_basis
 #' @export
@@ -26,14 +28,13 @@
 #' image(k1(pressure))
 #' image(k2(pressure))
 #' 
-lin <- function (columns) {
+lin <- function (columns, sigma = 1, c = rep(0, length(columns))) {
   
   # construct a linear kernel
   createKernelConstructor('lin',
                           columns,
-                          list(sigma = pos(1),
-                               c = unc(rep(0,
-                                       length(columns)))),
+                          list(sigma = pos(sigma),
+                               c = unc(c)),
                           linEval)
   
 }

@@ -10,6 +10,7 @@
 #' intercept. This is equivalent to a normal prior over the value of an 
 #' intercept term: \eqn{\alpha ~ N(0, \sigma^2)}.
 #' 
+#' @template par_sigma
 #' @template kco
 #' @export
 #' @name int
@@ -22,12 +23,12 @@
 #' # evaluate and visualise it
 #' image(k1(pressure))
 #' 
-int <- function () {
+int <- function (sigma = 1) {
   
   # construct an iid kernel
   createKernelConstructor('int',
                           '',
-                          list(sigma = pos(1)),
+                          list(sigma = pos(sigma)),
                           intEval)
   
 }

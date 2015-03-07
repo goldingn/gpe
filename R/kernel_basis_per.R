@@ -11,6 +11,9 @@
 #' \eqn{l} is a characteristic lengthscale, as in the rbf kernel, and \eqn{\sigma^2}
 #' is the amplitude of the signal
 #' 
+#' @template par_p
+#' @template par_sigma
+#' @template par_l
 #' @template kco
 #' @template kco_basis
 #' @export
@@ -27,14 +30,14 @@
 #' image(k1(pressure))
 #' image(k2(pressure))
 #' 
-per <- function (columns) {
+per <- function (columns, p = 1, l = 1, sigma = 1) {
   
   # construct a periodic kernel
   createKernelConstructor('per',
                           columns,
-                          list(p = pos(1),
-                               l = pos(1),
-                               sigma = pos(1)),
+                          list(p = pos(p),
+                               l = pos(l),
+                               sigma = pos(sigma)),
                           perEval)
   
 }
