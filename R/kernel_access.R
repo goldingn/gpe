@@ -203,24 +203,23 @@ getFeatures <- function (object, data, newdata, to_matrix = TRUE) {
 #'  
 setParameters <- function (kernel, ..., continuous = FALSE) {
   # function to set the values of some or all of the parameters
-
+  
   # capture dots argument
   parameter_list <- list(...)
   
   # check the new parameters
   checkParameters(kernel, parameter_list)
   
-  # copy over the kernel
-  new_kernel <- kernel
-  
-  # clone the previous environment
-  environment(new_kernel) <- environment(kernel)
-
   # get kernel's object
-  object <- getObject(new_kernel)
-
+  object <- getObject(kernel)
+  
   # get the existing parameters
   parameters_current <- object$parameters
+  
+  # convert these to their values
+  parameters_current_values <- lapply(parameters_current,
+                                      function(x, continuous) x(continuous),
+                                      continuous)
   
   # loop through each element in parameter_list
   for (i in 1:length(parameter_list)) {
@@ -233,18 +232,17 @@ setParameters <- function (kernel, ..., continuous = FALSE) {
     
     # find the matching parameter
     j <- match(parameter_name,
-               names(parameters_current))
+               names(parameters_current_values))
     
     # update the parameter
-    parameters_current[[j]] <- update(parameters_current[[j]],
-                                      parameter_list[[i]],
-                                      continuous = continuous)
+    parameters_current_values[[j]] <- parameter_list[[i]]
     
   }
   
-  # insert parameters back into the kernel
-  environment(new_kernel)$object$parameters <- parameters_current
-    
+  # create a new kernel with these parameter values
+  new_kernel <- do.call(getType(kernel),
+                        c(list(columns = getColumns(kernel)),
+                               parameters_current_values))
   
   # return the kernel
   return (new_kernel)
@@ -367,4 +365,3 @@ demoKernel <- function (kernel, data = NULL, ndraw = 5) {
                       trimParentheses(parseKernelStructure(kernel))))
   
 }
-
