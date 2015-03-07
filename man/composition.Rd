@@ -4,6 +4,7 @@
 \alias{*.kernel}
 \alias{+.kernel}
 \alias{\%x\%}
+\alias{^.kernel}
 \alias{composition}
 \alias{kron}
 \alias{prod.kernel}
@@ -18,6 +19,8 @@
 
 \method{*}{kernel}(kernel1, kernel2)
 
+\method{^}{kernel}(kernel, power)
+
 kron(kernel1, kernel2)
 
 kernel1 \%x\% kernel2
@@ -29,6 +32,10 @@ function}
 \item{kernel1}{A kernel object}
 
 \item{kernel2}{Another kernel object to combine it with}
+
+\item{power}{an integer (or integer-esque numeric) giving the power to which
+to raise the kernel function. If \code{power} is not integer-esque (that is
+\code{power != round(power)}) a warning is issued and the power rounded.}
 
 \item{\dots}{kernel objects to be combined}
 }
@@ -77,6 +84,16 @@ k_1_2 <- k1 * k2
 
 # evaluate the function and look at the matrix
 image(k_1_2(pressure))
+# get a cubic kernel
+k <- int() + lin('pressure', c = 400, sigma = 0.003)
+k_cu <- k ^ 3
+
+# evaluate the function and look at the matrix
+image(k_cu(pressure))
+
+# look at example draws from the original and cubed kernel
+demoKernel(k, pressure)
+demoKernel(k_cu, pressure)
 # get the kronecker product of two kernels
 k_kron <- kron(k1, k2)
 

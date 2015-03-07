@@ -158,6 +158,54 @@ prod.kernel <- function (..., na.rm = FALSE) {
 
 #' @rdname composition
 #' @export
+#' 
+#' @param power an integer (or integer-esque numeric) giving the power to which
+#' to raise the kernel function. If \code{power} is not integer-esque (that is
+#' \code{power != round(power)}) a warning is issued and the power rounded.
+#' 
+#' @examples
+#' # get a cubic kernel
+#' k <- int() + lin('pressure', c = 400, sigma = 0.003)
+#' k_cu <- k ^ 3
+#' 
+#' # evaluate the function and look at the matrix
+#' image(k_cu(pressure))
+#' 
+#' # look at example draws from the original and cubed kernel
+#' demoKernel(k, pressure) 
+#' demoKernel(k_cu, pressure) 
+#'  
+`^.kernel` <- function (kernel, power) {
+  
+  # check the kernel object
+  checkKernel(kernel)
+  
+  # check the power is (essentially) an integer
+  if (!power == round(power)) {
+    
+    # if not, coerce it into an integer
+    power <- round(power)
+    
+    # and issue a warning
+    warning (paste0('power must be an integer, but a non-integer was passed so\
+                  power has been changed to ',
+                    power))
+    
+  }
+  
+  # get a list of the same kernel
+  kernel_list <- replicate(power, kernel, simplify = FALSE)
+  
+  # get the product of these
+  ans <- do.call(prod, kernel_list)
+  
+  # return
+  return (ans)
+  
+} 
+
+#' @rdname composition
+#' @export
 #' @examples
 #' 
 #' # get the kronecker product of two kernels
@@ -214,3 +262,24 @@ kron <- function (kernel1,
   return (ans)
   
 } 
+
+# define generic methods for kernel multiplication and division,
+# export but don't document them
+
+#' @export
+`-.kernel` <- function (kernel1,
+                        kernel2) {
+  
+  stop ('kernel subtraction is not possible as the resulting kernel \
+        may well not be positive definite')
+  
+}
+
+#' @export
+`/.kernel` <- function (kernel1,
+                        kernel2) {
+  
+  stop ('kernel division is not possible as the resulting kernel \
+        may well not be positive definite')
+  
+}
