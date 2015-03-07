@@ -13,6 +13,8 @@
 #' Larger values of \eqn{l_i} correspond to functions in which change less 
 #' rapidly over the values of the covariates.
 #' 
+#' @template par_sigma
+#' @template par_l
 #' @template kco
 #' @template kco_basis
 #' @export
@@ -29,14 +31,13 @@
 #' image(k1(pressure))
 #' image(k2(pressure))
 #' 
-rbf <- function (columns) {
+rbf <- function (columns, sigma = 1, l = rep(1, length(columns))) {
   
   # construct an rbf kernel
   createKernelConstructor('rbf',
                           columns,
-                          list(sigma = pos(1),
-                               l = pos(rep(1,
-                                       length(columns)))),
+                          list(sigma = pos(sigma),
+                               l = pos(l)),
                           rbfEval)
   
 }

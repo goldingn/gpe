@@ -4,12 +4,20 @@
 \alias{rbf}
 \title{Radial basis function kernel}
 \usage{
-rbf(columns)
+rbf(columns, sigma = 1, l = rep(1, length(columns)))
 }
 \arguments{
 \item{columns}{a string vector giving the names of features on which the
 kernel acts. These will be used to access columns from a dataframe when the
 kernel is later used in a GP model.}
+
+\item{sigma}{a positive scalar parameter giving the overall
+variance of the kernel}
+
+\item{l}{a positive scalar or vector parameter giving the characteristic lengthscale
+of the kernel (how rapidly the covariance decays with difference in the
+value of the covariate). Larger values of \code{l} imply less complex
+functions.}
 }
 \value{
 a kernel object for which there are a range of associated functions.
