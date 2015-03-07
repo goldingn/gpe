@@ -47,7 +47,7 @@ NULL
 #' 
 #' @param hyperinference the method to be used for inference on the 
 #' hyperparameters (parameters of the kernel). \code{BFGS} carries out
-#' straightforward optimisation from a random set of starting 
+#' straightforward optimisation starting from the current kernel 
 #' parameters using gradient-free BFGS. Because the likelihood surface is
 #' rarely convex, this is is not advised for general use. \code{BFGSrestarts}
 #' runs gradient-free BFGS 5 times, each starting with a different randomly 

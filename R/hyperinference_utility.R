@@ -27,7 +27,7 @@ nlmlObjective <- function(pars, model) {
 }
 
 
-optimizeModelBFGS <- function (model, restarts = 1) {
+optimizeModelBFGS <- function (model, restarts = 1, sampling_sd = 10) {
   # optimize the hyperparameters of a model by gradient-free BFGS,
   # optionally with random restarts.
   # Note that the non-convexity of the likelihood means that running this without
@@ -40,10 +40,20 @@ optimizeModelBFGS <- function (model, restarts = 1) {
   # get current parameters of that kernel
   pars <- getParVec(kernel)
   
-  # get a list of random parameters for each restart
-  pars_list <- replicate(restarts,
-                         pars + rnorm(length(pars), 0, 10),
-                         simplify = FALSE)
+  # if there are no restarts (only one optimisation)
+  if (restarts == 1) {
+    
+    # use the current parameters as the satrting point
+    pars_list <- list(pars)
+    
+  } else {
+    
+    # otherwise get a list of random parameters for each restart
+    pars_list <- replicate(restarts,
+                           pars + rnorm(length(pars), 0, sampling_sd),
+                           simplify = FALSE)
+    
+  }
   
   # run the optimiser for each of these start values
   # sequrntially for the time being

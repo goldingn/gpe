@@ -4,7 +4,9 @@
 hyperinference_bfgs_no_restarts <- function(model) {
   
   # run BFGS optimisation on the model only once
-  model <- optimizeModelBFGS(model, 1)
+  model <- optimizeModelBFGS(model,
+                             restarts = 1,
+                             sampling_sd = 1)
   
   return (model)
   
