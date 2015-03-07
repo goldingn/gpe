@@ -20,7 +20,7 @@ setParameters(kernel, ..., continuous = FALSE)
 
 getSubKernel(kernel, which = 1)
 
-demoKernel(kernel, data = NULL, ndraw = 5)
+demoKernel(kernel, data = NULL, ndraw = 3)
 }
 \arguments{
 \item{kernel}{a kernel object}

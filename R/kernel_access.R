@@ -307,7 +307,7 @@ getSubKernel <- function (kernel, which = 1) {
 #' #plot example GPs from this kernel, applied to the pressure dataset
 #' demoKernel(k1, data = pressure)
 #' 
-demoKernel <- function (kernel, data = NULL, ndraw = 5) {
+demoKernel <- function (kernel, data = NULL, ndraw = 3) {
   
   # plotting example draws from a kernel
   
