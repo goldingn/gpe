@@ -1,16 +1,15 @@
-# kernel_mat32
+# kernel_exp
 
-#' @title Matern 3/2 kernel
+#' @title Exponential kernel
 #' 
-#' @description Construct a Matern 3/2 kernel.
+#' @description Construct an exponential kernel.
 #' 
-#' @details The Matern 3/2 kernel takes the form:
-#' \deqn{k_{mat32}(\mathbf{x}, \mathbf{x}') = \sigma^2 (1 + \sqrt{3} \\ \mathbf{dist}) exp(-\sqrt{3} \\ \mathbf{dist})} 
-#' \deqn{\mathbf{dist} = {\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right)}^2}
+#' @details The exponential kernel takes the form:
+#' \deqn{k_{expo}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp\left[-\frac{1}{2} {\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right)}\right]}
 #' where \eqn{\mathbf{x}} are the covariates on which the kernel is active, \eqn{l_d} 
 #' are the characteristic lengthscales for each covariate (column) \eqn{x_d} 
 #' and \eqn{\sigma^2} is the overall variance.
-# 
+#' 
 #' Larger values of \eqn{l_i} correspond to functions in which change less 
 #' rapidly over the values of the covariates.
 #' 
@@ -19,33 +18,33 @@
 #' @template kco
 #' @template kco_basis
 #' @export
-#' @name mat32
+#' @name expo
 #' 
 #' @examples
 #' # construct a kernel with one feature
-#' k1 <- mat32('temperature')
+#' k1 <- expo('temperature')
 #' 
 #' # and another with two features
-#' k2 <- mat32(c('temperature', 'pressure'))
+#' k2 <- expo(c('temperature', 'pressure'))
 #' 
 #' # evaluate them on the pressure dataset
 #' image(k1(pressure))
 #' image(k2(pressure))
 #' 
-mat32 <- function (columns, sigma = 1, l = rep(1, length(columns))) {
+expo <- function (columns, sigma = 1, l = rep(1, length(columns))) {
   
-  # construct an rbf kernel
-  createKernelConstructor('mat32',
+  # construct an exponential kernel
+  createKernelConstructor('expo',
                           columns,
                           list(sigma = pos(sigma),
                                l = pos(l)),
-                          mat32Eval)
+                          expoEval)
   
 }
 
 
-mat32Eval <- function(object, data, newdata = NULL, diag = FALSE) {
-  # evaluate Matern 3/2 kernel against data
+expoEval <- function(object, data, newdata = NULL, diag = FALSE) {
+  # evaluate exponential kernel against data
   
   # diagonal case
   if (diag) {
@@ -82,7 +81,7 @@ mat32Eval <- function(object, data, newdata = NULL, diag = FALSE) {
   d <- fields::rdist(x, y)
   
   # complete covariance matrix
-  covmat <- sigma ^ 2 * (1 + sqrt(3) * d) * exp(-sqrt(3) * d)
+  covmat <- sigma ^ 2 * exp(-(d) / 2)
   
   # and return
   return (covmat)

@@ -19,7 +19,7 @@ overall variance of the kernel}
 a kernel object for which there are a range of associated functions.
 }
 \description{
-Construct an iid normal 'random effect' kernel.
+Construct an iid normal `random effects' kernel.
 }
 \details{
 
@@ -29,7 +29,7 @@ The iid kernel takes the form:
 where \eqn{\mathbf{x}} are indicator variables with each column containing
 1s for records in a given group and 0s otherwise and \eqn{\sigma^2} is the
 overall variance. This is equivalent to a hierarchical or random-effects
-model: \eqn{z_j ~ N(0, \sigma2)} with \eqn{j} indexing the groups of the
+model: \eqn{z_j ~ N(0, \sigma^2)} with \eqn{j} indexing the groups of the
 specified factor.
 
 In practice, the active column should actually be a single factor and the
@@ -50,7 +50,7 @@ Other kernel.constructors: \code{\link{*.kernel}},
   \code{\link{+.kernel}}, \code{\link{\%x\%}},
   \code{\link{composition}}, \code{\link{kron}},
   \code{\link{prod.kernel}}, \code{\link{sum.kernel}};
-  \code{\link{int}}; \code{\link{lin}};
+  \code{\link{expo}}; \code{\link{int}}; \code{\link{lin}};
   \code{\link{mat32}}; \code{\link{mat52}};
   \code{\link{per}}; \code{\link{rbf}}
 }

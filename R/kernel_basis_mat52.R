@@ -45,7 +45,7 @@ mat52 <- function (columns, sigma = 1, l = rep(1, length(columns))) {
 
 
 mat52Eval <- function(object, data, newdata = NULL, diag = FALSE) {
-  # evaluate Matern 3/2 kernel against data
+  # evaluate Matern 5/2 kernel against data
   
   # diagonal case
   if (diag) {

@@ -2,7 +2,7 @@
 
 #' @title IID random effects kernel
 #' 
-#' @description Construct an iid normal 'random effect' kernel.
+#' @description Construct an iid normal `random effects' kernel.
 #' 
 #' @param column optionally, a single string giving the name of a \emph{factor} 
 #' feature on which the kernel acts. This will be used to access columns from 
@@ -14,7 +14,7 @@
 #' where \eqn{\mathbf{x}} are indicator variables with each column containing 
 #' 1s for records in a given group and 0s otherwise and \eqn{\sigma^2} is the 
 #' overall variance. This is equivalent to a hierarchical or random-effects 
-#' model: \eqn{z_j ~ N(0, \sigma2)} with \eqn{j} indexing the groups of the 
+#' model: \eqn{z_j ~ N(0, \sigma^2)} with \eqn{j} indexing the groups of the 
 #' specified factor.
 #' 
 #' In practice, the active column should actually be a single factor and the 
