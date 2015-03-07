@@ -233,7 +233,9 @@ updateModel <- function (model,
                          mean_function = NULL,
                          inducing_data = NULL,
                          inference = NULL,
+                         hyperinference = NULL,
                          verbose = NULL) {
+  
   # take a fitted model object, update some of its components
   # (data, kernel, inducing points, inference method etc.) and refit
   
@@ -259,6 +261,9 @@ updateModel <- function (model,
   if (is.null(inference)) {
     inference <- getInferenceType(model$posterior$inference_name)
   }
+  if (is.null(hyperinference)) {
+    hyperinference <- model$hyperinference
+  }
   if (is.null(verbose)) {
     verbose <- model$verbose
   }
@@ -270,6 +275,7 @@ updateModel <- function (model,
                   mean_function = mean_function,
                   inducing_data = inducing_data,
                   inference = inference,
+                  hyperinference = hyperinference,
                   verbose = verbose)
   
   return (new_model)

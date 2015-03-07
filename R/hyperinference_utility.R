@@ -14,7 +14,9 @@ nlmlObjective <- function(pars, model) {
   kernel <- gpe:::setParVec(kernel, par_vec = pars)
   
   # fit the model with the new parameters
-  model_new <- gpe:::updateModel(model = model, kernel = kernel)
+  model_new <- gpe:::updateModel(model = model,
+                                 kernel = kernel,
+                                 hyperinference = 'none')
   
   # extract the negative log marginal likelihood
   nlml <- -model_new$posterior$lZ
@@ -31,7 +33,7 @@ optimizeModelBFGS <- function (model, restarts = 1) {
   # Note that the non-convexity of the likelihood means that running this without
   # random restarts is probably a terrible idea (at least without a strong 
   # hyperprior), particuarly on Gaussian-response data.
-
+  
   # get current kernel
   kernel <- model$kernel
   
@@ -66,3 +68,46 @@ optimizeModelBFGS <- function (model, restarts = 1) {
   return (model_new)
   
 }
+
+# return a hyperparameter inference function, given an inference method
+getHyperinference <- function (hyperinference) {
+  
+  # if inference is default, look up the default for that likelihood
+  if (hyperinference == 'default') {
+    hyperinference <- defaultHyperinference()
+  }
+  
+  # get the inference name
+  hyperinference_name <- switch(hyperinference,
+                                BFGS = 'bfgs_no_restarts',
+                                BFGSrestarts = 'bfgs_5_restarts',
+                                none = 'none')
+  
+  # if the inference method wasn't found throw an error
+  if (is.null(hyperinference_name)) {
+    stop (paste0('Hyperinference method ',
+                 hyperinference,
+                 ' not found.'))
+  }
+  
+  # prepend 'hyperinference' to the name
+  hyperinference_name <- paste0('hyperinference_',
+                                hyperinference_name)
+  
+  # fetch the function
+  hyperinference <- get(hyperinference_name)
+  
+  # return this function
+  return (hyperinference)
+  
+}
+
+# default hyperparameter inference method
+defaultHyperinference <- function () {
+  
+  hyperinference <- 'none'
+  
+  return (hyperinference)
+  
+}
+

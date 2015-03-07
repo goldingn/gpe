@@ -7,6 +7,7 @@
 \usage{
 gp(formula, data, family = gaussian, mean_function = NULL,
   inducing_data = NULL, inference = c("default", "full", "FITC", "Laplace"),
+  hyperinference = c("default", "BFGS", "BFGSrestarts", "none"),
   verbose = FALSE)
 
 \method{print}{gp}(x, ...)
@@ -43,6 +44,16 @@ This must contain variables with names matching those referenced by
 estimate the values of the latent parameters. If \code{'default'} an
 appropriate method is picked for the likelihood specified. See details
 section for the list of default inference methods.}
+
+\item{hyperinference}{the method to be used for inference on the
+hyperparameters (parameters of the kernel). \code{BFGS} carries out
+straightforward optimisation from a random set of starting
+parameters using gradient-free BFGS. Because the likelihood surface is
+rarely convex, this is is not advised for general use. \code{BFGSrestarts}
+runs gradient-free BFGS 5 times, each starting with a different randomly
+chosen set of parameters, which might be a bit better. \code{none} does
+no inference on the hyperparameters. \code{default} currently switches to
+\code{none} in all cases, though in future it may depend on other arguments.}
 
 \item{verbose}{whether to return non-critical information to the user
 during model fitting.}

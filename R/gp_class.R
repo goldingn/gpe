@@ -45,6 +45,16 @@ NULL
 #' appropriate method is picked for the likelihood specified. See details 
 #' section for the list of default inference methods.
 #' 
+#' @param hyperinference the method to be used for inference on the 
+#' hyperparameters (parameters of the kernel). \code{BFGS} carries out
+#' straightforward optimisation from a random set of starting 
+#' parameters using gradient-free BFGS. Because the likelihood surface is
+#' rarely convex, this is is not advised for general use. \code{BFGSrestarts}
+#' runs gradient-free BFGS 5 times, each starting with a different randomly 
+#' chosen set of parameters, which might be a bit better. \code{none} does
+#' no inference on the hyperparameters. \code{default} currently switches to 
+#' \code{none} in all cases, though in future it may depend on other arguments.
+#' 
 #' @param verbose whether to return non-critical information to the user 
 #' during model fitting.
 #' 
@@ -96,6 +106,7 @@ gp <- function(formula,
                mean_function = NULL,
                inducing_data = NULL,
                inference = c('default', 'full', 'FITC', 'Laplace'),
+               hyperinference = c('default', 'BFGS', 'BFGSrestarts', 'none'),
                verbose = FALSE) {
   
   # catch the call
@@ -121,6 +132,12 @@ gp <- function(formula,
                             likelihood,
                             inducing_data)
   
+  # match the hyperparameter inference
+  hyperinference_name <- match.arg(hyperinference)
+  
+  # get hyperparameter inference function
+  hyperinference <- getHyperinference(hyperinference_name)
+  
   # check it's a valid kernel
   checkKernel(kernel)  
   
@@ -133,19 +150,23 @@ gp <- function(formula,
                          inducing_data,
                          verbose = verbose)
   
-  ans <- list(call = call,
-              likelihood = likelihood,
-              kernel = kernel,
-              mean_function = mean_function,
-              data = list(response = response,
-                          training_data = data,
-                          inducing_data = inducing_data),
-              posterior = posterior,
-              verbose = verbose)
+  model <- list(call = call,
+                likelihood = likelihood,
+                kernel = kernel,
+                mean_function = mean_function,
+                data = list(response = response,
+                            training_data = data,
+                            inducing_data = inducing_data),
+                posterior = posterior,
+                hyperinference = hyperinference_name,
+                verbose = verbose)
   
-  class(ans) <- 'gp'
+  class(model) <- 'gp'
   
-  return (ans)
+  # do hyperparameter inference
+  model <- hyperinference(model)
+  
+  return (model)
   
 }
 
@@ -397,5 +418,5 @@ parseKernel <- function (formula) {
   
   # and return
   return (kernel)
-
+  
 }
