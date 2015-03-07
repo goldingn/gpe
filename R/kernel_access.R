@@ -134,11 +134,23 @@ setObject <- function (object) {
   
   # if it's compositional, just recreate it
   if (is_comp) {
+  
     kernel <- get(object$type)(object$kernel1, object$kernel2)
+  
   } else {
-    
+  
     # otherwise, get kernel from the type and columns
-    kernel <- get(object$type)(object$columns)
+    if (is.null(object$columns)) {
+      
+      # if there are no columns (int & some iids), don't specify any
+      kernel <- do.call(object$type, list())
+    
+    } else {
+    
+      # otherwise build it with the new columns
+      kernel <- do.call(object$type, list(object$columns))
+    
+    }
     
     # get the parameter values
     params <- lapply(object$parameters,
@@ -146,6 +158,7 @@ setObject <- function (object) {
     
     # update the parameters with these
     kernel <- do.call(setParameters, c(kernel, params))
+
   }
   
   # check it's valid
@@ -241,9 +254,20 @@ setParameters <- function (kernel, ..., continuous = FALSE) {
   }
   
   # create a new kernel with these parameter values
-  new_kernel <- do.call(getType(kernel),
-                        c(list(columns = getColumns(kernel)),
-                               parameters_current_values))
+  if (is.null(getColumns(kernel))) {
+    
+    # for kernels without columns
+    new_kernel <- do.call(getType(kernel),
+                          parameters_current_values)
+  
+  } else {
+    
+    # for kernels with columns
+    new_kernel <- do.call(getType(kernel),
+                          c(list(columns = getColumns(kernel)),
+                            parameters_current_values))
+    
+  }
   
   # return the kernel
   return (new_kernel)
