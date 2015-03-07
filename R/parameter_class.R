@@ -173,8 +173,9 @@ update.parameter <- function(object, new_value, continuous = FALSE) {
     stop ('new_value is not within the constraints of this parameter')
   }
   
-  # update the value
-  environment(object)$object$value <- new_value
+  # create a new parameter object, with this value
+  object <- do.call(environment(object)$object$type,
+                    list(value = new_value))
   
   # return the parameter
   return (object)
