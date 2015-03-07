@@ -136,7 +136,8 @@ setObject <- function (object) {
   if (is_comp) {
     kernel <- get(object$type)(object$kernel1, object$kernel2)
   } else {
-    # otherwise, get the type and columns
+    
+    # otherwise, get kernel from the type and columns
     kernel <- get(object$type)(object$columns)
     
     # get the parameter values

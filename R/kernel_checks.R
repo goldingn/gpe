@@ -93,9 +93,9 @@ checkParameterType <- function (kernel, parameter_list) {
     # check it is of the correct dimension
     if (target_parameter_len != parameter_len) {
       stop (paste0(parameter_name,
-                   'is of length ',
+                   ' is of length ',
                    parameter_len,
-                   'but should be of length ',
+                   ' but should be of length ',
                    target_parameter_len))
     }
   }

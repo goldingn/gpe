@@ -27,7 +27,7 @@ int <- function (sigma = 1) {
   
   # construct an iid kernel
   createKernelConstructor('int',
-                          '',
+                          NULL,
                           list(sigma = pos(sigma)),
                           intEval)
   
