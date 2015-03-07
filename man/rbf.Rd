@@ -54,6 +54,7 @@ Other kernel.constructors: \code{\link{*.kernel}},
   \code{\link{composition}}, \code{\link{kron}},
   \code{\link{prod.kernel}}, \code{\link{sum.kernel}};
   \code{\link{iid}}; \code{\link{int}}; \code{\link{lin}};
-  \code{\link{mat32}}; \code{\link{per}}
+  \code{\link{mat32}}; \code{\link{mat52}};
+  \code{\link{per}}
 }
 
