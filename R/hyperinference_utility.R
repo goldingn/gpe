@@ -7,17 +7,9 @@ nlmlObjective <- function(pars, model) {
   # return the negative log marginal likelihood of a GP model with kernel 
   # parameters pars
   
-  # get the model kernel
-  kernel <- model$kernel
-  
-  # update the parameters
-  kernel <- gpe:::setParVec(kernel, par_vec = pars)
-  
   # fit the model with the new parameters
-  model_new <- gpe:::updateModel(model = model,
-                                 kernel = kernel,
-                                 hyperinference = 'none')
-  
+  model_new <- setModelParameters(model, pars)
+
   # extract the negative log marginal likelihood
   nlml <- -model_new$posterior$lZ
   
@@ -34,11 +26,12 @@ optimizeModelBFGS <- function (model, restarts = 1, sampling_sd = 10) {
   # random restarts is probably a terrible idea (at least without a strong 
   # hyperprior), particuarly on Gaussian-response data.
   
-  # get current kernel
-  kernel <- model$kernel
+  # make sure hyperparameter inference is switched off
+  model <- updateModel(model,
+                       hyperinference = 'none')
   
-  # get current parameters of that kernel
-  pars <- getParVec(kernel)
+  # get current hyperparameters of the model
+  pars <- getModelParameters(model)
   
   # if there are no restarts (only one optimisation)
   if (restarts == 1) {
@@ -69,12 +62,10 @@ optimizeModelBFGS <- function (model, restarts = 1, sampling_sd = 10) {
   # find the best model
   opt <- opt_list[[which.min(objectives)]]
   
-  # reconstruct the new kernel
-  kernel_new <- setParVec(kernel, opt$par)
+  # put these parameters back in the model
+  model_new <- setModelParameters(model, opt$par)
   
-  # fit the new model
-  model_new <- updateModel(model, kernel = kernel_new)
-  
+  # and return
   return (model_new)
   
 }
@@ -121,3 +112,29 @@ defaultHyperinference <- function () {
   
 }
 
+# utility functions to get and set kernel parameters for gp model objects,
+# to facilitate hyperparamter inference
+getModelParameters <- function (model) {
+
+  pars <- getParVec(model$kernel)
+  
+  return (pars)
+
+}
+
+setModelParameters <- function (model, pars) {
+
+  # get the model kernel
+  kernel <- model$kernel
+  
+  # update the parameters
+  kernel <- gpe:::setParVec(kernel, par_vec = pars)
+  
+  # fit the model with the new parameters
+  model_new <- gpe:::updateModel(model = model,
+                                 kernel = kernel)
+
+  # return
+  return (model_new)
+  
+}
