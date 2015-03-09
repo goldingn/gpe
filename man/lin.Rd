@@ -51,6 +51,6 @@ Other kernel.constructors: \code{\link{*.kernel}},
   \code{\link{sum.kernel}}; \code{\link{expo}};
   \code{\link{iid}}; \code{\link{int}};
   \code{\link{mat32}}; \code{\link{mat52}};
-  \code{\link{per}}; \code{\link{rbf}}
+  \code{\link{per}}; \code{\link{rbf}}; \code{\link{rq}}
 }
 

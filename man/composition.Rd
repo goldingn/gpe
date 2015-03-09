@@ -109,6 +109,6 @@ image(k_kron(pressure))
 Other kernel.constructors: \code{\link{expo}};
   \code{\link{iid}}; \code{\link{int}}; \code{\link{lin}};
   \code{\link{mat32}}; \code{\link{mat52}};
-  \code{\link{per}}; \code{\link{rbf}}
+  \code{\link{per}}; \code{\link{rbf}}; \code{\link{rq}}
 }
 
