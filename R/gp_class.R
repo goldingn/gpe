@@ -117,8 +117,8 @@ gp <- function(formula,
   call <- match.call()
   
   # get response and kernel from the formula
-  response <- parseResponse(formula, data)
-  kernel <- parseKernel(formula)
+  response <- getResponse(formula, data)
+  kernel <- getKernel(formula)
   
   # get or check the weights
   weights <- getWeights(weights, length(response))
@@ -374,7 +374,7 @@ is.gp <- function (x) {
 }
 
 
-parseResponse <- function(formula, data) {
+getResponse <- function(formula, data) {
   # given a formula and a dataframe, extract the response variable
   # first looking in the dataframe, then the parent environment
   
@@ -402,7 +402,7 @@ parseResponse <- function(formula, data) {
   
 }
 
-parseKernel <- function (formula) {
+getKernel <- function (formula) {
   # given a formula, fetch the kernel object
   
   # get the string from the formula
