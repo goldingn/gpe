@@ -20,7 +20,7 @@ value of the covariate). Larger values of \code{l} imply less complex
 functions.}
 }
 \value{
-a kernel object for which there are a range of associated functions.
+A kernel object for which there are a range of associated functions, see \code{\link{kernel}} and \code{\link{access}} for details.
 }
 \description{
 Construct an exponential kernel.
@@ -29,7 +29,7 @@ Construct an exponential kernel.
 
 
 The exponential kernel takes the form:
-\deqn{k_{expo}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp\left[-\frac{1}{2} {\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right)}\right]}
+\deqn{k_{expo}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp\left(-\frac{1}{2} \sqrt{{\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right) ^ 2}}\right)}
 where \eqn{\mathbf{x}} are the covariates on which the kernel is active, \eqn{l_d}
 are the characteristic lengthscales for each covariate (column) \eqn{x_d}
 and \eqn{\sigma^2} is the overall variance.

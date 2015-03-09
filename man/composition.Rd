@@ -40,7 +40,7 @@ to raise the kernel function. If \code{power} is not integer-esque (that is
 \item{\dots}{kernel objects to be combined}
 }
 \value{
-a kernel object for which there are a range of associated functions.
+A kernel object for which there are a range of associated functions, see \code{\link{kernel}} and \code{\link{access}} for details.
 }
 \description{
 Construct a new kernel by combining existing kernels, either

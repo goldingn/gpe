@@ -24,7 +24,7 @@ functions.}
 overall variance of the kernel}
 }
 \value{
-a kernel object for which there are a range of associated functions.
+A kernel object for which there are a range of associated functions, see \code{\link{kernel}} and \code{\link{access}} for details.
 }
 \description{
 Construct a periodic kernel.

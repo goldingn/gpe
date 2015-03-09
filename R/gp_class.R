@@ -26,7 +26,7 @@ NULL
 #' function to be used to fit the model. Currently only \code{gaussian}, 
 #' \code{poisson} and \code{binomial} (only Bernoulli) are supported.
 #' 
-#' @param weights an optional vector of ‘prior weights’ to be used in 
+#' @param weights an optional vector of 'prior weights' to be used in 
 #' the fitting process. Should be NULL or a numeric vector.
 #' 
 #' @param mean_function an optional function specifying the prior over the mean

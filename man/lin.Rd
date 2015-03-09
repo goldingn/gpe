@@ -18,7 +18,7 @@ overall variance of the kernel}
 the location on the x axis where y = 0 (an x-axis intercept)}
 }
 \value{
-a kernel object for which there are a range of associated functions.
+A kernel object for which there are a range of associated functions, see \code{\link{kernel}} and \code{\link{access}} for details.
 }
 \description{
 Construct a linear kernel.

@@ -11,7 +11,7 @@ int(sigma = 1)
 overall variance of the kernel}
 }
 \value{
-a kernel object for which there are a range of associated functions.
+A kernel object for which there are a range of associated functions, see \code{\link{kernel}} and \code{\link{access}} for details.
 }
 \description{
 Construct an intercept kernel
@@ -23,7 +23,7 @@ The intercept kernel takes the form:
 \deqn{k_{int}(\mathbf{x}, \mathbf{x}') = \sigma^2}
 where \eqn{\sigma^2} is the variance of the prior over the value of the
 intercept. This is equivalent to a normal prior over the value of an
-intercept term: \eqn{\alpha ~ N(0, \sigma^2)}.
+intercept term: \eqn{\alpha \sim N(0, \sigma^2)}.
 }
 \examples{
 # construct an intercept kernel

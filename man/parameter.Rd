@@ -42,9 +42,9 @@ parameter or with the value of its continuous transform.}
 Functions to create and interact with parameter objects
 }
 \details{
-The constructor functions \code{pos} and \code{unit} return
-parameter objects with a set value. These objects caontain member funcitons
-the constraints of the parameter (it's support) and define functions for
+The constructor functions (\code{pos}, \code{unit} and \code{unc}) return
+parameter objects with a set value. These objects contain member functions to test
+whether other values are within the constraints of the parameter and to convert
 between the true value and a continuous transformation of it.
 
 \code{unit} creates a parameter constrained to be on the unit interval
@@ -57,7 +57,7 @@ parameter can be returned by executing the object.
 The value can be changed using the \code{update} method.
 \code{is.parameter} returns a logical indicating whether the
 object is a gpe parameter object. \code{print} returns a very simple summary
-of the parameter, it's transformations and its support.
+of the parameter, its transformations and its support.
 }
 \examples{
 # create a parameter on the unit interval

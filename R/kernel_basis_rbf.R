@@ -5,7 +5,8 @@
 #' @description Construct a radial basis function (A.K.A. squared-exponential) kernel.
 #' 
 #' @details The rbf kernel takes the form:
-#' \deqn{k_{rbf}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp\left[-\frac{1}{2} {\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right)}^2\right]}
+#' \deqn{k_{rbf}(\mathbf{x}, \mathbf{x}') = \sigma^2 exp\left(-\frac{\mathbf{r} ^ 2}{2}\right)}
+#' \deqn{\mathbf{r} = {\sqrt{\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right) ^ 2}}}
 #' where \eqn{\mathbf{x}} are the covariates on which the kernel is active, \eqn{l_d} 
 #' are the characteristic lengthscales for each covariate (column) \eqn{x_d} 
 #' and \eqn{\sigma^2} is the overall variance.

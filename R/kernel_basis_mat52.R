@@ -5,13 +5,12 @@
 #' @description Construct a Matern 5/2 kernel.
 #' 
 #' @details The Matern 5/2 kernel takes the form:
-#' \deqn{k_{mat52}(\mathbf{x}, \mathbf{x}') = \sigma^2 (1 + \sqrt{5 \, \mathbf{dist} ^ 2}) + \frac{5 \, \mathbf{dist}^2}{3}) exp(- \sqrt{5 \, \mathbf{dist} ^ 2})} 
-#' \deqn{\mathbf{dist} = {\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right)}^2}
+#' \deqn{k_{mat52}(\mathbf{x}, \mathbf{x}') = \sigma^2  \left(1 + \sqrt{5} \mathbf{r} + \frac{5 \mathbf{r} ^ 2}{3}\right) exp(- \sqrt{5} \mathbf{r})} 
+#' \deqn{\mathbf{r} = {\sqrt{\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right) ^ 2}}}
 #' where \eqn{\mathbf{x}} are the covariates on which the kernel is active, \eqn{l_d} 
 #' are the characteristic lengthscales for each covariate (column) \eqn{x_d} 
 #' and \eqn{\sigma^2} is the overall variance.
-# 
-#' Larger values of \eqn{l_i} correspond to functions in which change less 
+#' Larger values of \eqn{l_i} correspond to functions which change less 
 #' rapidly over the values of the covariates.
 #' 
 #' @template par_sigma
@@ -75,19 +74,14 @@ mat52Eval <- function(object, data, newdata = NULL, diag = FALSE) {
   sigma <- parameters$sigma()
   
   # apply the lengthscale parameters
-  x <- sweep(x, 2, l ^ 2, '/')
-  y <- sweep(y, 2, l ^ 2, '/')
+  x <- sweep(x, 2, 2 * l ^ 2, '/')
+  y <- sweep(y, 2, 2 * l ^ 2, '/')
   
   # get distances
-  d <- fields::rdist(x, y)
-  
-  # squared distances
-  d2 <- d ^ 2
-  
-  d_ <- sqrt(5 * d2)
+  r <- fields::rdist(x, y)
   
   # complete covariance matrix
-  covmat <- sigma ^ 2 * (1 + d_ * 5 * d2 / 3) * exp(-d_)
+  covmat <- sigma ^ 2 * (1 + sqrt(5) * r + 5 * (r ^ 2) / 3) * exp(-sqrt(5) * r)
   
   # and return
   return (covmat)

@@ -5,13 +5,12 @@
 #' @description Construct a Matern 3/2 kernel.
 #' 
 #' @details The Matern 3/2 kernel takes the form:
-#' \deqn{k_{mat32}(\mathbf{x}, \mathbf{x}') = \sigma^2 (1 + \sqrt{3} \\ \mathbf{dist}) exp(-\sqrt{3} \\ \mathbf{dist})} 
-#' \deqn{\mathbf{dist} = {\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right)}^2}
+#' \deqn{k_{mat32}(\mathbf{x}, \mathbf{x}') = \sigma^2 (1 + \sqrt{3} \mathbf{r}) exp(-\sqrt{3} \mathbf{r})} 
+#' \deqn{\mathbf{r} = {\sqrt{\sum\limits_{d=1}^D \left(\frac{(x_d - x_d')}{2l_d^2}\right) ^ 2}}}
 #' where \eqn{\mathbf{x}} are the covariates on which the kernel is active, \eqn{l_d} 
 #' are the characteristic lengthscales for each covariate (column) \eqn{x_d} 
 #' and \eqn{\sigma^2} is the overall variance.
-# 
-#' Larger values of \eqn{l_i} correspond to functions in which change less 
+#' Larger values of \eqn{l_i} correspond to functions which change less 
 #' rapidly over the values of the covariates.
 #' 
 #' @template par_sigma
@@ -79,10 +78,10 @@ mat32Eval <- function(object, data, newdata = NULL, diag = FALSE) {
   y <- sweep(y, 2, l ^ 2, '/')
   
   # get distances
-  d <- fields::rdist(x, y)
+  r <- fields::rdist(x, y)
   
   # complete covariance matrix
-  covmat <- sigma ^ 2 * (1 + sqrt(3) * d) * exp(-sqrt(3) * d)
+  covmat <- sigma ^ 2 * (1 + sqrt(3) * r) * exp(-sqrt(3) * r)
   
   # and return
   return (covmat)

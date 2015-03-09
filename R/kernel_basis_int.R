@@ -8,7 +8,7 @@
 #' \deqn{k_{int}(\mathbf{x}, \mathbf{x}') = \sigma^2}
 #' where \eqn{\sigma^2} is the variance of the prior over the value of the 
 #' intercept. This is equivalent to a normal prior over the value of an 
-#' intercept term: \eqn{\alpha ~ N(0, \sigma^2)}.
+#' intercept term: \eqn{\alpha \sim N(0, \sigma^2)}.
 #' 
 #' @template par_sigma
 #' @template kco
