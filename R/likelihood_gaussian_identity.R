@@ -1,6 +1,6 @@
 # likelihood_gaussian_identity
 
-likelihood_gaussian_identity <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
+likelihood_gaussian_identity <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # Gaussian log-likelihood (and its derivatives)
   # with the identity link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -52,6 +52,9 @@ likelihood_gaussian_identity <- function(y, f, which = c('d0', 'd1', 'd2', 'link
     ans <- f
     
   }
+  
+  # apply weights
+  ans <- ans * wt
   
   return (ans)
   

@@ -11,6 +11,7 @@ createPosterior <- function (inference_name,
                              likelihood,
                              mean_function,
                              inducing_data,
+                             weights,
                              ...) {
   # A posterior object must have the named arguments,
   # but may also contain method-specific things via the dots argument.
@@ -25,6 +26,7 @@ createPosterior <- function (inference_name,
               likelihood = likelihood,
               mean_function = mean_function,
               inducing_data = inducing_data,
+              weights = weights,
               components = list(...))
   
   # set it to a posterior class
@@ -109,31 +111,30 @@ getU <- function (x,
   return (u)
 }
 
-laplace_psi <- function(a, f, mn, y, d0) {
+laplace_psi <- function(a, f, mn, y, d0, wt) {
   # $\psi$ (after Rasmussen & Williams) objective function for
   # Laplace approximation using newton iteration
-  ans <- 0.5 * t(a) %*% (f - mn) - sum(d0(y, f))
-    dim(ans) <- NULL
-    return (ans)
-  }
+  ans <- 0.5 * t(a) %*% (f - mn) - sum(d0(y, f, wt))
+  dim(ans) <- NULL
+  return (ans)
+}
 
-laplace_psiline_fitc <- function(s, adiff, a, Lambda_diag, B, y, d0, mn) {
+laplace_psiline_fitc <- function(s, adiff, a, Lambda_diag, B, y, d0, mn, wt) {
   # calculate psi for a given value of s (step size of the Newton iterations)
   # under an FITC GP
   a <- a + s * as.vector(adiff)
   # split this bit out into projection function
   f <- Lambda_diag * a + t(B) %*% (B %*% a) + mn
-  laplace_psi(a, f, mn, y, d0)
+  laplace_psi(a, f, mn, y, d0, wt)
 }
 
-laplace_psiline_full <-
+laplace_psiline_full <- function(s, adiff, a, K, y, d0, mn, wt) {
   # calculate psi for a given value of s (step size of the Newton iterations)
   # under an direct (non-sparse) GP
-  function(s, adiff, a, K, y, d0, mn) {
-    a <- a + s * as.vector(adiff)
-    f <- K %*% a + mn
-    laplace_psi(a, f, mn, y, d0)
-  }
+  a <- a + s * as.vector(adiff)
+  f <- K %*% a + mn
+  laplace_psi(a, f, mn, y, d0, wt)
+}
 
 
 # return an inference function, given an inference method and a family

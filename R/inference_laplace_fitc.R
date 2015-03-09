@@ -14,6 +14,7 @@ inference_laplace_fitc <- function(y,
                                    likelihood,
                                    mean_function,
                                    inducing_data,
+                                   weights,
                                    verbose = verbose) {
   
   # apply mean function to get prior mean at observation locations
@@ -57,7 +58,7 @@ inference_laplace_fitc <- function(y,
   
   # initialise loop
   obj.old <- Inf
-  obj <- -sum(likelihood$d0(y, f))
+  obj <- -sum(likelihood$d0(y, f, weights))
   it <- 0
   
   # start newton iterations
@@ -68,7 +69,7 @@ inference_laplace_fitc <- function(y,
     obj.old <- obj
     
     # get the negative log Hessian and its root
-    W <- -(likelihood$d2(y, f))
+    W <- -(likelihood$d2(y, f, weights))
     rW <- sqrt(W)
     
     # difference between posterior mode and prior
@@ -85,7 +86,7 @@ inference_laplace_fitc <- function(y,
     Sigma <- (Sigma + t(Sigma)) / 2
     
     # get direction of the posterior mode
-    b <- W * cf + likelihood$d1(y, f)
+    b <- W * cf + likelihood$d1(y, f, weights)
     Lb <- t(forwardsolve(t(jitchol(Sigma)), t(rWKxz / mat1)))
     mat2 <- rW * (Lambda_diag * b + t(B) %*% (B %*% b))
     adiff <- b - rW * (mat2 / Lah - Lb %*% (t(Lb) %*% mat2)) - a
@@ -102,7 +103,8 @@ inference_laplace_fitc <- function(y,
                     B = B,
                     y = y,
                     d0 = likelihood$d0,
-                    mn = mn_prior)
+                    mn = mn_prior,
+                    wt = weights)
     
     # move to the new posterior mode
     a <- a + res$minimum * adiff
@@ -116,12 +118,13 @@ inference_laplace_fitc <- function(y,
                        f = f,
                        mn = mn_prior,
                        y = y,
-                       d0 = likelihood$d0)
+                       d0 = likelihood$d0,
+                       wt = weights)
     
   }
   
   # recompute hessian at mode and it's root
-  W <- -(likelihood$d2(y, f))
+  W <- -(likelihood$d2(y, f, weights))
   rW <- sqrt(W)
   
   # rerun matrix algebra
@@ -134,7 +137,7 @@ inference_laplace_fitc <- function(y,
   Sigma <- (Sigma + t(Sigma)) / 2
 
   # return marginal negative log-likelihood
-  lZ <- sum(likelihood$d0(y, f)) +
+  lZ <- sum(likelihood$d0(y, f, weights)) +
     0.5 * sum(log(Lah)) +
     -sum(log(diag(Lzz))) +
     sum(log(diag(jitchol(Sigma))))
@@ -148,6 +151,7 @@ inference_laplace_fitc <- function(y,
                                likelihood = likelihood,
                                mean_function = mean_function,
                                inducing_data = inducing_data,
+                               weights = weights,
                                Kzz = Kzz,
                                Kzx = Kzx,
                                Lambda_diag = Lambda_diag,

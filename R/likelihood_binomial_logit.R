@@ -1,6 +1,6 @@
 # likelihood_binomial_logit
 
-likelihood_binomial_logit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
+likelihood_binomial_logit <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # binomial log-likelihood (and its derivatives)
   # with the logit link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -57,6 +57,9 @@ likelihood_binomial_logit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'),
                                       which = which,
                                       ...)
   }
+  
+  # apply weights
+  ans <- ans * wt
   
   return (ans)
   

@@ -1,6 +1,6 @@
 # likelihood_bernoulli_logit
 
-likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
+likelihood_bernoulli_logit <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # bernoulli log-likelihood (and its derivatives)
   # with the logit link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -106,6 +106,9 @@ likelihood_bernoulli_logit <- function(y, f, which = c('d0', 'd1', 'd2', 'link')
     ans <- plogis(f)
     
   }
+  
+  # apply weights
+  ans <- ans * wt
   
   return (ans)
   

@@ -26,6 +26,9 @@ NULL
 #' function to be used to fit the model. Currently only \code{gaussian}, 
 #' \code{poisson} and \code{binomial} (only Bernoulli) are supported.
 #' 
+#' @param weights an optional vector of ‘prior weights’ to be used in 
+#' the fitting process. Should be NULL or a numeric vector.
+#' 
 #' @param mean_function an optional function specifying the prior over the mean
 #' of the gp, in other words a 'first guess' at what the true function is.
 #' This must act on a dataframe with named variables matching some of those in 
@@ -103,6 +106,7 @@ NULL
 gp <- function(formula,
                data,
                family = gaussian,
+               weights = NULL,
                mean_function = NULL,
                inducing_data = NULL,
                inference = c('default', 'full', 'FITC', 'Laplace', 'LaplaceFITC'),
@@ -115,6 +119,9 @@ gp <- function(formula,
   # get response and kernel from the formula
   response <- parseResponse(formula, data)
   kernel <- parseKernel(formula)
+  
+  # get or check the weights
+  weights <- getWeights(weights, length(response))
   
   # if there's no mean function, use zeroes
   if (is.null(mean_function)) {
@@ -148,6 +155,7 @@ gp <- function(formula,
                          likelihood,
                          mean_function,
                          inducing_data,
+                         weights,
                          verbose = verbose)
   
   model <- list(call = call,
@@ -420,3 +428,56 @@ parseKernel <- function (formula) {
   return (kernel)
   
 }
+
+checkWeights <- function (weights, n) {
+  # check the weights argument and throw a nice error if invalid
+    
+  # must be a vector
+  if (!is.vector(weights)) {
+    stop ('weights must be a vector, or NULL')
+  }
+  
+  # must have length n
+  if (length(weights) != n) {
+    stop ('weights must have the same length as the response variable')
+  }
+  
+  # must be numeric
+  if (!is.numeric(weights)) {
+    stop ('weights must be numeric')
+  }
+  
+  # must be finite
+  if (any(!is.finite(weights))) {
+    stop ('weights must be finite')
+  }
+  
+  # can't be negative
+  if (any(weights < 0)) {
+    stop ('negative weights not allowed')
+  }
+
+}
+
+
+getWeights <- function (weights, n) {
+  # check the weights argument and either return valid weights
+  # or throw a nice error
+  
+  if (is.null(weights)) {
+
+    # if null, return ones
+    weights <- rep(1, n)
+  
+  } else {
+
+    # otherwise check the weights passed are valid
+    checkWeights(weights, n)
+    
+  }
+  
+  # return the weights
+  return (weights)
+  
+}
+

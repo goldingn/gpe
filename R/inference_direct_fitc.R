@@ -14,13 +14,15 @@ inference_direct_fitc <- function(y,
                                   likelihood,
                                   mean_function,
                                   inducing_data,
+                                  weights,
                                   verbose = verbose) {
   
   # NB likelihood is ignored
   
-  # switch to ignoring new data,
-  # creating a posterior object which can do predictions
-  # later switch to efficient cholesky version
+  # throw a warning (for now) if weights aren't specified
+  if (!all(weights == rep(1, length(y)))) {
+    warning('weights argument currently ignored for full inference')
+  }
   
   # create a diagonal matrix with a small amount of noise for inducing points
   Ixx_noise <- diag(nrow(data)) * 10 ^ -6
@@ -64,6 +66,7 @@ inference_direct_fitc <- function(y,
                                likelihood = likelihood,
                                mean_function = mean_function,
                                inducing_data = inducing_data,
+                               weights,
                                Kzzi = Kzzi,
                                Kzx = Kzx,
                                Sigma = Sigma,

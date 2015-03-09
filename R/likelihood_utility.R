@@ -55,16 +55,16 @@ getLikelihood <- function(family) {
   
   # define the functions for each derivative
   
-  d0 <- function(y, f, ...) {
-    evaluator(y, f, which = 'd0', ...)
+  d0 <- function(y, f, wt, ...) {
+    evaluator(y, f, wt, which = 'd0', ...)
   }
   
-  d1 <- function(y, f, ...) {
-    evaluator(y, f, which = 'd1', ...)
+  d1 <- function(y, f, wt, ...) {
+    evaluator(y, f, wt, which = 'd1', ...)
   }
   
-  d2 <- function(y, f, ...) {
-    evaluator(y, f, which = 'd2', ...)
+  d2 <- function(y, f, wt, ...) {
+    evaluator(y, f, wt, which = 'd2', ...)
   }
   
   link <- function(y, f, ...) {

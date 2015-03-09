@@ -8,14 +8,20 @@
 # kernel is a gpe kernel object
 # mean_function is a gpe mean function (for now just an R function)
 inference_direct_full <- function(y,
-                                   data,
-                                   kernel,
-                                   likelihood,
-                                   mean_function,
-                                   inducing_data,
-                                   verbose = verbose) {
+                                  data,
+                                  kernel,
+                                  likelihood,
+                                  mean_function,
+                                  inducing_data,
+                                  weights,
+                                  verbose = verbose) {
   
   # NB likelihood and inducing_data are ignored
+  
+  # throw a warning (for now) if weights aren't specified
+  if (!all(weights == rep(1, length(y)))) {
+    warning('weights argument currently ignored for full inference')
+  }
   
   # get number of observations
   n <- nrow(data)
@@ -31,7 +37,7 @@ inference_direct_full <- function(y,
   
   # uncorrelated latent vector a
   a <- backsolve(L, forwardsolve(t(L), (y - mn_prior)))
-
+  
   # log marginal likelihood
   lZ <- - (t(y - mn_prior) %*% a)[1, 1] / 2 -
     sum(log(diag(L))) -
@@ -45,6 +51,7 @@ inference_direct_full <- function(y,
                                likelihood = likelihood,
                                mean_function = mean_function,
                                inducing_data = inducing_data,
+                               weights,
                                mn_prior = mn_prior,
                                L = L,
                                a = a)
@@ -92,7 +99,7 @@ project_direct_full <- function(posterior,
     if (variance == 'diag') {
       
       # if diagonal (elementwise) variance only
-
+      
       # NB can easily modify this to return only the diagonal elements
       # (variances) with kernel(..., diag = TRUE)
       # calculation of the diagonal of t(v) %*% v is also easy:
@@ -113,13 +120,13 @@ project_direct_full <- function(posterior,
     } else {
       
       # if full variance
-
+      
       # test data self-matrix (prior covariance)
       Kxpxp <- posterior$kernel(new_data)
       
       # posterior
       K <- Kxpxp - crossprod(v)
-
+      
       var <- K
       
     }
@@ -128,7 +135,7 @@ project_direct_full <- function(posterior,
   # return both
   ans <- list(mu = mu,
               var = var)
- 
+  
   return (ans)
   
 }

@@ -1,10 +1,11 @@
 # likelihood_poisson_log
 
-likelihood_poisson_log <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
+likelihood_poisson_log <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # poisson log-likelihood (and its derivatives)
   # with the log link function
   # y is the observed data, must be counts
   # f is the value of the corresponding latent gaussians
+  # wt are regression weights
   # which determines whether to return the log-likelihood (d0)
   # or it's first or second derivative
   # \dots doesn't do anything, but is there for compatibility with other
@@ -46,6 +47,9 @@ likelihood_poisson_log <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ..
     ans <- exp(f)
     
   }
+  
+  # apply weights
+  ans <- ans * wt
   
   return (ans)
   

@@ -1,6 +1,6 @@
 # likelihood_bernoulli_probit
 
-likelihood_bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'), ...) {
+likelihood_bernoulli_probit <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'link'), ...) {
   # bernoulli log-likelihood (and its derivatives)
   # with the probit link function
   # y is the observed data, either binary (0, 1) or proportion
@@ -75,6 +75,9 @@ likelihood_bernoulli_probit <- function(y, f, which = c('d0', 'd1', 'd2', 'link'
     ans <- pnorm(f)
     
   }
+  
+  # apply weights
+  ans <- ans * wt
   
   return (ans)
 

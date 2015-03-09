@@ -13,6 +13,7 @@ inference_laplace_full <- function(y,
                                    likelihood,
                                    mean_function,
                                    inducing_data,
+                                   weights,
                                    verbose = verbose) {
   
   # NB inducing_data is ignored
@@ -41,7 +42,7 @@ inference_laplace_full <- function(y,
   
   # initialise loop
   obj.old <- Inf
-  obj <- -sum(likelihood$d0(y, f))
+  obj <- -sum(likelihood$d0(y, f, weights))
   it <- 0
   
   # start newton iterations
@@ -52,7 +53,7 @@ inference_laplace_full <- function(y,
     obj.old <- obj
     
     # get the negative log Hessian and its root
-    W <- -(likelihood$d2(y, f))
+    W <- -(likelihood$d2(y, f, weights))
     rW <- sqrt(W)
     
     # difference between posterior mode and prior
@@ -62,7 +63,7 @@ inference_laplace_full <- function(y,
     L <- jitchol(rW %*% t(rW) * Kxx + eye)
     
     # get direction of the posterior mode
-    b <- W * cf + likelihood$d1(y, f)
+    b <- W * cf + likelihood$d1(y, f, weights)
     mat2 <- rW * (Kxx %*% b)
     adiff <- b - rW * backsolve(L, forwardsolve(t(L), mat2)) - a 
     
@@ -77,7 +78,8 @@ inference_laplace_full <- function(y,
                     K = Kxx,
                     y = y,
                     d0 = likelihood$d0,
-                    mn = mn_prior)
+                    mn = mn_prior,
+                    weights)
     
     # move to the new posterior mode
     a <- a + res$minimum * adiff
@@ -87,16 +89,17 @@ inference_laplace_full <- function(y,
                        f,
                        mn_prior,
                        y,
-                       likelihood$d0)
+                       likelihood$d0,
+                       weights)
     
   }
 
   # recompute hessian at mode
-  W <- -(likelihood$d2(y, f))
+  W <- -(likelihood$d2(y, f, weights))
   
   # return marginal negative log-likelihood
   lZ <- -(a %*% (f - mn_prior))[1, 1] / 2 -
-    sum(likelihood$d0(y, f)) +
+    sum(likelihood$d0(y, f, weights)) +
     sum(log(diag(L)))
   
   # return posterior object
@@ -107,6 +110,7 @@ inference_laplace_full <- function(y,
                                likelihood = likelihood,
                                mean_function = mean_function,
                                inducing_data = inducing_data,
+                               weights,
                                mn_prior = mn_prior,
                                L = L,
                                a = a,

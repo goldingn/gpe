@@ -5,7 +5,7 @@
 \alias{print.gp}
 \title{Gaussian process models}
 \usage{
-gp(formula, data, family = gaussian, mean_function = NULL,
+gp(formula, data, family = gaussian, weights = NULL, mean_function = NULL,
   inducing_data = NULL, inference = c("default", "full", "FITC", "Laplace",
   "LaplaceFITC"), hyperinference = c("default", "BFGS", "BFGSrestarts",
   "none"), verbose = FALSE)
@@ -25,6 +25,9 @@ the response variable. This must have the same number of rows as
 \item{family}{a \code{\link{family}} object giving the likelihood and link
 function to be used to fit the model. Currently only \code{gaussian},
 \code{poisson} and \code{binomial} (only Bernoulli) are supported.}
+
+\item{weights}{an optional vector of ‘prior weights’ to be used in
+the fitting process. Should be NULL or a numeric vector.}
 
 \item{mean_function}{an optional function specifying the prior over the mean
 of the gp, in other words a 'first guess' at what the true function is.
