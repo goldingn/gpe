@@ -123,10 +123,8 @@ gp <- function(formula,
   # get or check the weights
   weights <- getWeights(weights, length(response))
   
-  # if there's no mean function, use zeroes
-  if (is.null(mean_function)) {
-    mean_function <- zeroes
-  }
+  # get or check the mean function
+  mean_function <- getMeanFunction(mean_function, data)
   
   # get the likelihood
   likelihood <- getLikelihood(family)
@@ -431,7 +429,7 @@ parseKernel <- function (formula) {
 
 checkWeights <- function (weights, n) {
   # check the weights argument and throw a nice error if invalid
-    
+  
   # must be a vector
   if (!is.vector(weights)) {
     stop ('weights must be a vector, or NULL')
@@ -456,7 +454,7 @@ checkWeights <- function (weights, n) {
   if (any(weights < 0)) {
     stop ('negative weights not allowed')
   }
-
+  
 }
 
 
@@ -465,12 +463,12 @@ getWeights <- function (weights, n) {
   # or throw a nice error
   
   if (is.null(weights)) {
-
+    
     # if null, return ones
     weights <- rep(1, n)
-  
+    
   } else {
-
+    
     # otherwise check the weights passed are valid
     checkWeights(weights, n)
     
@@ -481,3 +479,57 @@ getWeights <- function (weights, n) {
   
 }
 
+checkMeanFunction <- function(mean_function, data) {
+  # check that the specified mean function is valid
+  
+  # get the number of elements in the dataframe
+  n <- nrow(data)
+  
+  # evaluate it on the dataframe
+  mn <- mean_function(data)
+  
+  # mn must be finite
+  if (any(!is.finite(mn))) {
+    stop ('mean_function returned non-finite values')
+  }
+  
+  # must be a vector
+  if (!is.vector(mn)) {
+    stop ('mean_function must return a vector')
+  }
+  
+  # must have length n
+  if (length(mn) != n) {
+    stop ('mean_function must return a vector of the same length as
+          the dataframe against which it is evaluated')
+  }
+  
+  # must be numeric
+  if (!is.numeric(mn)) {
+    stop ('mean_function must return numeric values')
+  }
+  
+  }
+
+getMeanFunction <- function (mean_function, data) {
+  # check the weights argument and either return valid weights
+  # or throw a nice error
+  
+  if (is.null(mean_function)) {
+    
+    # if null, return ones
+    mean_function <- function (data) {
+      rep(0, nrow(data))
+    }
+    
+  } else {
+    
+    # otherwise check the weights passed are valid
+    checkMeanFunction(mean_function, data)
+    
+  }
+  
+  # return the weights
+  return (mean_function)
+  
+}
