@@ -26,8 +26,10 @@ likelihood_gaussian_identity <- function(y, f, wt, which = c('d0', 'd1', 'd2', '
     
     # can't do this yet as we don't have a way of dealing with
     # hyperparameters on the likelihood
-
+    
     stop ('Gaussian likelihood (for non-direct inference) not yet implemented.')
+
+    # ans <- dnorm(y, f, sigma, log = TRUE)
     
   } else if (which == 'd1') {
     
@@ -38,6 +40,8 @@ likelihood_gaussian_identity <- function(y, f, wt, which = c('d0', 'd1', 'd2', '
     
     stop ('Gaussian likelihood (for non-direct inference) not yet implemented.')
     
+    # ans <- (y - f) / sigma ^ 2
+    
   } else if (which == 'd2') {
     # second derivative
     
@@ -46,6 +50,8 @@ likelihood_gaussian_identity <- function(y, f, wt, which = c('d0', 'd1', 'd2', '
     
     stop ('Gaussian likelihood (for non-direct inference) not yet implemented.')
     
+    # ans <- -1 / sigma ^ 2
+  
   } else {
     
     # otherwise the link function (identity)
