@@ -143,6 +143,9 @@ inference_laplace_fitc <- function(y,
     -sum(log(diag(Lzz))) +
     sum(log(diag(jitchol(Sigma))))
   
+  # get whitened version of inducing point function values
+  f_z <- Kzx %*% a
+  a_z <- backsolve(Lzz, forwardsolve(t(Lzz), f_z))[, 1]
   
   # return posterior object
   posterior <- createPosterior(inference_name = 'inference_laplace_fitc',
@@ -153,6 +156,8 @@ inference_laplace_fitc <- function(y,
                                mean_function = mean_function,
                                inducing_data = inducing_data,
                                weights = weights,
+                               Lzz = Lzz,
+                               a_z = a_z,
                                Kzz = Kzz,
                                Kzx = Kzx,
                                Lambda_diag = Lambda_diag,
@@ -185,11 +190,7 @@ project_laplace_fitc <- function(posterior,
   Kxpz <- posterior$kernel(new_data,
                            posterior$inducing_data)
   
-  mu <- Kxpz %*% posterior$components$Sigma %*%
-    posterior$components$Kzx %*%
-    diag(1 / posterior$components$Lambda_diag) %*%
-    (posterior$components$f - posterior$components$mn_prior) +
-    mn_prior_xp
+  mu <- (Kxpz %*% posterior$components$a_z + mn_prior_xp)[, 1]
   
   if (variance == 'none') {
     
