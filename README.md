@@ -75,7 +75,7 @@ y <- rpois(100, exp(f(x)))
 df <- data.frame(y, x)
 
 # fit a Poisson GP model with an rbf kernel
-m <- gp(y ~ rbf('x'), k, data = df, family = poisson)
+m <- gp(y ~ rbf('x'), data = df, family = poisson)
 
 # predict from it
 pred_df <- data.frame(x = seq(min(df$x), max(df$x), len = 500))

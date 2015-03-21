@@ -316,7 +316,7 @@ predict.gp <- function(object, newdata = NULL,
     link <- object$likelihood$link
     
     # get answer on the link scale
-    fit <- link(NULL, res$mu)
+    fit <- link(res$mu)
     
   } else {
     

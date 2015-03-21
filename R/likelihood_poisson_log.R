@@ -21,7 +21,7 @@ likelihood_poisson_log <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'link')
   if(length(y) != length(f)) y <- rep(y, length(f))
   
   # create an empty vector for the results
-  ans <- vector('numeric', length(y))
+  ans <- vector('numeric', length(f))
   
   # straight likelihood case
   if (which == 'd0') {
@@ -44,7 +44,7 @@ likelihood_poisson_log <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'link')
   } else {
     
     # otherwise link
-    ans <- exp(f)
+    ans <- exp(as.numeric(f))
     
   }
   

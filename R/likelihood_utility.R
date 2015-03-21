@@ -67,8 +67,12 @@ getLikelihood <- function(family) {
     evaluator(y, f, wt, which = 'd2', ...)
   }
   
-  link <- function(y, f, ...) {
-    evaluator(y, f, which = 'link', ...)
+  link <- function(f, ...) {
+    evaluator(y = NULL,
+              f = f,
+              wt = rep(1, length(f)),
+              which = 'link',
+                ...)
   }
   
   # put it all in a list
