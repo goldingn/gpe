@@ -4,7 +4,7 @@ gpe is an R package implementing a Gaussian process (GP) statistical modelling f
 
 ## Why?
 
-Latent Gaussian process models constructed using compositional kernels - that is kernels created by adding, multiplying and convolving a series of basis kernels - can take a vast array of different functional forms, including many widely used statistical models as special cases. These include generalised linear (mixed, fixed or random) models; generalised additive models; geostatistical models; multivariate response models including joint species distribution models and (I think) model based ordination-type approaches. Under a GP approach, components of each of these models can be mixed and matched and extended in weird and wonderful directions.
+Latent Gaussian process models constructed using compositional kernels - that is kernels created by adding, multiplying and convolving a series of basis kernels - can take a vast array of different functional forms, including many widely used statistical models as special cases. These include generalised linear (mixed, fixed or random) models; generalised additive models; geostatistical models and multivariate response models including the joint species distribution models which are starting to be used in ecology. Under a GP approach, components of each of these models can be mixed and matched and extended in weird and wonderful directions.
 
 The aim of the package (and a planned accompanying demonstration repo) is to demonstrate how these models are all related and stimulate research into what can be done with the GP framework in an applied setting. It's certainly hoped that the package will developed into a fully-featured toolbox for all your GP needs, but that's a long way off for now. In the mean time you'd be better off using one of the existing packages mentioned above, or one of the many other packages that I haven't mentioned.
 
@@ -86,11 +86,11 @@ plot(lambda ~ pred_df$x, type = 'l', lwd = 2, ylim = range(y))
 lines(exp(f(pred_df$x)) ~ pred_df$x, lty = 2)
 points(y ~ x, data = df)
 
-# note you can get the posterior (prediction uncertainty) too,
+# note you can get the posterior variance (prediction uncertainty) too,
 # just set 'sd = TRUE' when predicting
 ```
 
-Nice glm-style summaries of the fitted models and learning of the kernel parameters are in the pipeline, but not yet implemented.
+You can now do inference on the model hyperparameters (the parameters of the kernel), though note that this is often tricky for GP models. Nice glm-style summaries of the fitted models is in the pipeline too, but not yet implemented.
 
 ## License
 
