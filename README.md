@@ -86,11 +86,11 @@ plot(lambda ~ pred_df$x, type = 'l', lwd = 2, ylim = range(y))
 lines(exp(f(pred_df$x)) ~ pred_df$x, lty = 2)
 points(y ~ x, data = df)
 
-# note you can get the posterior (prediction uncertainty) too,
+# note you can get the posterior variance (prediction uncertainty) too,
 # just set 'sd = TRUE' when predicting
 ```
 
-Nice glm-style summaries of the fitted models and learning of the kernel parameters are in the pipeline, but not yet implemented.
+You can now do inference on the model hyperparameters (the parameters of the kernel), though note that this is often tricky for GP models. Nice glm-style summaries of the fitted models is in the pipeline too, but not yet implemented.
 
 ## License
 
