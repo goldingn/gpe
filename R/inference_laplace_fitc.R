@@ -26,6 +26,7 @@ inference_laplace_fitc <- function(y,
 
   # number of observations
   n <- nrow(data)
+  m <- nrow(inducing_data)
   
   # self kernel (with observation noise)
   Kxx <- kernel(data, data)
