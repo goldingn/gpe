@@ -19,6 +19,7 @@ likelihood_binomial_logit <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'lin
       
       ans <- likelihood_bernoulli_logit(y,
                                         f,
+                                        wt,
                                         which = which,
                                         ...)
     } else {
@@ -54,6 +55,7 @@ likelihood_binomial_logit <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'lin
     # if it's a vector call the bernoulli likelihood
     ans <- likelihood_bernoulli_logit(y,
                                       f,
+                                      wt,
                                       which = which,
                                       ...)
   }

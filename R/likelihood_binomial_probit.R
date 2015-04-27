@@ -19,6 +19,7 @@ likelihood_binomial_probit <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'li
       
       ans <- likelihood_bernoulli_probit(y,
                                          f,
+                                         wt,
                                          which = which,
                                          ...)
     } else {
@@ -56,6 +57,7 @@ likelihood_binomial_probit <- function(y, f, wt, which = c('d0', 'd1', 'd2', 'li
     # if it's a vector call the bernoulli likelihood
     ans <- likelihood_bernoulli_probit(y,
                                       f,
+                                      wt,
                                       which = which,
                                       ...)
   }
