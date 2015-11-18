@@ -62,7 +62,6 @@ is.covarmat <- function (x) {
 #' image.
 #' 
 #' @export
-#' @importFrom fields image.plot
 #' 
 #' @examples
 #' 
