@@ -9,7 +9,7 @@ nlmlObjective <- function(pars, model) {
   
   # fit the model with the new parameters
   model_new <- setModelParameters(model, pars)
-
+  
   # extract the negative log marginal likelihood
   nlml <- -model_new$posterior$lZ
   
@@ -115,25 +115,25 @@ defaultHyperinference <- function () {
 # utility functions to get and set kernel parameters for gp model objects,
 # to facilitate hyperparamter inference
 getModelParameters <- function (model) {
-
+  
   pars <- getParVec(model$kernel)
   
   return (pars)
-
+  
 }
 
 setModelParameters <- function (model, pars) {
-
+  
   # get the model kernel
   kernel <- model$kernel
   
   # update the parameters
-  kernel <- gpe:::setParVec(kernel, par_vec = pars)
+  kernel <- setParVec(kernel, par_vec = pars)
   
   # fit the model with the new parameters
-  model_new <- gpe:::updateModel(model = model,
-                                 kernel = kernel)
-
+  model_new <- updateModel(model = model,
+                           kernel = kernel)
+  
   # return
   return (model_new)
   

@@ -62,6 +62,8 @@ is.covarmat <- function (x) {
 #' image.
 #' 
 #' @export
+#' @importFrom fields image.plot
+#' 
 #' @examples
 #' 
 #' # visualise it 
@@ -171,7 +173,7 @@ image.covarmat <- function (x,
 
 #' @rdname covarmat
 #' 
-#' @param axes whether to add axes to the image plot of \code{x}.
+#' @param n length of the continuous colour vector required
 #' 
 #' @export
 #' @examples
