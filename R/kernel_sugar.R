@@ -206,10 +206,12 @@ prod.kernel <- function (..., na.rm = FALSE) {
 
 setClass("kernel")
 
+#' @name kronecker
+#' @aliases kronecker,kernel-method
 #' @rdname composition
-#' @export
-#' @param FUN the operation to use in the kronecker operation, included only
-#'  for compatability, FUN = "*" is used regardless of what's specified
+#' @exportMethod kronecker
+#' @param FUN included only for compatability, ignored here
+#' (FUN = "*" is always used)
 #' @param make.dimnames included only for compatability, ignored here
 #' 
 #' @examples

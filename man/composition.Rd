@@ -7,7 +7,8 @@
 \alias{\%x\%}
 \alias{^.kernel}
 \alias{composition}
-\alias{kronecker,kernel,kernel-method}
+\alias{kronecker}
+\alias{kronecker,kernel-method}
 \alias{prod.kernel}
 \alias{sum.kernel}
 \title{Compositional kernels}
@@ -37,8 +38,8 @@ function}
 to raise the kernel function. If \code{power} is not integer-esque (that is
 \code{power != round(power)}) a warning is issued and the power rounded.}
 
-\item{FUN}{the operation to use in the kronecker operation, included only
-for compatability, FUN = "*" is used regardless of what's specified}
+\item{FUN}{included only for compatability, ignored here
+(FUN = "*" is always used)}
 
 \item{make.dimnames}{included only for compatability, ignored here}
 
