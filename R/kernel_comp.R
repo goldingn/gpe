@@ -21,7 +21,7 @@
 #' @template kco
 #' 
 #' @param \dots several kernel objects to be combined
-#' @param kernel,kernel1,kernel2 kernel objects to be combined
+#' @param kernel,kernel1,kernel2,X,Y kernel objects to be combined
 #' @param na.rm an unused argument for consistency with the generic sum
 #'  function
 #' @examples

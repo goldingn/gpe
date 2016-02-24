@@ -208,6 +208,10 @@ setClass("kernel")
 
 #' @rdname composition
 #' @export
+#' @param FUN the operation to use in the kronecker operation, included only
+#'  for compatability, FUN = "*" is used regardless of what's specified
+#' @param make.dimnames included only for compatability, ignored here
+#' 
 #' @examples
 #' 
 #' # get the kronecker product of two kernels

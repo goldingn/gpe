@@ -31,11 +31,16 @@ kernel1 \%x\% kernel2
 \item{na.rm}{an unused argument for consistency with the generic sum
 function}
 
-\item{kernel, kernel1, kernel2}{kernel objects to be combined}
+\item{kernel, kernel1, kernel2, X, Y}{kernel objects to be combined}
 
 \item{power}{an integer (or integer-esque numeric) giving the power to which
 to raise the kernel function. If \code{power} is not integer-esque (that is
 \code{power != round(power)}) a warning is issued and the power rounded.}
+
+\item{FUN}{the operation to use in the kronecker operation, included only
+for compatability, FUN = "*" is used regardless of what's specified}
+
+\item{make.dimnames}{included only for compatability, ignored here}
 
 \item{\dots}{several kernel objects to be combined}
 }
