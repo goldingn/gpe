@@ -62,6 +62,7 @@ is.covarmat <- function (x) {
 #' image.
 #' 
 #' @export
+#' 
 #' @examples
 #' 
 #' # visualise it 
@@ -84,9 +85,11 @@ image.covarmat <- function (x,
   # so that matrix and legend agree
   nlevel <- length(col)
   
+  covar <- x
+  
   # dimension
-  nx <- ncol(x)
-  ny <- nrow(x)
+  nx <- ncol(covar)
+  ny <- nrow(covar)
   
   # flip the matrix round (image does this for some reason)
   z <- as.matrix(t(x[ny:1, ]))
@@ -148,19 +151,37 @@ image.covarmat <- function (x,
   
   if (legend) {
     
-    # add the legend
-    fields::image.plot(x = x,
-                       y = y,
-                       z = z,
-                       useRaster = TRUE,
-                       ylab = '',
-                       xlab = '',
-                       axes = FALSE,
-                       ...,
-                       legend.only = TRUE,
-                       add = TRUE,
-                       nlevel = nlevel,
-                       col = col)
+    # check there is more than one unique covariance
+    if (length(unique(as.vector(z))) > 1) {
+      # add the legend
+      fields::image.plot(x = x,
+                         y = y,
+                         z = z,
+                         useRaster = TRUE,
+                         ylab = '',
+                         xlab = '',
+                         axes = FALSE,
+                         ...,
+                         legend.only = TRUE,
+                         add = TRUE,
+                         nlevel = nlevel,
+                         col = col)
+      
+    } else {
+      # otherwise, get the value
+      val <- mean(z, na.rm = TRUE)
+      
+      # and add a single colour legend
+      fields::image.plot(covar,
+                         legend.only = TRUE,
+                         col = rep(col[1], 8),
+                         smallplot = c(0.85, 0.9, 0.5, 0.55),
+                         lab.breaks = rep(c('', val, ''),
+                                          c(4, 1, 4)),
+                         axis.args = list(tcl = 0))
+
+    }
+    
   }
 }
 
@@ -171,7 +192,7 @@ image.covarmat <- function (x,
 
 #' @rdname covarmat
 #' 
-#' @param axes whether to add axes to the image plot of \code{x}.
+#' @param n length of the continuous colour vector required
 #' 
 #' @export
 #' @examples

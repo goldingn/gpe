@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/goldingn/gpe.svg?branch=master)](https://travis-ci.org/goldingn/gpe)
+![CRAN](http://www.r-pkg.org/badges/version/gpe)
+
 # Gaussian process everything
 
 gpe is an R package implementing a Gaussian process (GP) statistical modelling framework. The aims of the project are to provide *some* of the functionality of fully featured GP toolboxes available in other languages, such as [GPy](https://github.com/SheffieldML/GPy) for python and [GPstuff](http://becs.aalto.fi/en/research/bayes/gpstuff/) for MATLAB. Mostly though it's about communicating the power of the GP approach to an applied statistical audience.

@@ -20,9 +20,8 @@
 #'
 #' @template kco
 #' 
-#' @param \dots kernel objects to be combined
-#' @param kernel1 A kernel object
-#' @param kernel2 Another kernel object to combine it with
+#' @param \dots several kernel objects to be combined
+#' @param kernel,kernel1,kernel2 kernel objects to be combined
 #' @param na.rm an unused argument for consistency with the generic sum
 #'  function
 #' @examples

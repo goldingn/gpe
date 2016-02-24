@@ -145,7 +145,7 @@ is.parameter <- function (x) {
 #' p <- update(p, -1, continuous = TRUE)
 #' p()
 #' 
-update.parameter <- function(object, new_value, continuous = FALSE) {
+update.parameter <- function(object, new_value, continuous = FALSE, ...) {
   # function to update value of a parameter
   # parameter is the parameter,
   # new_value is the new value

@@ -2,14 +2,15 @@ Package: gpe
 Type: Package
 Title: Gaussian Process Everything
 Version: 0.1-1
-Date: 2015-02-07
+Date: 2015-11-18
 Author: Nick Golding
-Maintainer: Nick Golding <nick.golding@zoo.ox.ac.uk>
+Maintainer: Nick Golding <nick.golding.research@gmail.com>
 Description: A framework to reimplement and combine common statistical models
-    using Gaussian processes
+    using Gaussian processes.
 License: MIT + file LICENSE
 Suggests:
     testthat
 Imports:
     fields,
     RColorBrewer
+RoxygenNote: 5.0.1
