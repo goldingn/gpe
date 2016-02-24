@@ -109,7 +109,7 @@ gp <- function(formula,
                weights = NULL,
                mean_function = NULL,
                inducing_data = NULL,
-               inference = c('default', 'full', 'FITC', 'Laplace'),
+               inference = c('default', 'full', 'FITC', 'Laplace', 'LaplaceFITC'),
                hyperinference = c('default', 'BFGS', 'BFGSrestarts', 'none'),
                verbose = FALSE) {
   
