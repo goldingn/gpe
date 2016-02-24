@@ -204,38 +204,32 @@ prod.kernel <- function (..., na.rm = FALSE) {
   
 } 
 
+setClass("kernel")
+
 #' @rdname composition
 #' @export
 #' @examples
 #' 
 #' # get the kronecker product of two kernels
-#' k_kron <- kron(k1, k2)
+#' k_kron <- kronecker(k1, k2)
 #' 
 #' # evaluate the function and look at the matrix
 #' image(k_kron(pressure))
 #'  
-kron <- function (kernel1,
-                  kernel2) {
-  
-  # check they're both kernels
-  checkKernel(kernel1)
-  checkKernel(kernel2)
-  
-  ans <- comp(kernel1,
-              kernel2,
-              'kron')
-
-  # return the result
-  return (ans)
-  
-}
-
+setMethod(f = "kronecker", 
+          signature(X = "kernel", Y = "kernel", FUN = "ANY", make.dimnames = "ANY"),
+          definition = function(X, Y, ...) {
+            comp(X,
+                 Y,
+                 'kron')
+          }
+)
 
 #' @rdname composition
 #' @export
 #' @examples
 #' 
-#' # get the kronecker product of two kernels again
+#' # get the kronecker product of two kernels more elegantly
 #' k_kron <- k1 %x% k2
 #' 
 #' # evaluate the function and look at the matrix
