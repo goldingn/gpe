@@ -106,6 +106,11 @@ iidEval <- function(object, data, newdata = NULL, diag = FALSE) {
     
     # extract from/to data, don't vconvert them to matrices
     data <- getFeatures(object, data, newdata, to_matrix = FALSE)
+
+    # expand factors to cover all observed sites
+    new_levels <- unique(c(levels(data$x), levels(data$y)))
+    data$x <- factor(data$x, levels = new_levels)
+    data$y <- factor(data$y, levels = new_levels)
     
     # turn factors into full set of indicator variables
     x <- expandFactor(data$x)
