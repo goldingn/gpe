@@ -533,3 +533,22 @@ getMeanFunction <- function (mean_function, data) {
   return (mean_function)
   
 }
+
+stripOffsets <- function (formula) {
+  # remove the offset term(s) from a formula
+  formula <- terms(formula)
+  which_offset <- attr(formula, 'offset')
+  formula <- drop.terms(formula, which_offset, keep.response = TRUE)
+  formula(formula)
+}
+
+getOffsets <- function (formula, data) {
+  # find the offset term(s) from a formula
+  formula <- terms(formula)
+  which_offset <- attr(formula, 'offset')
+  all_names <- rownames(attr(formula, 'factors'))
+  offset_names <- all_names[which_offset]
+  offset_terms <- paste(offset_names, collapse = ' + ')
+  formula <- formula(paste('~', offset_terms))
+  model.frame(formula, data = data)
+}
