@@ -126,6 +126,9 @@ gp <- function(formula,
   # get or check the mean function
   mean_function <- getMeanFunction(mean_function, data)
   
+  # add offset terms to it
+  mean_fun <- addOffset(mean_function, formula, data)
+  
   # get the likelihood
   likelihood <- getLikelihood(family)
   
@@ -151,7 +154,7 @@ gp <- function(formula,
                          data,
                          kernel,
                          likelihood,
-                         mean_function,
+                         mean_fun,
                          inducing_data,
                          weights,
                          verbose = verbose)
@@ -159,7 +162,7 @@ gp <- function(formula,
   model <- list(call = call,
                 likelihood = likelihood,
                 kernel = kernel,
-                mean_function = mean_function,
+                mean_function = mean_fun,
                 data = list(response = response,
                             training_data = data,
                             inducing_data = inducing_data),
@@ -405,6 +408,9 @@ getResponse <- function(formula, data) {
 getKernel <- function (formula) {
   # given a formula, fetch the kernel object
   
+  # remove all offset terms
+  formula <- stripOffsets(formula)
+  
   # get the string from the formula
   kernel_string <- deparse(formula[[3]])
   
@@ -546,9 +552,23 @@ getOffsets <- function (formula, data) {
   # find the offset term(s) from a formula
   formula <- terms(formula)
   which_offset <- attr(formula, 'offset')
-  all_names <- rownames(attr(formula, 'factors'))
-  offset_names <- all_names[which_offset]
-  offset_terms <- paste(offset_names, collapse = ' + ')
-  formula <- formula(paste('~', offset_terms))
-  model.frame(formula, data = data)
+  if (!is.null(which_offset)) {
+    all_names <- rownames(attr(formula, 'factors'))
+    offset_names <- all_names[which_offset]
+    offset_terms <- paste(offset_names, collapse = ' + ')
+    formula <- formula(paste('~', offset_terms))
+    model.frame(formula, data = data)
+  } else {
+    matrix(0, nrow = nrow(data), ncol = 1)
+  }
+}
+
+addOffset <- function (mean_function, formula, data) {
+  # create a new function that adds both the user-specified function and the
+  # offsets in a single function
+  overall <- function (data) {
+    offset <- rowSums(getOffsets(formula, data))
+    mean_function(data) + offset
+  }
+  overall
 }
