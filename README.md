@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/goldingn/gpe.svg?branch=master)](https://travis-ci.org/goldingn/gpe)
 ![CRAN](http://www.r-pkg.org/badges/version/gpe)
+[![codecov.io](https://codecov.io/github/goldingn/gpe/coverage.svg?branch=master)](https://codecov.io/github/goldingn/gpe?branch=master)
 
 # Gaussian process everything
 
