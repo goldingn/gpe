@@ -60,10 +60,49 @@ test_that('kernels produce the right covariance matrices', {
     expect_true(is.matrix(C_proj))
     expect_true(is.matrix(C_diag))
     
-    expect_true(all.equal(dim(C_self), c(3, 3)))
-    expect_true(all.equal(dim(C_proj), c(3, 2)))
-    expect_true(all.equal(dim(C_diag), c(3, 3)))
+    expect_equal(dim(C_self), c(3, 3))
+    expect_equal(dim(C_proj), c(3, 2))
+    expect_equal(dim(C_diag), c(3, 3))
   }
   
+})
 
+
+test_that('kernel access functions work', {
+  
+  # create kernel functions
+  k1 <- rbf(c('a', 'b'), sigma = 0.1, l = 0.2)
+  k2 <- int(sigma = 0.2)
+  k3 <- iid('a', sigma = 0.1)
+  k4 <- per(c('a', 'b'), sigma = 0.1, l = 0.2, p = 1)
+  k <- k1 + (k2 * k3 + k4)
+  
+  # check the column names can be extracted
+  expect_equal(getColumns(k1), c('a', 'b'))
+  expect_equal(getColumns(k2), NULL)
+  expect_equal(getColumns(k3), 'a')
+  expect_equal(getColumns(k4), c('a', 'b'))
+  expect_equal(getColumns(k), c('a', 'b'))
+
+  # check the parameters can be extracted  
+  expect_equal(getParameters(k1), list(sigma = 0.1, l = 0.2))
+  expect_equal(getParameters(k2), list(sigma = 0.2))
+  expect_equal(getParameters(k3), list(sigma = 0.1))
+  expect_equal(getParameters(k4), list(p = 1, l = 0.2, sigma = 0.1))
+
+  # check the parameters can be updated
+  k1 <- setParameters(k1, l = 0.3)
+  expect_equal(getParameters(k1), list(sigma = 0.1, l = 0.3))
+  
+  # check the types can be extracted
+  expect_equal(getType(k1), 'rbf')
+  expect_equal(getType(k2), 'int')
+  expect_equal(getType(k3), 'iid')
+  expect_equal(getType(k4), 'per')
+  expect_equal(getType(k), 'sum')
+  
+  # check the subkernels can be extracted
+  expect_equal(getSubKernel(k, 1), k1)
+  expect_equal(getSubKernel(k, 2), (k2 * k3) + k4)
+  
 })
