@@ -18,6 +18,7 @@ test_that('all the kernel constructors work', {
   k <- per(c('a', 'b'), sigma = 0.1, l = 0.2, p = 1)
   k <- int(sigma = 0.2)
   k <- iid('a', sigma = 0.1)
+  k <- iid(sigma = 0.1)
   
 })
 
@@ -41,7 +42,8 @@ test_that('kernels produce the right covariance matrices', {
                    "rq(c('a', 'b'), sigma = 0.1, alpha = 0.2)",
                    "per(c('a', 'b'), sigma = 0.1, l = 0.2, p = 1)",
                    "int(sigma = 0.2)",
-                   "iid('a', sigma = 0.1)")
+                   "iid('a', sigma = 0.1)",
+                   "iid(sigma = 0.1)")
 
   # check matrices
   for (expression in expressions) {
