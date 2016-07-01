@@ -13,4 +13,5 @@
 #' @importFrom utils capture.output
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom fields image.plot
+#' @importFrom viridis viridis
 NULL

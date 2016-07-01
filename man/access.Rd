@@ -31,25 +31,28 @@ on the scale of their continuous transformation rather than their true value
 
 \item{which}{which of the two \emph{immediate} subkernels of the kernel to extract}
 
-\item{data}{a dataset from which to calculate the range of values over which to draw example GPs.
-If \code{NULL}, the range -5 to 5 is used, arbitrarily.}
+\item{data}{a dataset from which to calculate the range of values over which
+to draw example GPs. If \code{NULL}, the range -5 to 5 is used,
+arbitrarily.}
 
-\item{ndraw}{the number of (zero-mean) GP realisations from the the kernel to plot.}
+\item{ndraw}{the number of (zero-mean) GP realisations from the kernel to
+plot. Ignored in the case of a 2d kernel.}
 
 \item{\dots}{parameters to be updated and the new values for them to take 
 (see examples). Note that these must be passed as values, not as parameter
 objects}
 }
 \description{
-Access and interact with kernel objects. 
-These functions allow you to report the type of kernel (\code{getType}), 
-extract subkernels (\code{getSubKernel}) report kernel parameters 
-(\code{getParameters}) and update them (\code{setParameters}).
+Access and interact with kernel objects. These functions allow
+  you to report the type of kernel (\code{getType}), extract subkernels
+  (\code{getSubKernel}) report kernel parameters (\code{getParameters}) and
+  update them (\code{setParameters}). You can also visualise GPs drawn from
+  1d or 2d kernels using \code{demoKernel}.
 }
 \examples{
  
 # construct a kernel with one feature
-k1 <- rbf('temperature')
+k1 <- rbf('temperature', l = 5)
  
  
 # get the kernel type
@@ -86,8 +89,12 @@ k2 <- k1 + k1 * k1
 k3 <- getSubKernel(k2, 1)
  
  
-#plot example GPs from this kernel, applied to the pressure dataset
+# plot example GPs from this kernel, applied to the pressure dataset
 demoKernel(k1, data = pressure)
+
+# plot a draw from a 2d kernel
+k4 <- k1 * expo('pressure', l = 7)
+demoKernel(k4, data = pressure)
 
 }
 
