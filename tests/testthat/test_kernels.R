@@ -108,3 +108,22 @@ test_that('kernel access functions work', {
   expect_equal(getSubKernel(k, 2), (k2 * k3) + k4)
   
 })
+
+test_that('kernel summaries work', {
+  
+  expected <- c("",
+                "Kernel summary",
+                "",
+                "\t\t\t\ttype:  rbf",
+                "\t\t\t\tactive columns:  a, b",
+                "\t\t\t\tparameters: sigma  =  0.1 ",
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tl  =  0.2 ",
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t")
+  expect_equal(capture.output(summary(k1)), expected)
+  
+  # try plotting a kernel
+  plot(k1)
+  plot(k4)
+  
+})
+
