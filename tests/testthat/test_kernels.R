@@ -110,6 +110,8 @@ test_that('kernel access functions work', {
 })
 
 test_that('kernel summaries work', {
+
+  k <- rbf(c('a', 'b'), sigma = 0.1, l = 0.2)
   
   expected <- c("",
                 "Kernel summary",
@@ -119,11 +121,11 @@ test_that('kernel summaries work', {
                 "\t\t\t\tparameters: sigma  =  0.1 ",
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tl  =  0.2 ",
                 "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t")
-  expect_equal(capture.output(summary(k1)), expected)
+  expect_equal(capture.output(summary(k)), expected)
   
   # try plotting a kernel
-  plot(k1)
-  plot(k4)
+  plot(k)
+  plot(k * k)
   
 })
 

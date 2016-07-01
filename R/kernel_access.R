@@ -2,20 +2,21 @@
 
 #' @name access
 #' @rdname access
-#'
+#'   
 #' @title Interaction with kernel objects
-#' 
-#' @description Access and interact with kernel objects. 
-#' These functions allow you to report the type of kernel (\code{getType}), 
-#' extract subkernels (\code{getSubKernel}) report kernel parameters 
-#' (\code{getParameters}) and update them (\code{setParameters}).
-#' 
+#'   
+#' @description Access and interact with kernel objects. These functions allow
+#'   you to report the type of kernel (\code{getType}), extract subkernels
+#'   (\code{getSubKernel}) report kernel parameters (\code{getParameters}) and
+#'   update them (\code{setParameters}). You can also visualise GPs drawn from
+#'   1d or 2d kernels using \code{demoKernel}.
+#'   
 #' @template kac_kernel
-#' 
+#'   
 #' @examples
 #'  
 #' # construct a kernel with one feature
-#' k1 <- rbf('temperature')
+#' k1 <- rbf('temperature', l = 5)
 #'  
 NULL
 
@@ -134,22 +135,22 @@ setObject <- function (object) {
   
   # if it's compositional, just recreate it
   if (is_comp) {
-  
+    
     kernel <- get(object$type)(object$kernel1, object$kernel2)
-  
+    
   } else {
-  
+    
     # otherwise, get kernel from the type and columns
     if (is.null(object$columns)) {
       
       # if there are no columns (int & some iids), don't specify any
       kernel <- do.call(object$type, list())
-    
+      
     } else {
-    
+      
       # otherwise build it with the new columns
       kernel <- do.call(object$type, list(object$columns))
-    
+      
     }
     
     # get the parameter values
@@ -158,7 +159,7 @@ setObject <- function (object) {
     
     # update the parameters with these
     kernel <- do.call(setParameters, c(kernel, params))
-
+    
   }
   
   # check it's valid
@@ -259,7 +260,7 @@ setParameters <- function (kernel, ..., continuous = FALSE) {
     # for kernels without columns
     new_kernel <- do.call(getType(kernel),
                           parameters_current_values)
-  
+    
   } else {
     
     # for kernels with columns
@@ -321,16 +322,22 @@ getSubKernel <- function (kernel, which = 1) {
 
 
 #' @rdname access
-#' 
-#' @param data a dataset from which to calculate the range of values over which to draw example GPs.
-#' If \code{NULL}, the range -5 to 5 is used, arbitrarily.
-#' @param ndraw the number of (zero-mean) GP realisations from the the kernel to plot.
-#' 
+#'   
+#' @param data a dataset from which to calculate the range of values over which
+#'   to draw example GPs. If \code{NULL}, the range -5 to 5 is used,
+#'   arbitrarily.
+#' @param ndraw the number of (zero-mean) GP realisations from the kernel to
+#'   plot. Ignored in the case of a 2d kernel.
+#'   
 #' @export
 #' @examples
 #'  
-#' #plot example GPs from this kernel, applied to the pressure dataset
+#' # plot example GPs from this kernel, applied to the pressure dataset
 #' demoKernel(k1, data = pressure)
+#' 
+#' # plot a draw from a 2d kernel
+#' k4 <- k1 * expo('pressure', l = 7)
+#' demoKernel(k4, data = pressure)
 #' 
 demoKernel <- function (kernel, data = NULL, ndraw = 3) {
   
@@ -341,52 +348,150 @@ demoKernel <- function (kernel, data = NULL, ndraw = 3) {
   
   D <- length(columns)
   
-  if (D != 1) {
-    stop ("sorry, only one-dimensional kernels are currently supported")
-  }
-  
-  if (length(columns) == 0) {
-    stop ("sorry, only kernels which use a covariate are currently supported")
+  if (!D %in% 1:2) {
+    stop ("sorry, only one- and two-dimensional kernels are currently supported")
   }
   
   # need to make this handle discrete data
   
-  # get the range of data to plot
-  if (is.null(data)) {
-    range <- c(-5, 5)
+  # for 2d case, call a separate function
+  if (D == 2) {
+    
+    # get the range of data to plot
+    if (is.null(data)) {
+      range_x <- range_y <- c(-5, 5)
+    } else {
+      range_x <- range(data[, columns[1]])
+      range_y <- range(data[, columns[2]])
+    }
+    
+    gpPersp(kernel, range_x, range_y)
+    
   } else {
-    range <- range(data[, columns])
-  }
-  
-  # get some random draws from the kernel
-  df_covs <- data.frame(seq(range[1], range[2], len = 1000))
-  names(df_covs) <- columns
-  
-  draws <- rgp(n = ndraw, kernel = kernel, data = df_covs)
-  
-  # define colour palette
-  col <- RColorBrewer::brewer.pal(9, 'Set1')
-  
-  # repeat it multiple times if necessary
-  if (ndraw > 9) {
-    col <- rep(col, ceiling(ndraw / 9))
-  }
-  
-  plot(draws[, 1] ~ df_covs[[1]],
-       type = 'n',
-       ylim = range(draws),
-       xlab = columns,
-       ylab = paste0('f(', columns, ')'))
-  
-  for (i in 1:ndraw) {
-    lines(draws[, i] ~ df_covs[[1]],
-          type = 'l',
-          lwd = 2,
-          col = col[i])
+    
+    # get the range of data to plot
+    if (is.null(data)) {
+      range <- c(-5, 5)
+    } else {
+      range <- range(data[, columns])
+    }
+    
+    # get some random draws from the kernel
+    df_covs <- data.frame(seq(range[1], range[2], len = 1000))
+    names(df_covs) <- columns
+    
+    draws <- rgp(n = ndraw, kernel = kernel, data = df_covs)
+    
+    # define colour palette
+    col <- RColorBrewer::brewer.pal(9, 'Set1')
+    
+    # repeat it multiple times if necessary
+    if (ndraw > 9) {
+      col <- rep(col, ceiling(ndraw / 9))
+    }
+    
+    plot(draws[, 1] ~ df_covs[[1]],
+         type = 'n',
+         ylim = range(draws),
+         xlab = columns,
+         ylab = paste0('f(', columns, ')'))
+    
+    for (i in 1:ndraw) {
+      lines(draws[, i] ~ df_covs[[1]],
+            type = 'l',
+            lwd = 2,
+            col = col[i])
+    }
   }
   
   title(main = paste0(ndraw,
                       ' GP realisations from the kernel\n',
                       trimParentheses(parseKernelStructure(kernel))))
   
+}
+
+gpPersp <- function (kernel, range_x = c(-5, 5), range_y = c(-5, 5), res = 100) {
+  # draw a 2d GP from a kernel and plot it nicely
+  
+  # set up fake data
+  columns <- getColumns(kernel)
+  stopifnot(length(columns) == 2)
+  seq_x <- seq(range_x[1], range_x[2], length.out = res)
+  seq_y <- seq(range_y[1], range_y[2], length.out = res)
+  df <- expand.grid(x = seq_x,
+                    y = seq_y)
+  colnames(df) <- columns
+  
+  # draw gp & coerce to a matrix
+  draw <- rgp(1, kernel, df)
+  draw <- matrix(draw, nrow = res, byrow = FALSE)
+  
+  # get plotting parameters & replace them on exit
+  mar <- par()$mar
+  on.exit(par(mar = mar))
+  par(mar = rep(0, 4))
+  
+  zlim <- range(draw)
+  zlim <- zlim + c(-1, 1) * 0.4 * abs(diff(zlim))
+  
+  # make the plot
+  persp(x = seq_x,
+        y = seq_y,
+        z = draw,
+        shade = 0.1,
+        col = perspCol(draw, viridis(1000)),
+        border = NA,
+        zlim = zlim,
+        box = FALSE,
+        theta = -30,
+        phi = 45,
+        r = sqrt(20),
+        xlab = columns[1],
+        ylab = columns[2]) -> res
+  
+  # add axis arrows and labels
+  
+  # arrow locations
+  l1 <- trans3d(range_x, range_y[c(1, 1)], min(zlim), pmat = res)
+  l2 <- trans3d(range_x[c(1, 1)], range_y, min(zlim), pmat = res)
+  
+  # label locations
+  x_off <- abs(diff(range_x)) * 0.2
+  y_off <- abs(diff(range_y)) * 0.2
+  
+  lab1 <- trans3d(mean(range_x), range_y[1] - y_off, min(zlim), pmat = res)
+  lab2 <- trans3d(range_x[1] - x_off, mean(range_y), min(zlim), pmat = res)
+  
+  arrows(l1$x[1], l1$y[1], l1$x[2], l1$y[2],
+         pch = 16,
+         xpd = NA,
+         lwd = 1,
+         length = 0.1,
+         col = grey(0.5))
+  arrows(l2$x[1], l2$y[1], l2$x[2], l2$y[2],
+         pch = 16,
+         xpd = NA,
+         lwd = 1,
+         length = 0.1,
+         col = grey(0.5))
+  
+  text(lab1$x, lab1$y, labels = 'a', col = grey(0.5))
+  text(lab2$x, lab2$y, labels = 'b', col = grey(0.5))
+  
+  # invisibly return the persp object
+  invisible(res)
+}
+
+perspCol <- function(grid, colvec) {
+  # get colour ramp matrix for perspective plotting
+  nc <- ncol(grid)
+  nr <- nrow(grid)
+  mn <- (grid[-1, -1] +
+           grid[-1, -(nc - 1)] +
+           grid[-(nr - 1), -1] +
+           grid[-(nr - 1), -(nc - 1)]) / 4
+  breaks <- cut(mn,
+                breaks = length(colvec),
+                include.lowest = TRUE)
+  colvec[breaks]
 }
