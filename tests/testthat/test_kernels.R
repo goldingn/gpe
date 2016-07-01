@@ -124,8 +124,10 @@ test_that('kernel summaries work', {
   expect_equal(capture.output(summary(k)), expected)
   
   # try plotting a kernel
+  pdf(NULL)
   plot(k)
   plot(k * k)
+  dev.off()
   
 })
 
