@@ -353,8 +353,11 @@ rgp <- function(n, kernel, data = NULL) {
               nrow = N,
               ncol = n)
   
+  # factorize the covariance matrix
+  L <- jitchol(K)
+  
   # get random draws
-  ans <- K %*% z
+  ans <- t(L) %*% z
   
   # name the columns
   colnames(ans) <- paste0('draw_', 1:n)
