@@ -98,8 +98,8 @@ inference_laplace_full <- function(y,
   W <- -(likelihood$d2(y, f, weights))
   
   # return marginal negative log-likelihood
-  lZ <- -(a %*% (f - mn_prior))[1, 1] / 2 -
-    sum(likelihood$d0(y, f, weights)) +
+  lZ <- -(a %*% (f - mn_prior))[1, 1] / 2 +
+    sum(likelihood$d0(y, f, weights)) -
     sum(log(diag(L)))
   
   # return posterior object
