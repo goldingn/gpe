@@ -147,6 +147,9 @@ inference_laplace_fitc <- function(y,
   f_z <- Kzx %*% a
   a_z <- backsolve(Lzz, forwardsolve(t(Lzz), f_z))[, 1]
   
+  # recompute f for the final result
+  f <- Kxz %*% a_z
+  
   # return posterior object
   posterior <- createPosterior(inference_name = 'inference_laplace_fitc',
                                lZ = lZ,
