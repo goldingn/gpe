@@ -54,7 +54,7 @@ summary(k1)
 plot(k1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="80%" />
 
 ``` r
 # look at some GPs drawn from this kernel
@@ -63,7 +63,7 @@ demoKernel(k1)
 #> computed, so 1e-05 was added to the diagonal.
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-2.png" width="80%" />
 
 Crucially though, these kernels may be combined to create new functional forms:
 
@@ -78,7 +78,7 @@ demoKernel(k2)
 #> computed, so 2.087504e-05 was added to the diagonal.
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="80%" />
 
 ``` r
 # a GP model with a linear kernel is the same as (Bayesian) linear regression
@@ -91,7 +91,7 @@ demoKernel(k3)
 #> computed, so 3.087504e-05 was added to the diagonal.
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-2.png" width="80%" />
 
 ``` r
 # this is the same as adding the random draws together
@@ -102,7 +102,7 @@ k4 <- k3 * per('temperature')
 plot(k4)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-3.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-3.png" width="80%" />
 
 ``` r
 demoKernel(k4)
@@ -110,7 +110,7 @@ demoKernel(k4)
 #> computed, so 3.087504e-05 was added to the diagonal.
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-4.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-4.png" width="80%" />
 
 ``` r
 
@@ -143,7 +143,7 @@ lines(exp(f(pred_df$x)) ~ pred_df$x, lty = 2)
 points(y ~ x, data = df)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="80%" />
 
 ``` r
 
